@@ -52,11 +52,66 @@ function deleteTodo(id) {
     renderTodos();
 }
 
+// Show achievement badge with celebration
+function showAchievementBadge() {
+    const badge = document.getElementById('achievementBadge');
+    const messages = [
+        { icon: '⭐', text: 'Amazing!', sub: 'Task Completed' },
+        { icon: '🎉', text: 'Well Done!', sub: 'Keep It Up!' },
+        { icon: '✨', text: 'Fantastic!', sub: 'You\'re Crushing It!' },
+        { icon: '💖', text: 'Awesome!', sub: 'Task Complete!' },
+        { icon: '🌟', text: 'Brilliant!', sub: 'You Did It!' }
+    ];
+
+    const msg = messages[Math.floor(Math.random() * messages.length)];
+    badge.querySelector('.badge-icon').textContent = msg.icon;
+    badge.querySelector('.badge-text').textContent = msg.text;
+    badge.querySelector('.badge-subtext').textContent = msg.sub;
+
+    badge.classList.add('show');
+
+    // Create confetti
+    createConfetti();
+
+    // Hide after 2 seconds
+    setTimeout(() => {
+        badge.classList.remove('show');
+    }, 2000);
+}
+
+// Create confetti effect
+function createConfetti() {
+    const colors = ['#ff1493', '#ff69b4', '#fff', '#ffc0cb'];
+    for (let i = 0; i < 50; i++) {
+        setTimeout(() => {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.top = '-10px';
+            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.width = Math.random() * 10 + 5 + 'px';
+            confetti.style.height = Math.random() * 10 + 5 + 'px';
+            confetti.style.animationDuration = Math.random() * 2 + 2 + 's';
+            confetti.style.animationDelay = Math.random() * 0.5 + 's';
+            document.body.appendChild(confetti);
+
+            setTimeout(() => confetti.remove(), 5000);
+        }, i * 30);
+    }
+}
+
 // Toggle todo completion
 function toggleTodo(id) {
     const todo = todos.find(todo => todo.id === id);
     if (todo) {
+        const wasCompleted = todo.completed;
         todo.completed = !todo.completed;
+
+        // Show celebration only when marking as complete (not when unchecking)
+        if (!wasCompleted && todo.completed) {
+            showAchievementBadge();
+        }
+
         saveTodos();
         renderTodos();
     }

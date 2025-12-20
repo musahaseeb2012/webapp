@@ -307,3 +307,108 @@ h1::after {
     color: #666;
     font-size: 18px;
 }
+
+/* Achievement Badge Styles */
+.achievement-badge {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
+    border: 4px solid #fff;
+    border-radius: 50%;
+    width: 200px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+        0 0 50px rgba(255, 20, 147, 0.8),
+        0 0 100px rgba(255, 20, 147, 0.5),
+        0 10px 30px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    opacity: 0;
+    transition: all 0.5s ease-out;
+}
+
+.achievement-badge.show {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    animation: badgePulse 0.5s ease-out, badgeRotate 0.8s ease-out;
+}
+
+@keyframes badgePulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.1); }
+}
+
+@keyframes badgeRotate {
+    0% { transform: translate(-50%, -50%) scale(0) rotate(-180deg); }
+    100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+}
+
+.achievement-badge .badge-icon {
+    font-size: 60px;
+    margin-bottom: 10px;
+}
+
+.achievement-badge .badge-text {
+    color: white;
+    font-size: 20px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-align: center;
+}
+
+.achievement-badge .badge-subtext {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    margin-top: 5px;
+    font-weight: 600;
+}
+
+/* Confetti Styles */
+.confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background: #ff1493;
+    position: absolute;
+    animation: confettiFall 3s linear forwards;
+    z-index: 999;
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(0) rotateZ(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotateZ(720deg);
+        opacity: 0;
+    }
+}
+
+.sparkle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #ff1493;
+    border-radius: 50%;
+    animation: sparkleFloat 1s ease-out forwards;
+    pointer-events: none;
+    z-index: 998;
+}
+
+@keyframes sparkleFloat {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--tx), var(--ty)) scale(0);
+        opacity: 0;
+    }
+}
