@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -15,19 +15,21 @@ body {
 }
 
 .container {
-    background: white;
+    background: #1a1a1a;
+    border: 2px solid #ff1493;
     border-radius: 15px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 60px rgba(255, 20, 147, 0.3);
     padding: 40px;
     width: 100%;
     max-width: 600px;
 }
 
 h1 {
-    color: #667eea;
+    color: #ff1493;
     text-align: center;
     margin-bottom: 30px;
     font-size: 2.5rem;
+    text-shadow: 0 0 20px rgba(255, 20, 147, 0.5);
 }
 
 .input-section {
@@ -39,30 +41,39 @@ h1 {
 #todoInput {
     flex: 1;
     padding: 15px;
-    border: 2px solid #e0e0e0;
+    border: 2px solid #333;
     border-radius: 8px;
     font-size: 16px;
     transition: border-color 0.3s;
+    background: #2a2a2a;
+    color: #fff;
 }
 
 #todoInput:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #ff1493;
+    box-shadow: 0 0 10px rgba(255, 20, 147, 0.3);
+}
+
+#todoInput::placeholder {
+    color: #888;
 }
 
 #addBtn {
     padding: 15px 30px;
-    background: #667eea;
+    background: #ff1493;
     color: white;
     border: none;
     border-radius: 8px;
     font-size: 16px;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: all 0.3s;
+    box-shadow: 0 0 15px rgba(255, 20, 147, 0.4);
 }
 
 #addBtn:hover {
-    background: #5568d3;
+    background: #ff69b4;
+    box-shadow: 0 0 20px rgba(255, 20, 147, 0.6);
 }
 
 .filters {
@@ -74,22 +85,25 @@ h1 {
 
 .filter-btn {
     padding: 10px 20px;
-    background: #f5f5f5;
-    border: 2px solid transparent;
+    background: #2a2a2a;
+    border: 2px solid #333;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s;
     font-size: 14px;
+    color: #fff;
 }
 
 .filter-btn:hover {
-    background: #e0e0e0;
+    background: #333;
+    border-color: #ff1493;
 }
 
 .filter-btn.active {
-    background: #667eea;
+    background: #ff1493;
     color: white;
-    border-color: #667eea;
+    border-color: #ff1493;
+    box-shadow: 0 0 15px rgba(255, 20, 147, 0.4);
 }
 
 .todo-list {
@@ -103,7 +117,8 @@ h1 {
     display: flex;
     align-items: center;
     padding: 15px;
-    background: #f9f9f9;
+    background: #2a2a2a;
+    border: 1px solid #333;
     border-radius: 8px;
     margin-bottom: 10px;
     transition: all 0.3s;
@@ -122,13 +137,14 @@ h1 {
 }
 
 .todo-item:hover {
-    background: #f0f0f0;
+    background: #333;
+    border-color: #ff1493;
     transform: translateX(5px);
 }
 
 .todo-item.completed .todo-text {
     text-decoration: line-through;
-    color: #999;
+    color: #666;
 }
 
 .todo-checkbox {
@@ -141,22 +157,24 @@ h1 {
 .todo-text {
     flex: 1;
     font-size: 16px;
-    color: #333;
+    color: #fff;
 }
 
 .delete-btn {
-    background: #ff6b6b;
-    color: white;
-    border: none;
+    background: transparent;
+    color: #ff1493;
+    border: 1px solid #ff1493;
     padding: 8px 15px;
     border-radius: 5px;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: all 0.3s;
     font-size: 14px;
 }
 
 .delete-btn:hover {
-    background: #ff5252;
+    background: #ff1493;
+    color: white;
+    box-shadow: 0 0 10px rgba(255, 20, 147, 0.4);
 }
 
 .stats {
@@ -164,15 +182,15 @@ h1 {
     justify-content: space-between;
     align-items: center;
     padding-top: 20px;
-    border-top: 2px solid #e0e0e0;
+    border-top: 2px solid #333;
     font-size: 14px;
-    color: #666;
+    color: #aaa;
 }
 
 #clearCompleted {
     background: transparent;
-    color: #667eea;
-    border: 2px solid #667eea;
+    color: #ff1493;
+    border: 2px solid #ff1493;
     padding: 8px 15px;
     border-radius: 5px;
     cursor: pointer;
@@ -181,13 +199,14 @@ h1 {
 }
 
 #clearCompleted:hover {
-    background: #667eea;
+    background: #ff1493;
     color: white;
+    box-shadow: 0 0 15px rgba(255, 20, 147, 0.4);
 }
 
 .empty-state {
     text-align: center;
     padding: 40px;
-    color: #999;
+    color: #666;
     font-size: 18px;
 }
