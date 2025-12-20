@@ -43,7 +43,8 @@ const server = http.createServer((req, res) => {
     });
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running at http://localhost:${PORT}/`);
+    console.log(`Server also accessible at http://<your-ip>:${PORT}/`);
     console.log('Press Ctrl+C to stop the server');
 });
