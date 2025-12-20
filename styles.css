@@ -308,6 +308,123 @@ h1::after {
     font-size: 18px;
 }
 
+/* Achievement Stats */
+.achievement-stats {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #333;
+}
+
+.total-completed {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px;
+    background: linear-gradient(135deg, rgba(255, 20, 147, 0.1) 0%, rgba(255, 105, 180, 0.1) 100%);
+    border: 2px solid rgba(255, 20, 147, 0.3);
+    border-radius: 15px;
+    transition: all 0.3s;
+}
+
+.total-completed:hover {
+    border-color: #ff1493;
+    box-shadow: 0 0 15px rgba(255, 20, 147, 0.3);
+}
+
+.completed-icon {
+    font-size: 24px;
+    color: #ff1493;
+    font-weight: bold;
+}
+
+#totalCompleted {
+    font-size: 32px;
+    font-weight: 900;
+    color: #ff1493;
+    text-shadow: 0 0 10px rgba(255, 20, 147, 0.5);
+    min-width: 40px;
+    text-align: center;
+}
+
+.completed-label {
+    font-size: 14px;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+/* Milestone Badge - Special for every 5 tasks */
+.milestone-badge {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: linear-gradient(135deg, #ff1493 0%, #ffd700 50%, #ff1493 100%);
+    border: 5px solid #ffd700;
+    border-radius: 50%;
+    width: 250px;
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+        0 0 60px rgba(255, 215, 0, 0.8),
+        0 0 120px rgba(255, 20, 147, 0.6),
+        0 15px 40px rgba(0, 0, 0, 0.6);
+    z-index: 1001;
+    opacity: 0;
+    transition: all 0.6s ease-out;
+}
+
+.milestone-badge.show {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    animation: milestonePulse 0.6s ease-out, milestoneRotate 1s ease-out;
+}
+
+@keyframes milestonePulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    33% { transform: translate(-50%, -50%) scale(1.15); }
+    66% { transform: translate(-50%, -50%) scale(0.95); }
+}
+
+@keyframes milestoneRotate {
+    0% { transform: translate(-50%, -50%) scale(0) rotate(-360deg); }
+    100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+}
+
+.milestone-badge .milestone-icon {
+    font-size: 80px;
+    margin-bottom: 15px;
+    animation: iconBounce 0.6s ease-out infinite;
+}
+
+@keyframes iconBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.milestone-badge .milestone-text {
+    color: white;
+    font-size: 24px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-align: center;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.milestone-badge .milestone-subtext {
+    color: #ffd700;
+    font-size: 16px;
+    margin-top: 10px;
+    font-weight: 700;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
 /* Achievement Badge Styles */
 .achievement-badge {
     position: fixed;

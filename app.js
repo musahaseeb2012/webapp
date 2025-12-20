@@ -9,6 +9,7 @@ const filterBtns = document.querySelectorAll('.filter-btn');
 // State
 let todos = [];
 let currentFilter = 'all';
+let totalCompletedCount = 0;
 
 // Load todos from localStorage on page load
 function loadTodos() {
@@ -17,11 +18,24 @@ function loadTodos() {
         todos = JSON.parse(savedTodos);
         renderTodos();
     }
+
+    // Load total completed count
+    const savedTotal = localStorage.getItem('totalCompleted');
+    if (savedTotal) {
+        totalCompletedCount = parseInt(savedTotal);
+        updateTotalCompleted();
+    }
 }
 
 // Save todos to localStorage
 function saveTodos() {
     localStorage.setItem('todos', JSON.stringify(todos));
+}
+
+// Save and update total completed count
+function updateTotalCompleted() {
+    localStorage.setItem('totalCompleted', totalCompletedCount);
+    document.getElementById('totalCompleted').textContent = totalCompletedCount;
 }
 
 // Add a new todo
@@ -79,10 +93,31 @@ function showAchievementBadge() {
     }, 2000);
 }
 
+// Show milestone badge for every 5 tasks
+function showMilestoneBadge() {
+    const badge = document.getElementById('milestoneBadge');
+    badge.querySelector('.milestone-subtext').textContent = `${totalCompletedCount} Tasks Milestone!`;
+
+    badge.classList.add('show');
+
+    // Create extra special confetti with gold
+    createConfetti(true);
+
+    // Hide after 3 seconds (longer than regular)
+    setTimeout(() => {
+        badge.classList.remove('show');
+    }, 3000);
+}
+
 // Create confetti effect
-function createConfetti() {
-    const colors = ['#ff1493', '#ff69b4', '#fff', '#ffc0cb'];
-    for (let i = 0; i < 50; i++) {
+function createConfetti(isMilestone = false) {
+    const colors = isMilestone
+        ? ['#ff1493', '#ff69b4', '#ffd700', '#fff', '#ffc0cb', '#ffdf00']  // Add gold for milestones
+        : ['#ff1493', '#ff69b4', '#fff', '#ffc0cb'];
+
+    const count = isMilestone ? 100 : 50;  // Double confetti for milestones
+
+    for (let i = 0; i < count; i++) {
         setTimeout(() => {
             const confetti = document.createElement('div');
             confetti.className = 'confetti';
@@ -96,7 +131,7 @@ function createConfetti() {
             document.body.appendChild(confetti);
 
             setTimeout(() => confetti.remove(), 5000);
-        }, i * 30);
+        }, i * (isMilestone ? 20 : 30));  // Faster for milestones
     }
 }
 
@@ -109,7 +144,18 @@ function toggleTodo(id) {
 
         // Show celebration only when marking as complete (not when unchecking)
         if (!wasCompleted && todo.completed) {
-            showAchievementBadge();
+            // Increment total completed count
+            totalCompletedCount++;
+            updateTotalCompleted();
+
+            // Check if this is a milestone (every 5 tasks)
+            if (totalCompletedCount % 5 === 0) {
+                // Show special milestone celebration
+                showMilestoneBadge();
+            } else {
+                // Show regular achievement badge
+                showAchievementBadge();
+            }
         }
 
         saveTodos();
