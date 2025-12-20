@@ -38,7 +38,6 @@ h1 {
     font-size: 2.8rem;
     font-weight: 900;
     letter-spacing: 2px;
-    text-transform: uppercase;
     text-shadow:
         0 0 10px rgba(255, 20, 147, 0.8),
         0 0 20px rgba(255, 20, 147, 0.6),
@@ -49,24 +48,6 @@ h1 {
     -webkit-text-fill-color: transparent;
     background-clip: text;
     position: relative;
-}
-
-h1::before {
-    content: '♥';
-    position: absolute;
-    left: -40px;
-    color: #ff1493;
-    -webkit-text-fill-color: #ff1493;
-    animation: pulse 2s infinite;
-}
-
-h1::after {
-    content: '♥';
-    position: absolute;
-    right: -40px;
-    color: #ff1493;
-    -webkit-text-fill-color: #ff1493;
-    animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
@@ -86,7 +67,7 @@ h1::after {
     margin-bottom: 20px;
 }
 
-#todoInput {
+#topicInput {
     flex: 1;
     padding: 15px 20px;
     border: 2px solid rgba(255, 20, 147, 0.3);
@@ -98,7 +79,7 @@ h1::after {
     backdrop-filter: blur(5px);
 }
 
-#todoInput:focus {
+#topicInput:focus {
     outline: none;
     border-color: #ff1493;
     box-shadow:
@@ -107,12 +88,12 @@ h1::after {
     background: rgba(26, 26, 26, 0.8);
 }
 
-#todoInput::placeholder {
+#topicInput::placeholder {
     color: #999;
     font-style: italic;
 }
 
-#addBtn {
+#generateBtn {
     padding: 15px 30px;
     background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
     color: white;
@@ -131,7 +112,7 @@ h1::after {
     overflow: hidden;
 }
 
-#addBtn::before {
+#generateBtn::before {
     content: '';
     position: absolute;
     top: 0;
@@ -142,11 +123,11 @@ h1::after {
     transition: left 0.5s;
 }
 
-#addBtn:hover::before {
+#generateBtn:hover::before {
     left: 100%;
 }
 
-#addBtn:hover {
+#generateBtn:hover {
     background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
     box-shadow:
         0 0 30px rgba(255, 20, 147, 0.8),
@@ -154,59 +135,66 @@ h1::after {
     transform: translateY(-2px);
 }
 
-.filters {
+.controls {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
-.filter-btn {
-    padding: 10px 24px;
+.control-btn {
+    padding: 12px 24px;
     background: transparent;
     border: 2px solid #ff1493;
     border-radius: 20px;
     cursor: pointer;
     transition: all 0.3s;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
-    text-transform: uppercase;
     letter-spacing: 1px;
     color: #ff1493;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.filter-btn:hover {
+.control-btn:hover:not(:disabled) {
     background: rgba(255, 20, 147, 0.1);
     border-color: #ff69b4;
     color: #ff69b4;
     box-shadow: 0 0 15px rgba(255, 20, 147, 0.3);
 }
 
-.filter-btn.active {
+.control-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: #666;
+    color: #666;
+}
+
+.control-btn.active {
     background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
     color: white;
     border-color: #ff1493;
     box-shadow: 0 0 20px rgba(255, 20, 147, 0.6);
 }
 
-.todo-list {
-    list-style: none;
-    margin-bottom: 20px;
-    max-height: 400px;
-    overflow-y: auto;
+.btn-icon {
+    font-size: 16px;
 }
 
-.todo-item {
-    display: flex;
-    align-items: center;
-    padding: 18px;
+.lyrics-container {
+    margin-bottom: 20px;
+    min-height: 300px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 20px;
     background: linear-gradient(135deg, rgba(26, 26, 26, 0.8) 0%, rgba(42, 42, 42, 0.6) 100%);
-    border: 1px solid rgba(255, 20, 147, 0.2);
+    border: 2px solid rgba(255, 20, 147, 0.3);
     border-radius: 15px;
-    margin-bottom: 12px;
-    transition: all 0.3s;
-    animation: slideIn 0.3s ease-out;
     backdrop-filter: blur(5px);
+    animation: slideIn 0.3s ease-out;
 }
 
 @keyframes slideIn {
@@ -220,53 +208,43 @@ h1::after {
     }
 }
 
-.todo-item:hover {
-    background: linear-gradient(135deg, rgba(42, 42, 42, 0.9) 0%, rgba(51, 51, 51, 0.7) 100%);
+.lyrics-container:hover {
     border-color: #ff1493;
     box-shadow: 0 0 20px rgba(255, 20, 147, 0.3);
-    transform: translateX(8px);
 }
 
-.todo-item.completed .todo-text {
-    text-decoration: line-through;
-    color: #666;
-}
-
-.todo-checkbox {
-    width: 22px;
-    height: 22px;
-    margin-right: 15px;
-    cursor: pointer;
-    accent-color: #ff1493;
-    filter: drop-shadow(0 0 3px rgba(255, 20, 147, 0.5));
-}
-
-.todo-text {
-    flex: 1;
-    font-size: 16px;
+.lyrics-line {
     color: #fff;
-}
-
-.delete-btn {
-    background: transparent;
-    color: #ff1493;
-    border: 2px solid #ff1493;
-    padding: 8px 18px;
-    border-radius: 20px;
-    cursor: pointer;
+    font-size: 18px;
+    line-height: 1.8;
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    border-left: 3px solid transparent;
     transition: all 0.3s;
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
-.delete-btn:hover {
-    background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
-    color: white;
-    border-color: #ff1493;
-    box-shadow: 0 0 15px rgba(255, 20, 147, 0.5);
-    transform: scale(1.05);
+.lyrics-line:hover {
+    border-left-color: #ff1493;
+    background: rgba(255, 20, 147, 0.1);
+    padding-left: 16px;
+}
+
+.lyrics-line.highlight {
+    border-left-color: #ff1493;
+    background: rgba(255, 20, 147, 0.2);
+    box-shadow: 0 0 15px rgba(255, 20, 147, 0.3);
+    animation: pulse 1s infinite;
+}
+
+.topic-title {
+    font-size: 24px;
+    font-weight: 900;
+    color: #ff1493;
+    text-align: center;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px rgba(255, 20, 147, 0.5);
 }
 
 .stats {
@@ -279,7 +257,12 @@ h1::after {
     color: #aaa;
 }
 
-#clearCompleted {
+#rapCount {
+    font-weight: 600;
+    color: #ff69b4;
+}
+
+#downloadBtn {
     background: transparent;
     color: #ff1493;
     border: 2px solid #ff1493;
@@ -293,12 +276,19 @@ h1::after {
     letter-spacing: 0.5px;
 }
 
-#clearCompleted:hover {
+#downloadBtn:hover:not(:disabled) {
     background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
     color: white;
     border-color: #ff1493;
     box-shadow: 0 0 20px rgba(255, 20, 147, 0.6);
     transform: scale(1.05);
+}
+
+#downloadBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: #666;
+    color: #666;
 }
 
 .empty-state {
@@ -308,54 +298,26 @@ h1::after {
     font-size: 18px;
 }
 
-/* Achievement Stats */
-.achievement-stats {
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 2px solid #333;
+/* Scrollbar Styles */
+.lyrics-container::-webkit-scrollbar {
+    width: 8px;
 }
 
-.total-completed {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 15px;
-    background: linear-gradient(135deg, rgba(255, 20, 147, 0.1) 0%, rgba(255, 105, 180, 0.1) 100%);
-    border: 2px solid rgba(255, 20, 147, 0.3);
-    border-radius: 15px;
-    transition: all 0.3s;
+.lyrics-container::-webkit-scrollbar-track {
+    background: rgba(26, 26, 26, 0.5);
+    border-radius: 10px;
 }
 
-.total-completed:hover {
-    border-color: #ff1493;
-    box-shadow: 0 0 15px rgba(255, 20, 147, 0.3);
+.lyrics-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
+    border-radius: 10px;
 }
 
-.completed-icon {
-    font-size: 24px;
-    color: #ff1493;
-    font-weight: bold;
+.lyrics-container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
 }
 
-#totalCompleted {
-    font-size: 32px;
-    font-weight: 900;
-    color: #ff1493;
-    text-shadow: 0 0 10px rgba(255, 20, 147, 0.5);
-    min-width: 40px;
-    text-align: center;
-}
-
-.completed-label {
-    font-size: 14px;
-    color: #aaa;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 600;
-}
-
-/* Milestone Badge - Special for every 5 tasks */
+/* Milestone Badge - Removed */
 .milestone-badge {
     position: fixed;
     top: 50%;
