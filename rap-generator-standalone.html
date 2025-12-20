@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rap Music Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: #000000;
+            background-image:
+                radial-gradient(circle at 20% 50%, rgba(255, 20, 147, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 105, 180, 0.1) 0%, transparent 50%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border: 3px solid #ff1493;
+            border-radius: 20px;
+            box-shadow:
+                0 0 40px rgba(255, 20, 147, 0.5),
+                0 0 80px rgba(255, 20, 147, 0.3),
+                inset 0 0 60px rgba(255, 20, 147, 0.05);
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h1 {
+            color: #ff1493;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.8rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-shadow:
+                0 0 10px rgba(255, 20, 147, 0.8),
+                0 0 20px rgba(255, 20, 147, 0.6),
+                0 0 30px rgba(255, 20, 147, 0.4),
+                0 0 40px rgba(255, 20, 147, 0.2);
+            background: linear-gradient(135deg, #ff1493 0%, #ff69b4 50%, #ff1493 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .input-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        #topicInput {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px 20px;
+            border: 2px solid rgba(255, 20, 147, 0.3);
+            border-radius: 25px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: rgba(26, 26, 26, 0.6);
+            color: #fff;
+            backdrop-filter: blur(5px);
+        }
+
+        #topicInput:focus {
+            outline: none;
+            border-color: #ff1493;
+            box-shadow:
+                0 0 20px rgba(255, 20, 147, 0.4),
+                inset 0 0 10px rgba(255, 20, 147, 0.1);
+            background: rgba(26, 26, 26, 0.8);
+        }
+
+        #topicInput::placeholder {
+            color: #999;
+            font-style: italic;
+        }
+
+        #generateBtn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow:
+                0 0 20px rgba(255, 20, 147, 0.6),
+                0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        #generateBtn:hover {
+            background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
+            box-shadow:
+                0 0 30px rgba(255, 20, 147, 0.8),
+                0 4px 20px rgba(0, 0, 0, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 12px 24px;
+            background: transparent;
+            border: 2px solid #ff1493;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: #ff1493;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-btn:hover:not(:disabled) {
+            background: rgba(255, 20, 147, 0.1);
+            border-color: #ff69b4;
+            color: #ff69b4;
+            box-shadow: 0 0 15px rgba(255, 20, 147, 0.3);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-color: #666;
+            color: #666;
+        }
+
+        .control-btn.active {
+            background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
+            color: white;
+            border-color: #ff1493;
+            box-shadow: 0 0 20px rgba(255, 20, 147, 0.6);
+        }
+
+        .lyrics-container {
+            margin-bottom: 20px;
+            min-height: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.8) 0%, rgba(42, 42, 42, 0.6) 100%);
+            border: 2px solid rgba(255, 20, 147, 0.3);
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+        }
+
+        .lyrics-line {
+            color: #fff;
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 12px;
+            padding: 8px 12px;
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .lyrics-line.highlight {
+            border-left-color: #ff1493;
+            background: rgba(255, 20, 147, 0.2);
+            box-shadow: 0 0 15px rgba(255, 20, 147, 0.3);
+        }
+
+        .topic-title {
+            font-size: 24px;
+            font-weight: 900;
+            color: #ff1493;
+            text-align: center;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255, 20, 147, 0.5);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 2px solid #333;
+            font-size: 14px;
+            color: #aaa;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        #rapCount {
+            font-weight: 600;
+            color: #ff69b4;
+        }
+
+        #downloadBtn {
+            background: transparent;
+            color: #ff1493;
+            border: 2px solid #ff1493;
+            padding: 8px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        #downloadBtn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
+            color: white;
+            border-color: #ff1493;
+            box-shadow: 0 0 20px rgba(255, 20, 147, 0.6);
+            transform: scale(1.05);
+        }
+
+        #downloadBtn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-color: #666;
+            color: #666;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 18px;
+        }
+
+        .achievement-badge {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
+            border: 4px solid #fff;
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow:
+                0 0 50px rgba(255, 20, 147, 0.8),
+                0 0 100px rgba(255, 20, 147, 0.5),
+                0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.5s ease-out;
+        }
+
+        .achievement-badge.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .badge-icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+
+        .badge-text {
+            color: white;
+            font-size: 20px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+
+        .badge-subtext {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #ff1493;
+            animation: confettiFall 3s linear forwards;
+            z-index: 999;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotateZ(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotateZ(720deg);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎤 Rap Generator 🎤</h1>
+
+        <div class="input-section">
+            <input type="text" id="topicInput" placeholder="Enter any topic (e.g., pizza, coding, space)..." />
+            <button id="generateBtn">Generate Rap</button>
+        </div>
+
+        <div class="controls">
+            <button id="playBtn" class="control-btn" disabled>
+                <span class="btn-icon">▶️</span> Play Rap
+            </button>
+            <button id="stopBtn" class="control-btn" disabled>
+                <span class="btn-icon">⏹️</span> Stop
+            </button>
+            <button id="beatBtn" class="control-btn">
+                <span class="btn-icon">🎵</span> Toggle Beat
+            </button>
+        </div>
+
+        <div class="lyrics-container" id="lyricsContainer">
+            <div class="empty-state">Enter a topic and generate your rap! 🔥</div>
+        </div>
+
+        <div class="stats">
+            <span id="rapCount">0 raps generated</span>
+            <button id="downloadBtn" disabled>Download Lyrics</button>
+        </div>
+    </div>
+
+    <div id="achievementBadge" class="achievement-badge">
+        <div class="badge-icon">🎤</div>
+        <div class="badge-text">Fire Bars!</div>
+        <div class="badge-subtext">Rap Generated</div>
+    </div>
+
+    <script>
+        const topicInput = document.getElementById('topicInput');
+        const generateBtn = document.getElementById('generateBtn');
+        const playBtn = document.getElementById('playBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const beatBtn = document.getElementById('beatBtn');
+        const lyricsContainer = document.getElementById('lyricsContainer');
+        const rapCount = document.getElementById('rapCount');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const achievementBadge = document.getElementById('achievementBadge');
+
+        let currentLyrics = [];
+        let currentTopic = '';
+        let rapGeneratedCount = 0;
+        let isBeatPlaying = false;
+        let speechSynthesis = window.speechSynthesis;
+        let currentUtterance = null;
+        let audioContext = null;
+        let beatInterval = null;
+
+        const rapTemplates = [
+            {
+                pattern: [
+                    "Yo, listen up, let me tell you 'bout {topic}",
+                    "It's the hottest thing, you know I gotta flaunt it",
+                    "{topic} on my mind, every single day",
+                    "Can't get enough of it, that's all I gotta say"
+                ]
+            },
+            {
+                pattern: [
+                    "Check it, {topic} is what I'm here to speak",
+                    "From Monday to Sunday, every day of the week",
+                    "Got me feeling fly, reaching for the peak",
+                    "When it comes to {topic}, I'm totally unique"
+                ]
+            },
+            {
+                pattern: [
+                    "Uh, yeah, {topic} in the building tonight",
+                    "Everything's incredible, everything's so right",
+                    "Taking over the world with all our might",
+                    "{topic} shining bright like a spotlight"
+                ]
+            },
+            {
+                pattern: [
+                    "Boom bap, {topic} hits different, you see",
+                    "Revolutionary vibes, setting spirits free",
+                    "From the ground to the sky, it's a guarantee",
+                    "When you roll with {topic}, that's the place to be"
+                ]
+            },
+            {
+                pattern: [
+                    "Straight fire, {topic} burning up the scene",
+                    "Hottest thing around, if you know what I mean",
+                    "Living large, living life, living the dream",
+                    "With {topic} by my side, I'm the supreme"
+                ]
+            }
+        ];
+
+        const verseExtensions = [
+            "Breaking barriers, yeah we innovate",
+            "No hesitation, we appreciate",
+            "Top of the game, we dominate",
+            "Watch us rise, we celebrate",
+            "This is real, it ain't debate",
+            "Making moves, can't replicate",
+            "Energy high, we radiate",
+            "On our grind, we never late"
+        ];
+
+        const hooks = [
+            [
+                "{topic}, {topic}, got me feeling so alive",
+                "Every moment with it, yeah I truly thrive",
+                "{topic}, {topic}, this is how we survive",
+                "Taking it to levels, watch us dive"
+            ],
+            [
+                "Yeah, {topic} in my heart (in my heart)",
+                "Been there from the very start (from the start)",
+                "{topic} is the art (is the art)",
+                "Never gonna fall apart (fall apart)"
+            ],
+            [
+                "Can't stop, won't stop, {topic} all day",
+                "Living life in our own way",
+                "From the night into the day",
+                "This is what I gotta say"
+            ]
+        ];
+
+        function generateRapLyrics(topic) {
+            if (!topic || topic.trim() === '') {
+                alert('Please enter a topic for your rap!');
+                return null;
+            }
+
+            const lyrics = [];
+            lyrics.push(`=== ${topic.toUpperCase()} ===`);
+            lyrics.push('');
+
+            lyrics.push('[Verse 1]');
+            const template = rapTemplates[Math.floor(Math.random() * rapTemplates.length)];
+            template.pattern.forEach(line => {
+                lyrics.push(line.replace(/{topic}/g, topic));
+            });
+
+            for (let i = 0; i < 2; i++) {
+                const extension = verseExtensions[Math.floor(Math.random() * verseExtensions.length)];
+                lyrics.push(extension);
+            }
+            lyrics.push('');
+
+            lyrics.push('[Hook]');
+            const hook = hooks[Math.floor(Math.random() * hooks.length)];
+            hook.forEach(line => {
+                lyrics.push(line.replace(/{topic}/g, topic));
+            });
+            lyrics.push('');
+
+            lyrics.push('[Verse 2]');
+            const template2 = rapTemplates[Math.floor(Math.random() * rapTemplates.length)];
+            template2.pattern.forEach(line => {
+                lyrics.push(line.replace(/{topic}/g, topic));
+            });
+
+            for (let i = 0; i < 2; i++) {
+                const extension = verseExtensions[Math.floor(Math.random() * verseExtensions.length)];
+                lyrics.push(extension);
+            }
+            lyrics.push('');
+
+            lyrics.push('[Outro]');
+            lyrics.push(`Yeah, ${topic}, that's what's up`);
+            lyrics.push("Can't get enough, we filling the cup");
+            lyrics.push("From the bottom to the top");
+            lyrics.push(`${topic} never gonna stop!`);
+
+            return lyrics;
+        }
+
+        function displayLyrics(lyrics) {
+            lyricsContainer.innerHTML = '';
+
+            lyrics.forEach((line, index) => {
+                const lineDiv = document.createElement('div');
+
+                if (line.startsWith('===') || line.startsWith('[')) {
+                    lineDiv.className = 'topic-title';
+                } else if (line.trim() === '') {
+                    lineDiv.innerHTML = '<br>';
+                    lyricsContainer.appendChild(lineDiv);
+                    return;
+                } else {
+                    lineDiv.className = 'lyrics-line';
+                }
+
+                lineDiv.textContent = line;
+                lineDiv.dataset.index = index;
+                lyricsContainer.appendChild(lineDiv);
+            });
+        }
+
+        function createBeat() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            const now = audioContext.currentTime;
+
+            const kick = audioContext.createOscillator();
+            const kickGain = audioContext.createGain();
+            kick.connect(kickGain);
+            kickGain.connect(audioContext.destination);
+            kick.frequency.value = 60;
+            kickGain.gain.setValueAtTime(1, now);
+            kickGain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+            kick.start(now);
+            kick.stop(now + 0.5);
+
+            const hihat = audioContext.createOscillator();
+            const hihatGain = audioContext.createGain();
+            const hihatFilter = audioContext.createBiquadFilter();
+            hihat.connect(hihatFilter);
+            hihatFilter.connect(hihatGain);
+            hihatGain.connect(audioContext.destination);
+            hihat.frequency.value = 8000;
+            hihatFilter.type = 'highpass';
+            hihatFilter.frequency.value = 7000;
+            hihatGain.gain.setValueAtTime(0.3, now);
+            hihatGain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+            hihat.start(now);
+            hihat.stop(now + 0.1);
+        }
+
+        function toggleBeat() {
+            if (isBeatPlaying) {
+                if (beatInterval) {
+                    clearInterval(beatInterval);
+                    beatInterval = null;
+                }
+                isBeatPlaying = false;
+                beatBtn.classList.remove('active');
+            } else {
+                isBeatPlaying = true;
+                beatBtn.classList.add('active');
+                beatInterval = setInterval(() => {
+                    createBeat();
+                }, 500);
+            }
+        }
+
+        function playRap() {
+            if (currentLyrics.length === 0) return;
+
+            stopRap();
+
+            playBtn.disabled = true;
+            stopBtn.disabled = false;
+
+            const spokenLyrics = currentLyrics.filter(line => {
+                return line.trim() !== '' &&
+                       !line.startsWith('===') &&
+                       !line.startsWith('[');
+            });
+
+            const text = spokenLyrics.join('. ');
+
+            currentUtterance = new SpeechSynthesisUtterance(text);
+            currentUtterance.rate = 1.3;
+            currentUtterance.pitch = 1.0;
+            currentUtterance.volume = 1.0;
+
+            const voices = speechSynthesis.getVoices();
+            const preferredVoice = voices.find(voice =>
+                voice.name.includes('Male') ||
+                voice.name.includes('Guy') ||
+                voice.name.includes('Daniel') ||
+                voice.name.includes('Google US English')
+            );
+
+            if (preferredVoice) {
+                currentUtterance.voice = preferredVoice;
+            }
+
+            currentUtterance.onend = () => {
+                stopRap();
+            };
+
+            speechSynthesis.speak(currentUtterance);
+        }
+
+        function stopRap() {
+            if (currentUtterance) {
+                speechSynthesis.cancel();
+                currentUtterance = null;
+            }
+
+            document.querySelectorAll('.lyrics-line.highlight').forEach(el => {
+                el.classList.remove('highlight');
+            });
+
+            playBtn.disabled = false;
+            stopBtn.disabled = true;
+        }
+
+        function showAchievementBadge() {
+            const messages = [
+                { icon: '🎤', text: 'Fire Bars!', sub: 'Rap Generated' },
+                { icon: '🔥', text: 'Straight Fire!', sub: 'You\'re a Lyricist!' },
+                { icon: '💎', text: 'Diamond Bars!', sub: 'Pure Gold!' },
+                { icon: '⭐', text: 'Superstar!', sub: 'Keep Spitting!' },
+                { icon: '👑', text: 'Rap Royalty!', sub: 'Crowned!' }
+            ];
+
+            const msg = messages[Math.floor(Math.random() * messages.length)];
+            achievementBadge.querySelector('.badge-icon').textContent = msg.icon;
+            achievementBadge.querySelector('.badge-text').textContent = msg.text;
+            achievementBadge.querySelector('.badge-subtext').textContent = msg.sub;
+
+            achievementBadge.classList.add('show');
+            createConfetti();
+
+            setTimeout(() => {
+                achievementBadge.classList.remove('show');
+            }, 2000);
+        }
+
+        function createConfetti() {
+            const colors = ['#ff1493', '#ff69b4', '#fff', '#ffc0cb', '#ffd700'];
+            const count = 50;
+
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.top = '-10px';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.width = Math.random() * 10 + 5 + 'px';
+                    confetti.style.height = Math.random() * 10 + 5 + 'px';
+                    confetti.style.animationDuration = Math.random() * 2 + 2 + 's';
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    document.body.appendChild(confetti);
+
+                    setTimeout(() => confetti.remove(), 5000);
+                }, i * 30);
+            }
+        }
+
+        function downloadLyrics() {
+            if (currentLyrics.length === 0) return;
+
+            const text = currentLyrics.join('\n');
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${currentTopic.replace(/\s+/g, '_')}_rap.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        generateBtn.addEventListener('click', () => {
+            const topic = topicInput.value.trim();
+
+            if (!topic) {
+                alert('Please enter a topic!');
+                return;
+            }
+
+            const lyrics = generateRapLyrics(topic);
+
+            if (lyrics) {
+                currentLyrics = lyrics;
+                currentTopic = topic;
+                displayLyrics(lyrics);
+
+                rapGeneratedCount++;
+                rapCount.textContent = `${rapGeneratedCount} rap${rapGeneratedCount !== 1 ? 's' : ''} generated`;
+
+                playBtn.disabled = false;
+                downloadBtn.disabled = false;
+
+                showAchievementBadge();
+
+                topicInput.value = '';
+            }
+        });
+
+        topicInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                generateBtn.click();
+            }
+        });
+
+        playBtn.addEventListener('click', playRap);
+        stopBtn.addEventListener('click', stopRap);
+        beatBtn.addEventListener('click', toggleBeat);
+        downloadBtn.addEventListener('click', downloadLyrics);
+
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = () => {
+                speechSynthesis.getVoices();
+            };
+        }
+
+        rapCount.textContent = '0 raps generated';
+    </script>
+</body>
+</html>
