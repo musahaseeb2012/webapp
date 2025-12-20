@@ -360,6 +360,123 @@
             font-size: 18px;
         }
 
+        /* Achievement Stats */
+        .achievement-stats {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #333;
+        }
+
+        .total-completed {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(255, 20, 147, 0.1) 0%, rgba(255, 105, 180, 0.1) 100%);
+            border: 2px solid rgba(255, 20, 147, 0.3);
+            border-radius: 15px;
+            transition: all 0.3s;
+        }
+
+        .total-completed:hover {
+            border-color: #ff1493;
+            box-shadow: 0 0 15px rgba(255, 20, 147, 0.3);
+        }
+
+        .completed-icon {
+            font-size: 24px;
+            color: #ff1493;
+            font-weight: bold;
+        }
+
+        #totalCompleted {
+            font-size: 32px;
+            font-weight: 900;
+            color: #ff1493;
+            text-shadow: 0 0 10px rgba(255, 20, 147, 0.5);
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .completed-label {
+            font-size: 14px;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        /* Milestone Badge - Special for every 5 tasks */
+        .milestone-badge {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #ff1493 0%, #ffd700 50%, #ff1493 100%);
+            border: 5px solid #ffd700;
+            border-radius: 50%;
+            width: 250px;
+            height: 250px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow:
+                0 0 60px rgba(255, 215, 0, 0.8),
+                0 0 120px rgba(255, 20, 147, 0.6),
+                0 15px 40px rgba(0, 0, 0, 0.6);
+            z-index: 1001;
+            opacity: 0;
+            transition: all 0.6s ease-out;
+        }
+
+        .milestone-badge.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            animation: milestonePulse 0.6s ease-out, milestoneRotate 1s ease-out;
+        }
+
+        @keyframes milestonePulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            33% { transform: translate(-50%, -50%) scale(1.15); }
+            66% { transform: translate(-50%, -50%) scale(0.95); }
+        }
+
+        @keyframes milestoneRotate {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(-360deg); }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+        }
+
+        .milestone-badge .milestone-icon {
+            font-size: 80px;
+            margin-bottom: 15px;
+            animation: iconBounce 0.6s ease-out infinite;
+        }
+
+        @keyframes iconBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .milestone-badge .milestone-text {
+            color: white;
+            font-size: 24px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-align: center;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .milestone-badge .milestone-subtext {
+            color: #ffd700;
+            font-size: 16px;
+            margin-top: 10px;
+            font-weight: 700;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
         /* Achievement Badge Styles */
         .achievement-badge {
             position: fixed;
@@ -505,6 +622,14 @@
             <span id="taskCount">0 tasks remaining</span>
             <button id="clearCompleted">Clear Completed</button>
         </div>
+
+        <div class="achievement-stats">
+            <div class="total-completed">
+                <span class="completed-icon">✓</span>
+                <span id="totalCompleted">0</span>
+                <span class="completed-label">Tasks Completed</span>
+            </div>
+        </div>
     </div>
 
     <!-- Achievement Badge -->
@@ -512,6 +637,13 @@
         <div class="badge-icon">⭐</div>
         <div class="badge-text">Well Done!</div>
         <div class="badge-subtext">Task Completed</div>
+    </div>
+
+    <!-- Milestone Badge -->
+    <div id="milestoneBadge" class="milestone-badge">
+        <div class="milestone-icon">🏆</div>
+        <div class="milestone-text">You're Crushing It!</div>
+        <div class="milestone-subtext">5 Tasks Milestone!</div>
     </div>
 
     <script>
@@ -526,6 +658,7 @@
         // State
         let todos = [];
         let currentFilter = 'all';
+        let totalCompletedCount = 0;
 
         // Load todos from localStorage on page load
         function loadTodos() {
@@ -534,11 +667,24 @@
                 todos = JSON.parse(savedTodos);
                 renderTodos();
             }
+
+            // Load total completed count
+            const savedTotal = localStorage.getItem('totalCompleted');
+            if (savedTotal) {
+                totalCompletedCount = parseInt(savedTotal);
+                updateTotalCompleted();
+            }
         }
 
         // Save todos to localStorage
         function saveTodos() {
             localStorage.setItem('todos', JSON.stringify(todos));
+        }
+
+        // Save and update total completed count
+        function updateTotalCompleted() {
+            localStorage.setItem('totalCompleted', totalCompletedCount);
+            document.getElementById('totalCompleted').textContent = totalCompletedCount;
         }
 
         // Add a new todo
@@ -596,10 +742,31 @@
             }, 2000);
         }
 
+        // Show milestone badge for every 5 tasks
+        function showMilestoneBadge() {
+            const badge = document.getElementById('milestoneBadge');
+            badge.querySelector('.milestone-subtext').textContent = `${totalCompletedCount} Tasks Milestone!`;
+
+            badge.classList.add('show');
+
+            // Create extra special confetti with gold
+            createConfetti(true);
+
+            // Hide after 3 seconds (longer than regular)
+            setTimeout(() => {
+                badge.classList.remove('show');
+            }, 3000);
+        }
+
         // Create confetti effect
-        function createConfetti() {
-            const colors = ['#ff1493', '#ff69b4', '#fff', '#ffc0cb'];
-            for (let i = 0; i < 50; i++) {
+        function createConfetti(isMilestone = false) {
+            const colors = isMilestone
+                ? ['#ff1493', '#ff69b4', '#ffd700', '#fff', '#ffc0cb', '#ffdf00']  // Add gold for milestones
+                : ['#ff1493', '#ff69b4', '#fff', '#ffc0cb'];
+
+            const count = isMilestone ? 100 : 50;  // Double confetti for milestones
+
+            for (let i = 0; i < count; i++) {
                 setTimeout(() => {
                     const confetti = document.createElement('div');
                     confetti.className = 'confetti';
@@ -613,7 +780,7 @@
                     document.body.appendChild(confetti);
 
                     setTimeout(() => confetti.remove(), 5000);
-                }, i * 30);
+                }, i * (isMilestone ? 20 : 30));  // Faster for milestones
             }
         }
 
@@ -626,7 +793,18 @@
 
                 // Show celebration only when marking as complete (not when unchecking)
                 if (!wasCompleted && todo.completed) {
-                    showAchievementBadge();
+                    // Increment total completed count
+                    totalCompletedCount++;
+                    updateTotalCompleted();
+
+                    // Check if this is a milestone (every 5 tasks)
+                    if (totalCompletedCount % 5 === 0) {
+                        // Show special milestone celebration
+                        showMilestoneBadge();
+                    } else {
+                        // Show regular achievement badge
+                        showAchievementBadge();
+                    }
                 }
 
                 saveTodos();
