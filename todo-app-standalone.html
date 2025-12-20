@@ -360,6 +360,111 @@
             font-size: 18px;
         }
 
+        /* Achievement Badge Styles */
+        .achievement-badge {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
+            border: 4px solid #fff;
+            border-radius: 50%;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow:
+                0 0 50px rgba(255, 20, 147, 0.8),
+                0 0 100px rgba(255, 20, 147, 0.5),
+                0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.5s ease-out;
+        }
+
+        .achievement-badge.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            animation: badgePulse 0.5s ease-out, badgeRotate 0.8s ease-out;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        @keyframes badgeRotate {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(-180deg); }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+        }
+
+        .achievement-badge .badge-icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+
+        .achievement-badge .badge-text {
+            color: white;
+            font-size: 20px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+
+        .achievement-badge .badge-subtext {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        /* Confetti Styles */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #ff1493;
+            position: absolute;
+            animation: confettiFall 3s linear forwards;
+            z-index: 999;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotateZ(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotateZ(720deg);
+                opacity: 0;
+            }
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ff1493;
+            border-radius: 50%;
+            animation: sparkleFloat 1s ease-out forwards;
+            pointer-events: none;
+            z-index: 998;
+        }
+
+        @keyframes sparkleFloat {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+
         @media (max-width: 600px) {
             .container {
                 padding: 20px;
@@ -400,6 +505,13 @@
             <span id="taskCount">0 tasks remaining</span>
             <button id="clearCompleted">Clear Completed</button>
         </div>
+    </div>
+
+    <!-- Achievement Badge -->
+    <div id="achievementBadge" class="achievement-badge">
+        <div class="badge-icon">⭐</div>
+        <div class="badge-text">Well Done!</div>
+        <div class="badge-subtext">Task Completed</div>
     </div>
 
     <script>
@@ -457,11 +569,66 @@
             renderTodos();
         }
 
+        // Show achievement badge with celebration
+        function showAchievementBadge() {
+            const badge = document.getElementById('achievementBadge');
+            const messages = [
+                { icon: '⭐', text: 'Amazing!', sub: 'Task Completed' },
+                { icon: '🎉', text: 'Well Done!', sub: 'Keep It Up!' },
+                { icon: '✨', text: 'Fantastic!', sub: 'You\'re Crushing It!' },
+                { icon: '💖', text: 'Awesome!', sub: 'Task Complete!' },
+                { icon: '🌟', text: 'Brilliant!', sub: 'You Did It!' }
+            ];
+
+            const msg = messages[Math.floor(Math.random() * messages.length)];
+            badge.querySelector('.badge-icon').textContent = msg.icon;
+            badge.querySelector('.badge-text').textContent = msg.text;
+            badge.querySelector('.badge-subtext').textContent = msg.sub;
+
+            badge.classList.add('show');
+
+            // Create confetti
+            createConfetti();
+
+            // Hide after 2 seconds
+            setTimeout(() => {
+                badge.classList.remove('show');
+            }, 2000);
+        }
+
+        // Create confetti effect
+        function createConfetti() {
+            const colors = ['#ff1493', '#ff69b4', '#fff', '#ffc0cb'];
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.top = '-10px';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.width = Math.random() * 10 + 5 + 'px';
+                    confetti.style.height = Math.random() * 10 + 5 + 'px';
+                    confetti.style.animationDuration = Math.random() * 2 + 2 + 's';
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    document.body.appendChild(confetti);
+
+                    setTimeout(() => confetti.remove(), 5000);
+                }, i * 30);
+            }
+        }
+
         // Toggle todo completion
         function toggleTodo(id) {
             const todo = todos.find(todo => todo.id === id);
             if (todo) {
+                const wasCompleted = todo.completed;
                 todo.completed = !todo.completed;
+
+                // Show celebration only when marking as complete (not when unchecking)
+                if (!wasCompleted && todo.completed) {
+                    showAchievementBadge();
+                }
+
                 saveTodos();
                 renderTodos();
             }
