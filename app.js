@@ -112,8 +112,8 @@ function showMilestoneBadge() {
 // Create confetti effect
 function createConfetti(isMilestone = false) {
     const colors = isMilestone
-        ? ['#ff1493', '#ff69b4', '#ffd700', '#fff', '#ffc0cb', '#ffdf00']  // Add gold for milestones
-        : ['#ff1493', '#ff69b4', '#fff', '#ffc0cb'];
+        ? ['#ffd700', '#ffcc00', '#fff', '#ffeb3b', '#ffc107', '#ffdf00']  // Gold/yellow variations for milestones
+        : ['#ffd700', '#ffcc00', '#fff', '#ffeb3b'];
 
     const count = isMilestone ? 100 : 50;  // Double confetti for milestones
 
