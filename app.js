@@ -111,31 +111,24 @@ function showMilestoneBadge() {
 
 // Create F1 car racing through checkered flag celebration
 function createConfetti(isMilestone = false) {
-    // Create checkered flag
+    // Create checkered flag at top left
     const flag = document.createElement('div');
     flag.className = 'checkered-flag';
     flag.textContent = '🏁';
-    flag.style.top = '40%';
     document.body.appendChild(flag);
 
     // Remove flag after animation
     setTimeout(() => flag.remove(), 2000);
 
-    // Create F1 car(s)
-    const carCount = isMilestone ? 3 : 1; // More cars for milestones
+    // Create one F1 car
+    const car = document.createElement('div');
+    car.className = 'f1-car';
+    car.textContent = '🏎️';
+    car.style.top = '10%';
+    document.body.appendChild(car);
 
-    for (let i = 0; i < carCount; i++) {
-        setTimeout(() => {
-            const car = document.createElement('div');
-            car.className = 'f1-car';
-            car.textContent = '🏎️';
-            car.style.top = (35 + (i * 10)) + '%';
-            document.body.appendChild(car);
-
-            // Remove car after animation completes
-            setTimeout(() => car.remove(), 2000);
-        }, i * 300); // Stagger cars for milestones
-    }
+    // Remove car after animation completes
+    setTimeout(() => car.remove(), 2000);
 }
 
 // Toggle todo completion

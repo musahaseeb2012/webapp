@@ -537,38 +537,34 @@
             position: fixed;
             font-size: 60px;
             z-index: 999;
+            transform: scaleX(-1); /* Flip car to face forward */
             animation: raceCar 2s ease-in-out forwards;
         }
 
         @keyframes raceCar {
             0% {
                 left: -100px;
-                transform: rotate(0deg) scale(1);
-            }
-            50% {
-                transform: rotate(5deg) scale(1.2);
             }
             100% {
                 left: 110%;
-                transform: rotate(0deg) scale(1);
             }
         }
 
         .checkered-flag {
             position: fixed;
-            font-size: 80px;
-            left: 50%;
-            transform: translateX(-50%);
+            font-size: 60px;
+            top: 10%;
+            left: 10%;
             z-index: 998;
             animation: waveFlag 0.5s ease-in-out infinite;
         }
 
         @keyframes waveFlag {
             0%, 100% {
-                transform: translateX(-50%) rotate(-5deg);
+                transform: rotate(-5deg);
             }
             50% {
-                transform: translateX(-50%) rotate(5deg);
+                transform: rotate(5deg);
             }
         }
 
@@ -750,31 +746,24 @@
 
         // Create F1 car racing through checkered flag celebration
         function createConfetti(isMilestone = false) {
-            // Create checkered flag
+            // Create checkered flag at top left
             const flag = document.createElement('div');
             flag.className = 'checkered-flag';
             flag.textContent = '🏁';
-            flag.style.top = '40%';
             document.body.appendChild(flag);
 
             // Remove flag after animation
             setTimeout(() => flag.remove(), 2000);
 
-            // Create F1 car(s)
-            const carCount = isMilestone ? 3 : 1; // More cars for milestones
+            // Create one F1 car
+            const car = document.createElement('div');
+            car.className = 'f1-car';
+            car.textContent = '🏎️';
+            car.style.top = '10%';
+            document.body.appendChild(car);
 
-            for (let i = 0; i < carCount; i++) {
-                setTimeout(() => {
-                    const car = document.createElement('div');
-                    car.className = 'f1-car';
-                    car.textContent = '🏎️';
-                    car.style.top = (35 + (i * 10)) + '%';
-                    document.body.appendChild(car);
-
-                    // Remove car after animation completes
-                    setTimeout(() => car.remove(), 2000);
-                }, i * 300); // Stagger cars for milestones
-            }
+            // Remove car after animation completes
+            setTimeout(() => car.remove(), 2000);
         }
 
         // Toggle todo completion
