@@ -154,7 +154,7 @@
             cursor: pointer;
             transition: all 0.3s;
             box-shadow:
-                0 0 20px rgba(255, 20, 147, 0.6),
+                0 0 20px rgba(255, 215, 0, 0.6),
                 0 4px 15px rgba(0, 0, 0, 0.4);
             position: relative;
             overflow: hidden;
@@ -239,7 +239,7 @@
             align-items: center;
             padding: 18px;
             background: linear-gradient(135deg, rgba(26, 26, 26, 0.8) 0%, rgba(42, 42, 42, 0.6) 100%);
-            border: 1px solid rgba(255, 20, 147, 0.2);
+            border: 1px solid rgba(255, 215, 0, 0.2);
             border-radius: 15px;
             margin-bottom: 12px;
             transition: all 0.3s;
@@ -275,8 +275,8 @@
             height: 22px;
             margin-right: 15px;
             cursor: pointer;
-            accent-color: #ff1493;
-            filter: drop-shadow(0 0 3px rgba(255, 20, 147, 0.5));
+            accent-color: #ffd700;
+            filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.5));
         }
 
         .todo-text {
@@ -407,7 +407,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0);
-            background: linear-gradient(135deg, #ff1493 0%, #ffd700 50%, #ff1493 100%);
+            background: linear-gradient(135deg, #ffd700 0%, #ffcc00 50%, #ffd700 100%);
             border: 5px solid #ffd700;
             border-radius: 50%;
             width: 250px;
@@ -418,7 +418,7 @@
             justify-content: center;
             box-shadow:
                 0 0 60px rgba(255, 215, 0, 0.8),
-                0 0 120px rgba(255, 20, 147, 0.6),
+                0 0 120px rgba(255, 215, 0, 0.6),
                 0 15px 40px rgba(0, 0, 0, 0.6);
             z-index: 1001;
             opacity: 0;
@@ -464,11 +464,11 @@
         }
 
         .milestone-badge .milestone-subtext {
-            color: #ffd700;
+            color: #000;
             font-size: 16px;
             margin-top: 10px;
             font-weight: 700;
-            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            text-shadow: 0 2px 5px rgba(255, 255, 255, 0.5);
         }
 
         /* Achievement Badge Styles */
@@ -487,8 +487,8 @@
             align-items: center;
             justify-content: center;
             box-shadow:
-                0 0 50px rgba(255, 20, 147, 0.8),
-                0 0 100px rgba(255, 20, 147, 0.5),
+                0 0 50px rgba(255, 215, 0, 0.8),
+                0 0 100px rgba(255, 215, 0, 0.5),
                 0 10px 30px rgba(0, 0, 0, 0.5);
             z-index: 1000;
             opacity: 0;
@@ -526,7 +526,7 @@
         }
 
         .achievement-badge .badge-subtext {
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(0, 0, 0, 0.8);
             font-size: 14px;
             margin-top: 5px;
             font-weight: 600;
@@ -566,6 +566,78 @@
             50% {
                 transform: rotate(5deg);
             }
+        }
+
+        /* Monthly Chart Styles */
+        .monthly-chart-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #333;
+        }
+
+        .chart-title {
+            color: #ffd700;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .monthly-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            gap: 8px;
+            height: 200px;
+            padding: 10px;
+            background: rgba(26, 26, 26, 0.6);
+            border-radius: 15px;
+            border: 2px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(to top, #ffd700 0%, #ffcc00 100%);
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            min-width: 40px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .chart-bar:hover {
+            background: linear-gradient(to top, #ffeb3b 0%, #ffd700 100%);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+        }
+
+        .chart-bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: #999;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .chart-bar-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 13px;
+            color: #ffd700;
+            font-weight: 700;
+        }
+
+        .chart-empty {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 14px;
         }
 
         @media (max-width: 600px) {
@@ -616,6 +688,12 @@
                 <span class="completed-label">Tasks Completed</span>
             </div>
         </div>
+
+        <!-- Monthly Chart -->
+        <div class="monthly-chart-section">
+            <h2 class="chart-title">📊 Monthly Completions</h2>
+            <div id="monthlyChart" class="monthly-chart"></div>
+        </div>
     </div>
 
     <!-- Achievement Badge -->
@@ -645,6 +723,7 @@
         let todos = [];
         let currentFilter = 'all';
         let totalCompletedCount = 0;
+        let completionHistory = {}; // Track completions by month (format: "YYYY-MM": count)
 
         // Load todos from localStorage on page load
         function loadTodos() {
@@ -659,6 +738,13 @@
             if (savedTotal) {
                 totalCompletedCount = parseInt(savedTotal);
                 updateTotalCompleted();
+            }
+
+            // Load completion history
+            const savedHistory = localStorage.getItem('completionHistory');
+            if (savedHistory) {
+                completionHistory = JSON.parse(savedHistory);
+                renderMonthlyChart();
             }
         }
 
@@ -766,6 +852,72 @@
             setTimeout(() => car.remove(), 2000);
         }
 
+        // Render monthly completion chart
+        function renderMonthlyChart() {
+            const chartContainer = document.getElementById('monthlyChart');
+
+            // Get last 6 months including current month
+            const months = [];
+            const currentDate = new Date();
+
+            for (let i = 5; i >= 0; i--) {
+                const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+                const monthKey = date.toISOString().slice(0, 7); // "YYYY-MM"
+                const monthLabel = date.toLocaleDateString('en-US', { month: 'short' });
+                months.push({ key: monthKey, label: monthLabel });
+            }
+
+            // Find max value for scaling
+            const values = months.map(m => completionHistory[m.key] || 0);
+            const maxValue = Math.max(...values, 1); // At least 1 to avoid division by zero
+
+            // Check if there's any data
+            const hasData = values.some(v => v > 0);
+
+            if (!hasData) {
+                chartContainer.innerHTML = '<div class="chart-empty">No completed tasks yet. Complete some tasks to see your monthly progress!</div>';
+                return;
+            }
+
+            // Create bars
+            chartContainer.innerHTML = '';
+            months.forEach(month => {
+                const count = completionHistory[month.key] || 0;
+                const heightPercent = (count / maxValue) * 100;
+
+                const barContainer = document.createElement('div');
+                barContainer.style.flex = '1';
+                barContainer.style.display = 'flex';
+                barContainer.style.flexDirection = 'column';
+                barContainer.style.alignItems = 'center';
+                barContainer.style.justifyContent = 'flex-end';
+                barContainer.style.position = 'relative';
+                barContainer.style.height = '100%';
+
+                const bar = document.createElement('div');
+                bar.className = 'chart-bar';
+                bar.style.height = heightPercent + '%';
+                bar.title = `${month.label}: ${count} task${count !== 1 ? 's' : ''}`;
+
+                // Add value label on top of bar
+                if (count > 0) {
+                    const valueLabel = document.createElement('span');
+                    valueLabel.className = 'chart-bar-value';
+                    valueLabel.textContent = count;
+                    bar.appendChild(valueLabel);
+                }
+
+                // Add month label below bar
+                const label = document.createElement('span');
+                label.className = 'chart-bar-label';
+                label.textContent = month.label;
+
+                barContainer.appendChild(bar);
+                barContainer.appendChild(label);
+                chartContainer.appendChild(barContainer);
+            });
+        }
+
         // Toggle todo completion
         function toggleTodo(id) {
             const todo = todos.find(todo => todo.id === id);
@@ -778,6 +930,12 @@
                     // Increment total completed count
                     totalCompletedCount++;
                     updateTotalCompleted();
+
+                    // Record completion in monthly history
+                    const currentMonth = new Date().toISOString().slice(0, 7); // "YYYY-MM"
+                    completionHistory[currentMonth] = (completionHistory[currentMonth] || 0) + 1;
+                    localStorage.setItem('completionHistory', JSON.stringify(completionHistory));
+                    renderMonthlyChart();
 
                     // Check if this is a milestone (every 5 tasks)
                     if (totalCompletedCount % 5 === 0) {

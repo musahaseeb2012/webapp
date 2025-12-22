@@ -522,3 +522,75 @@ h1::after {
         transform: rotate(5deg);
     }
 }
+
+/* Monthly Chart Styles */
+.monthly-chart-section {
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 2px solid #333;
+}
+
+.chart-title {
+    color: #ffd700;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.monthly-chart {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    gap: 8px;
+    height: 200px;
+    padding: 10px;
+    background: rgba(26, 26, 26, 0.6);
+    border-radius: 15px;
+    border: 2px solid rgba(255, 215, 0, 0.2);
+}
+
+.chart-bar {
+    flex: 1;
+    background: linear-gradient(to top, #ffd700 0%, #ffcc00 100%);
+    border-radius: 8px 8px 0 0;
+    position: relative;
+    min-width: 40px;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.chart-bar:hover {
+    background: linear-gradient(to top, #ffeb3b 0%, #ffd700 100%);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+}
+
+.chart-bar-label {
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: #999;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.chart-bar-value {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 13px;
+    color: #ffd700;
+    font-weight: 700;
+}
+
+.chart-empty {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-size: 14px;
+}

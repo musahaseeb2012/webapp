@@ -10,6 +10,7 @@ const filterBtns = document.querySelectorAll('.filter-btn');
 let todos = [];
 let currentFilter = 'all';
 let totalCompletedCount = 0;
+let completionHistory = {}; // Track completions by month (format: "YYYY-MM": count)
 
 // Load todos from localStorage on page load
 function loadTodos() {
@@ -24,6 +25,13 @@ function loadTodos() {
     if (savedTotal) {
         totalCompletedCount = parseInt(savedTotal);
         updateTotalCompleted();
+    }
+
+    // Load completion history
+    const savedHistory = localStorage.getItem('completionHistory');
+    if (savedHistory) {
+        completionHistory = JSON.parse(savedHistory);
+        renderMonthlyChart();
     }
 }
 
@@ -131,6 +139,72 @@ function createConfetti(isMilestone = false) {
     setTimeout(() => car.remove(), 2000);
 }
 
+// Render monthly completion chart
+function renderMonthlyChart() {
+    const chartContainer = document.getElementById('monthlyChart');
+
+    // Get last 6 months including current month
+    const months = [];
+    const currentDate = new Date();
+
+    for (let i = 5; i >= 0; i--) {
+        const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+        const monthKey = date.toISOString().slice(0, 7); // "YYYY-MM"
+        const monthLabel = date.toLocaleDateString('en-US', { month: 'short' });
+        months.push({ key: monthKey, label: monthLabel });
+    }
+
+    // Find max value for scaling
+    const values = months.map(m => completionHistory[m.key] || 0);
+    const maxValue = Math.max(...values, 1); // At least 1 to avoid division by zero
+
+    // Check if there's any data
+    const hasData = values.some(v => v > 0);
+
+    if (!hasData) {
+        chartContainer.innerHTML = '<div class="chart-empty">No completed tasks yet. Complete some tasks to see your monthly progress!</div>';
+        return;
+    }
+
+    // Create bars
+    chartContainer.innerHTML = '';
+    months.forEach(month => {
+        const count = completionHistory[month.key] || 0;
+        const heightPercent = (count / maxValue) * 100;
+
+        const barContainer = document.createElement('div');
+        barContainer.style.flex = '1';
+        barContainer.style.display = 'flex';
+        barContainer.style.flexDirection = 'column';
+        barContainer.style.alignItems = 'center';
+        barContainer.style.justifyContent = 'flex-end';
+        barContainer.style.position = 'relative';
+        barContainer.style.height = '100%';
+
+        const bar = document.createElement('div');
+        bar.className = 'chart-bar';
+        bar.style.height = heightPercent + '%';
+        bar.title = `${month.label}: ${count} task${count !== 1 ? 's' : ''}`;
+
+        // Add value label on top of bar
+        if (count > 0) {
+            const valueLabel = document.createElement('span');
+            valueLabel.className = 'chart-bar-value';
+            valueLabel.textContent = count;
+            bar.appendChild(valueLabel);
+        }
+
+        // Add month label below bar
+        const label = document.createElement('span');
+        label.className = 'chart-bar-label';
+        label.textContent = month.label;
+
+        barContainer.appendChild(bar);
+        barContainer.appendChild(label);
+        chartContainer.appendChild(barContainer);
+    });
+}
+
 // Toggle todo completion
 function toggleTodo(id) {
     const todo = todos.find(todo => todo.id === id);
@@ -143,6 +217,12 @@ function toggleTodo(id) {
             // Increment total completed count
             totalCompletedCount++;
             updateTotalCompleted();
+
+            // Record completion in monthly history
+            const currentMonth = new Date().toISOString().slice(0, 7); // "YYYY-MM"
+            completionHistory[currentMonth] = (completionHistory[currentMonth] || 0) + 1;
+            localStorage.setItem('completionHistory', JSON.stringify(completionHistory));
+            renderMonthlyChart();
 
             // Check if this is a milestone (every 5 tasks)
             if (totalCompletedCount % 5 === 0) {
