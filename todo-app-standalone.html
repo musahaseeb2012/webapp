@@ -532,47 +532,43 @@
             font-weight: 600;
         }
 
-        /* Confetti Styles */
-        .confetti {
+        /* F1 Car and Checkered Flag Animation */
+        .f1-car {
             position: fixed;
-            width: 10px;
-            height: 10px;
-            background: #ff1493;
-            position: absolute;
-            animation: confettiFall 3s linear forwards;
+            font-size: 60px;
             z-index: 999;
+            animation: raceCar 2s ease-in-out forwards;
         }
 
-        @keyframes confettiFall {
+        @keyframes raceCar {
             0% {
-                transform: translateY(0) rotateZ(0deg);
-                opacity: 1;
+                left: -100px;
+                transform: rotate(0deg) scale(1);
+            }
+            50% {
+                transform: rotate(5deg) scale(1.2);
             }
             100% {
-                transform: translateY(100vh) rotateZ(720deg);
-                opacity: 0;
+                left: 110%;
+                transform: rotate(0deg) scale(1);
             }
         }
 
-        .sparkle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: #ff1493;
-            border-radius: 50%;
-            animation: sparkleFloat 1s ease-out forwards;
-            pointer-events: none;
+        .checkered-flag {
+            position: fixed;
+            font-size: 80px;
+            left: 50%;
+            transform: translateX(-50%);
             z-index: 998;
+            animation: waveFlag 0.5s ease-in-out infinite;
         }
 
-        @keyframes sparkleFloat {
-            0% {
-                transform: translate(0, 0) scale(1);
-                opacity: 1;
+        @keyframes waveFlag {
+            0%, 100% {
+                transform: translateX(-50%) rotate(-5deg);
             }
-            100% {
-                transform: translate(var(--tx), var(--ty)) scale(0);
-                opacity: 0;
+            50% {
+                transform: translateX(-50%) rotate(5deg);
             }
         }
 
@@ -752,29 +748,32 @@
             }, 3000);
         }
 
-        // Create confetti effect
+        // Create F1 car racing through checkered flag celebration
         function createConfetti(isMilestone = false) {
-            const colors = isMilestone
-                ? ['#ff1493', '#ff69b4', '#ffd700', '#fff', '#ffc0cb', '#ffdf00']  // Add gold for milestones
-                : ['#ff1493', '#ff69b4', '#fff', '#ffc0cb'];
+            // Create checkered flag
+            const flag = document.createElement('div');
+            flag.className = 'checkered-flag';
+            flag.textContent = '🏁';
+            flag.style.top = '40%';
+            document.body.appendChild(flag);
 
-            const count = isMilestone ? 100 : 50;  // Double confetti for milestones
+            // Remove flag after animation
+            setTimeout(() => flag.remove(), 2000);
 
-            for (let i = 0; i < count; i++) {
+            // Create F1 car(s)
+            const carCount = isMilestone ? 3 : 1; // More cars for milestones
+
+            for (let i = 0; i < carCount; i++) {
                 setTimeout(() => {
-                    const confetti = document.createElement('div');
-                    confetti.className = 'confetti';
-                    confetti.style.left = Math.random() * 100 + '%';
-                    confetti.style.top = '-10px';
-                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.width = Math.random() * 10 + 5 + 'px';
-                    confetti.style.height = Math.random() * 10 + 5 + 'px';
-                    confetti.style.animationDuration = Math.random() * 2 + 2 + 's';
-                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
-                    document.body.appendChild(confetti);
+                    const car = document.createElement('div');
+                    car.className = 'f1-car';
+                    car.textContent = '🏎️';
+                    car.style.top = (35 + (i * 10)) + '%';
+                    document.body.appendChild(car);
 
-                    setTimeout(() => confetti.remove(), 5000);
-                }, i * (isMilestone ? 20 : 30));  // Faster for milestones
+                    // Remove car after animation completes
+                    setTimeout(() => car.remove(), 2000);
+                }, i * 300); // Stagger cars for milestones
             }
         }
 

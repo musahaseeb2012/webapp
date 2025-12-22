@@ -487,46 +487,42 @@ h1::after {
     font-weight: 600;
 }
 
-/* Confetti Styles */
-.confetti {
+/* F1 Car and Checkered Flag Animation */
+.f1-car {
     position: fixed;
-    width: 10px;
-    height: 10px;
-    background: #ffd700;
-    position: absolute;
-    animation: confettiFall 3s linear forwards;
+    font-size: 60px;
     z-index: 999;
+    animation: raceCar 2s ease-in-out forwards;
 }
 
-@keyframes confettiFall {
+@keyframes raceCar {
     0% {
-        transform: translateY(0) rotateZ(0deg);
-        opacity: 1;
+        left: -100px;
+        transform: rotate(0deg) scale(1);
+    }
+    50% {
+        transform: rotate(5deg) scale(1.2);
     }
     100% {
-        transform: translateY(100vh) rotateZ(720deg);
-        opacity: 0;
+        left: 110%;
+        transform: rotate(0deg) scale(1);
     }
 }
 
-.sparkle {
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    background: #ffd700;
-    border-radius: 50%;
-    animation: sparkleFloat 1s ease-out forwards;
-    pointer-events: none;
+.checkered-flag {
+    position: fixed;
+    font-size: 80px;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 998;
+    animation: waveFlag 0.5s ease-in-out infinite;
 }
 
-@keyframes sparkleFloat {
-    0% {
-        transform: translate(0, 0) scale(1);
-        opacity: 1;
+@keyframes waveFlag {
+    0%, 100% {
+        transform: translateX(-50%) rotate(-5deg);
     }
-    100% {
-        transform: translate(var(--tx), var(--ty)) scale(0);
-        opacity: 0;
+    50% {
+        transform: translateX(-50%) rotate(5deg);
     }
 }

@@ -109,29 +109,32 @@ function showMilestoneBadge() {
     }, 3000);
 }
 
-// Create confetti effect
+// Create F1 car racing through checkered flag celebration
 function createConfetti(isMilestone = false) {
-    const colors = isMilestone
-        ? ['#ffd700', '#ffcc00', '#fff', '#ffeb3b', '#ffc107', '#ffdf00']  // Gold/yellow variations for milestones
-        : ['#ffd700', '#ffcc00', '#fff', '#ffeb3b'];
+    // Create checkered flag
+    const flag = document.createElement('div');
+    flag.className = 'checkered-flag';
+    flag.textContent = '🏁';
+    flag.style.top = '40%';
+    document.body.appendChild(flag);
 
-    const count = isMilestone ? 100 : 50;  // Double confetti for milestones
+    // Remove flag after animation
+    setTimeout(() => flag.remove(), 2000);
 
-    for (let i = 0; i < count; i++) {
+    // Create F1 car(s)
+    const carCount = isMilestone ? 3 : 1; // More cars for milestones
+
+    for (let i = 0; i < carCount; i++) {
         setTimeout(() => {
-            const confetti = document.createElement('div');
-            confetti.className = 'confetti';
-            confetti.style.left = Math.random() * 100 + '%';
-            confetti.style.top = '-10px';
-            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-            confetti.style.width = Math.random() * 10 + 5 + 'px';
-            confetti.style.height = Math.random() * 10 + 5 + 'px';
-            confetti.style.animationDuration = Math.random() * 2 + 2 + 's';
-            confetti.style.animationDelay = Math.random() * 0.5 + 's';
-            document.body.appendChild(confetti);
+            const car = document.createElement('div');
+            car.className = 'f1-car';
+            car.textContent = '🏎️';
+            car.style.top = (35 + (i * 10)) + '%';
+            document.body.appendChild(car);
 
-            setTimeout(() => confetti.remove(), 5000);
-        }, i * (isMilestone ? 20 : 30));  // Faster for milestones
+            // Remove car after animation completes
+            setTimeout(() => car.remove(), 2000);
+        }, i * 300); // Stagger cars for milestones
     }
 }
 
