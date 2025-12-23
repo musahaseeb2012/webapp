@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>To-Do List App</title>
+    <!-- Google Fonts for handwriting style -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Patrick+Hand&family=Indie+Flower&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -70,6 +74,22 @@
                     placeholder="Give your entry a title..."
                     maxlength="100"
                 />
+
+                <!-- Color Picker -->
+                <div class="color-picker-section">
+                    <label class="color-label">✍️ Ink Color:</label>
+                    <div class="color-options">
+                        <button class="color-btn active" data-color="#000000" style="background: #000000;" title="Black Ink">●</button>
+                        <button class="color-btn" data-color="#0066cc" style="background: #0066cc;" title="Blue Ink">●</button>
+                        <button class="color-btn" data-color="#cc0000" style="background: #cc0000;" title="Red Ink">●</button>
+                        <button class="color-btn" data-color="#00aa00" style="background: #00aa00;" title="Green Ink">●</button>
+                        <button class="color-btn" data-color="#9933cc" style="background: #9933cc;" title="Purple Ink">●</button>
+                        <button class="color-btn" data-color="#ff6600" style="background: #ff6600;" title="Orange Ink">●</button>
+                        <button class="color-btn" data-color="#cc6600" style="background: #cc6600;" title="Brown Ink">●</button>
+                        <button class="color-btn" data-color="#666666" style="background: #666666;" title="Gray Ink">●</button>
+                    </div>
+                </div>
+
                 <textarea
                     id="journalInput"
                     class="journal-textarea"

@@ -7,6 +7,10 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>To-Do List App</title>
+    <!-- Google Fonts for handwriting style -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Patrick+Hand&family=Indie+Flower&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -696,36 +700,82 @@
             }
         }
 
-        /* Journal Styles */
+        /* Journal Styles - Realistic Notebook */
+        #journalSection {
+            background:
+                /* Paper texture */
+                linear-gradient(90deg, transparent 0px, transparent 40px, rgba(139, 69, 19, 0.1) 40px, rgba(139, 69, 19, 0.1) 42px, transparent 42px),
+                /* Notebook lines */
+                repeating-linear-gradient(
+                    transparent,
+                    transparent 31px,
+                    rgba(0, 0, 0, 0.05) 31px,
+                    rgba(0, 0, 0, 0.05) 32px
+                ),
+                /* Paper color with slight texture */
+                linear-gradient(110deg, #f9f6f0 60%, #f5f2ea 100%);
+            padding: 40px 50px 40px 60px;
+            border-radius: 10px;
+            box-shadow:
+                inset 3px 0 10px rgba(139, 69, 19, 0.3),
+                5px 5px 20px rgba(0, 0, 0, 0.2),
+                -2px 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            min-height: 600px;
+        }
+
+        /* Spiral binding holes */
+        #journalSection::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            bottom: 20px;
+            width: 10px;
+            background: repeating-linear-gradient(
+                transparent,
+                transparent 25px,
+                rgba(139, 69, 19, 0.3) 25px,
+                rgba(139, 69, 19, 0.3) 30px,
+                transparent 30px,
+                transparent 35px
+            );
+            border-radius: 10px;
+        }
+
         .journal-welcome {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 204, 0, 0.1) 100%);
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            border-radius: 20px;
-            padding: 30px;
+            background: rgba(255, 243, 205, 0.5);
+            border: 2px dashed #d4a373;
+            border-radius: 15px;
+            padding: 25px;
             margin-bottom: 30px;
             text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
         .welcome-title {
-            color: #ffd700;
+            color: #8b4513;
             font-size: 2rem;
             font-weight: 800;
             margin-bottom: 15px;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            font-family: 'Caveat', cursive;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .welcome-text {
-            color: #fff;
+            color: #5c4033;
             font-size: 16px;
-            line-height: 1.6;
+            line-height: 1.8;
             margin-bottom: 10px;
+            font-family: 'Patrick Hand', cursive;
         }
 
         .welcome-subtext {
-            color: #ffd700;
+            color: #8b6f47;
             font-size: 14px;
             font-weight: 600;
             font-style: italic;
+            font-family: 'Indie Flower', cursive;
         }
 
         /* Journal Entry Form */
@@ -736,14 +786,15 @@
         .journal-title-input {
             width: 100%;
             padding: 15px 20px;
-            background: rgba(26, 26, 26, 0.8);
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            border-radius: 15px;
-            color: #fff;
-            font-size: 18px;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid #d4a373;
+            border-radius: 0;
+            color: #2c2416;
+            font-size: 24px;
             font-weight: 700;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-            margin-bottom: 15px;
+            font-family: 'Caveat', cursive;
+            margin-bottom: 20px;
             transition: all 0.3s;
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
@@ -751,29 +802,81 @@
 
         .journal-title-input:focus {
             outline: none;
-            border-color: #ffd700;
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
-            background: rgba(26, 26, 26, 0.95);
+            border-bottom-color: #8b4513;
+            background: rgba(255, 243, 205, 0.3);
         }
 
         .journal-title-input::placeholder {
-            color: #666;
+            color: #999;
             font-style: italic;
             font-weight: 600;
+        }
+
+        /* Color Picker Styles */
+        .color-picker-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 243, 205, 0.3);
+            border-radius: 10px;
+            border: 1px dashed #d4a373;
+        }
+
+        .color-label {
+            color: #8b4513;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: 'Patrick Hand', cursive;
+        }
+
+        .color-options {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .color-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 20px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .color-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .color-btn.active {
+            border-color: #ffd700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.6), 0 2px 5px rgba(0, 0, 0, 0.3);
+            transform: scale(1.15);
         }
 
         .journal-textarea {
             width: 100%;
             padding: 20px;
-            background: rgba(26, 26, 26, 0.8);
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            border-radius: 15px;
-            color: #fff;
-            font-size: 16px;
-            line-height: 1.8;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            background: transparent;
+            border: 1px dashed #d4a373;
+            border-radius: 10px;
+            color: #000000;
+            font-size: 18px;
+            line-height: 2;
+            font-family: 'Patrick Hand', cursive;
             resize: vertical;
-            min-height: 200px;
+            min-height: 250px;
             transition: all 0.3s;
             /* Apple Pencil optimization */
             touch-action: pan-y;
@@ -781,18 +884,20 @@
             -webkit-touch-callout: default;
             -webkit-user-select: text;
             user-select: text;
+            letter-spacing: 0.5px;
         }
 
         .journal-textarea:focus {
             outline: none;
-            border-color: #ffd700;
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
-            background: rgba(26, 26, 26, 0.95);
+            border-color: #8b4513;
+            background: rgba(255, 243, 205, 0.2);
+            box-shadow: 0 0 15px rgba(212, 163, 115, 0.3);
         }
 
         .journal-textarea::placeholder {
-            color: #666;
+            color: #999;
             font-style: italic;
+            font-family: 'Indie Flower', cursive;
         }
 
         .journal-actions {
@@ -844,34 +949,51 @@
         }
 
         .entries-title {
-            color: #ffd700;
-            font-size: 1.5rem;
+            color: #8b4513;
+            font-size: 1.8rem;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             text-align: center;
-            text-transform: uppercase;
+            font-family: 'Caveat', cursive;
             letter-spacing: 1px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .journal-entries {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 25px;
         }
 
         .journal-entry {
-            background: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(42, 42, 42, 0.7) 100%);
-            border: 2px solid rgba(255, 215, 0, 0.2);
-            border-radius: 15px;
+            background: rgba(255, 250, 240, 0.6);
+            border: 2px solid #d4a373;
+            border-left: 4px solid #8b4513;
+            border-radius: 8px;
             padding: 20px;
             transition: all 0.3s;
             animation: slideIn 0.3s ease-out;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
 
         .journal-entry:hover {
-            border-color: #ffd700;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-            transform: translateX(5px);
+            border-left-width: 6px;
+            box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.15);
+            transform: translateX(3px);
+        }
+
+        /* Paper fold corner effect */
+        .journal-entry::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 20px 20px 0;
+            border-color: transparent #f5f2ea transparent transparent;
         }
 
         .entry-header {
@@ -880,62 +1002,67 @@
             align-items: center;
             margin-bottom: 15px;
             padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+            border-bottom: 1px dashed #d4a373;
         }
 
         .entry-date {
-            color: #ffd700;
-            font-size: 14px;
-            font-weight: 700;
+            color: #8b6f47;
+            font-size: 13px;
+            font-weight: 600;
             display: flex;
             align-items: center;
             gap: 5px;
+            font-family: 'Indie Flower', cursive;
         }
 
         .entry-delete-btn {
             background: transparent;
-            color: #ff4444;
-            border: 2px solid #ff4444;
-            padding: 6px 15px;
-            border-radius: 15px;
+            color: #cc4444;
+            border: 2px solid #cc4444;
+            padding: 5px 12px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
-            min-height: 35px;
+            min-height: 30px;
+            font-family: 'Patrick Hand', cursive;
         }
 
         .entry-delete-btn:hover {
-            background: #ff4444;
+            background: #cc4444;
             color: #fff;
-            box-shadow: 0 0 15px rgba(255, 68, 68, 0.5);
+            box-shadow: 0 2px 8px rgba(204, 68, 68, 0.4);
         }
 
         .entry-title {
-            color: #ffd700;
-            font-size: 18px;
+            font-size: 22px;
             font-weight: 800;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            font-family: 'Caveat', cursive;
             text-transform: capitalize;
+            letter-spacing: 0.5px;
         }
 
         .entry-content {
-            color: #fff;
-            font-size: 15px;
-            line-height: 1.8;
+            font-size: 17px;
+            line-height: 2;
             white-space: pre-wrap;
             word-wrap: break-word;
+            font-family: 'Patrick Hand', cursive;
+            letter-spacing: 0.3px;
         }
 
         .entries-empty {
             text-align: center;
             padding: 50px 20px;
-            color: #666;
-            font-size: 16px;
+            color: #8b6f47;
+            font-size: 18px;
             font-style: italic;
+            font-family: 'Indie Flower', cursive;
         }
 
         /* Pagination Controls */
@@ -1109,6 +1236,22 @@
                     placeholder="Give your entry a title..."
                     maxlength="100"
                 />
+
+                <!-- Color Picker -->
+                <div class="color-picker-section">
+                    <label class="color-label">✍️ Ink Color:</label>
+                    <div class="color-options">
+                        <button class="color-btn active" data-color="#000000" style="background: #000000;" title="Black Ink">●</button>
+                        <button class="color-btn" data-color="#0066cc" style="background: #0066cc;" title="Blue Ink">●</button>
+                        <button class="color-btn" data-color="#cc0000" style="background: #cc0000;" title="Red Ink">●</button>
+                        <button class="color-btn" data-color="#00aa00" style="background: #00aa00;" title="Green Ink">●</button>
+                        <button class="color-btn" data-color="#9933cc" style="background: #9933cc;" title="Purple Ink">●</button>
+                        <button class="color-btn" data-color="#ff6600" style="background: #ff6600;" title="Orange Ink">●</button>
+                        <button class="color-btn" data-color="#cc6600" style="background: #cc6600;" title="Brown Ink">●</button>
+                        <button class="color-btn" data-color="#666666" style="background: #666666;" title="Gray Ink">●</button>
+                    </div>
+                </div>
+
                 <textarea
                     id="journalInput"
                     class="journal-textarea"
@@ -1490,6 +1633,7 @@
         let journalEntries = [];
         let currentPage = 1;
         const entriesPerPage = 3;
+        let selectedColor = '#000000'; // Default black ink
 
         // Get journal DOM elements
         const tabBtns = document.querySelectorAll('.tab-btn');
@@ -1504,6 +1648,7 @@
         const nextPageBtn = document.getElementById('nextPageBtn');
         const pageInfo = document.getElementById('pageInfo');
         const paginationControls = document.getElementById('paginationControls');
+        const colorBtns = document.querySelectorAll('.color-btn');
 
         // Tab switching
         tabBtns.forEach(btn => {
@@ -1522,6 +1667,21 @@
                     journalSection.classList.add('active');
                     todoSection.classList.remove('active');
                 }
+            });
+        });
+
+        // Color picker functionality
+        colorBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all buttons
+                colorBtns.forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                btn.classList.add('active');
+                // Update selected color
+                selectedColor = btn.dataset.color;
+                // Apply color to textarea and title
+                journalInput.style.color = selectedColor;
+                journalTitle.style.color = selectedColor;
             });
         });
 
@@ -1559,7 +1719,8 @@
                 id: Date.now(),
                 title: title || 'Untitled Entry',
                 content: content,
-                date: new Date().toISOString()
+                date: new Date().toISOString(),
+                color: selectedColor
             };
 
             journalEntries.unshift(entry); // Add to beginning
@@ -1641,12 +1802,14 @@
                     const title = document.createElement('div');
                     title.className = 'entry-title';
                     title.textContent = entry.title;
+                    title.style.color = entry.color || '#000000';
                     entryDiv.appendChild(title);
                 }
 
                 const content = document.createElement('div');
                 content.className = 'entry-content';
                 content.textContent = entry.content;
+                content.style.color = entry.color || '#000000';
 
                 entryDiv.appendChild(content);
                 journalEntriesContainer.appendChild(entryDiv);

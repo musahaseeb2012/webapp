@@ -324,6 +324,7 @@ loadTodos();
 let journalEntries = [];
 let currentPage = 1;
 const entriesPerPage = 3;
+let selectedColor = '#000000'; // Default black ink
 
 // Get journal DOM elements
 const tabBtns = document.querySelectorAll('.tab-btn');
@@ -338,6 +339,7 @@ const prevPageBtn = document.getElementById('prevPageBtn');
 const nextPageBtn = document.getElementById('nextPageBtn');
 const pageInfo = document.getElementById('pageInfo');
 const paginationControls = document.getElementById('paginationControls');
+const colorBtns = document.querySelectorAll('.color-btn');
 
 // Tab switching
 tabBtns.forEach(btn => {
@@ -356,6 +358,21 @@ tabBtns.forEach(btn => {
             journalSection.classList.add('active');
             todoSection.classList.remove('active');
         }
+    });
+});
+
+// Color picker functionality
+colorBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        // Remove active class from all buttons
+        colorBtns.forEach(b => b.classList.remove('active'));
+        // Add active class to clicked button
+        btn.classList.add('active');
+        // Update selected color
+        selectedColor = btn.dataset.color;
+        // Apply color to textarea and title
+        journalInput.style.color = selectedColor;
+        journalTitle.style.color = selectedColor;
     });
 });
 
@@ -393,7 +410,8 @@ function saveEntry() {
         id: Date.now(),
         title: title || 'Untitled Entry',
         content: content,
-        date: new Date().toISOString()
+        date: new Date().toISOString(),
+        color: selectedColor
     };
 
     journalEntries.unshift(entry); // Add to beginning
@@ -475,12 +493,14 @@ function renderJournalEntries() {
             const title = document.createElement('div');
             title.className = 'entry-title';
             title.textContent = entry.title;
+            title.style.color = entry.color || '#000000';
             entryDiv.appendChild(title);
         }
 
         const content = document.createElement('div');
         content.className = 'entry-content';
         content.textContent = entry.content;
+        content.style.color = entry.color || '#000000';
 
         entryDiv.appendChild(content);
         journalEntriesContainer.appendChild(entryDiv);
