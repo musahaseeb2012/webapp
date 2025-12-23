@@ -666,6 +666,7 @@ h1::after {
         /* Paper color with slight texture */
         linear-gradient(110deg, #f9f6f0 60%, #f5f2ea 100%);
     padding: 40px 50px 40px 60px;
+    padding: max(40px, env(safe-area-inset-top)) max(50px, env(safe-area-inset-right)) max(40px, env(safe-area-inset-bottom)) max(60px, env(safe-area-inset-left));
     border-radius: 0;
     box-shadow: none;
     position: fixed !important;
@@ -678,9 +679,11 @@ h1::after {
     min-height: 100vh !important;
     max-width: none !important;
     overflow-y: auto;
+    overflow-x: hidden;
     z-index: 9999 !important;
     margin: 0 !important;
     transform: none !important;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* Spiral binding holes */
@@ -1113,4 +1116,98 @@ h1::after {
     border-color: #ffd700;
     box-shadow: 0 0 10px rgba(255, 215, 0, 0.6), 0 2px 5px rgba(0, 0, 0, 0.3);
     transform: scale(1.15);
+}
+
+/* iPad Pro Optimizations */
+@media only screen
+and (min-device-width: 768px)
+and (max-device-width: 1024px)
+and (-webkit-min-device-pixel-ratio: 2) {
+
+    /* Larger touch targets for iPad */
+    .tab-btn {
+        padding: 18px 40px;
+        font-size: 18px;
+        min-height: 56px;
+    }
+
+    .save-entry-btn {
+        padding: 20px 45px;
+        font-size: 20px;
+        min-height: 60px;
+        min-width: 150px;
+    }
+
+    .color-btn {
+        width: 48px;
+        height: 48px;
+        font-size: 24px;
+    }
+
+    /* Enhanced journal for larger screen */
+    #journalSection {
+        padding: max(50px, env(safe-area-inset-top)) max(80px, env(safe-area-inset-right)) max(50px, env(safe-area-inset-bottom)) max(90px, env(safe-area-inset-left));
+    }
+
+    .journal-textarea {
+        font-size: 22px;
+        min-height: 400px;
+        line-height: 2.2;
+        padding: 30px;
+    }
+
+    .journal-title-input {
+        font-size: 32px;
+        padding: 20px 25px;
+    }
+
+    .welcome-title {
+        font-size: 2.5rem;
+    }
+
+    .welcome-text {
+        font-size: 20px;
+    }
+
+    .entry-title {
+        font-size: 28px;
+    }
+
+    .entry-content {
+        font-size: 20px;
+        line-height: 2.2;
+    }
+
+    .color-label {
+        font-size: 18px;
+    }
+
+    .page-btn {
+        padding: 16px 35px;
+        font-size: 18px;
+        min-height: 56px;
+    }
+}
+
+/* iPad Pro 12.9" specific */
+@media only screen
+and (min-device-width: 1024px)
+and (max-device-width: 1366px)
+and (-webkit-min-device-pixel-ratio: 2) {
+
+    #journalSection {
+        padding: max(60px, env(safe-area-inset-top)) max(100px, env(safe-area-inset-right)) max(60px, env(safe-area-inset-bottom)) max(110px, env(safe-area-inset-left));
+    }
+
+    .journal-textarea {
+        font-size: 24px;
+        min-height: 500px;
+        line-height: 2.3;
+        padding: 35px;
+    }
+
+    .journal-title-input {
+        font-size: 36px;
+        padding: 25px 30px;
+    }
 }
