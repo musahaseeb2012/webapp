@@ -640,6 +640,267 @@
             font-size: 14px;
         }
 
+        /* Tab Navigation */
+        .tab-navigation {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            padding: 12px 30px;
+            background: transparent;
+            border: 2px solid #ffd700;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 15px;
+            font-weight: 700;
+            color: #ffd700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 215, 0, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #ffd700 0%, #ffcc00 100%);
+            color: #000;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Journal Styles */
+        .journal-welcome {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15) 0%, rgba(255, 204, 0, 0.1) 100%);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .welcome-title {
+            color: #ffd700;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .welcome-text {
+            color: #fff;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .welcome-subtext {
+            color: #ffd700;
+            font-size: 14px;
+            font-weight: 600;
+            font-style: italic;
+        }
+
+        /* Journal Entry Form */
+        .journal-entry-form {
+            margin-bottom: 30px;
+        }
+
+        .journal-textarea {
+            width: 100%;
+            padding: 20px;
+            background: rgba(26, 26, 26, 0.8);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            color: #fff;
+            font-size: 16px;
+            line-height: 1.8;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            resize: vertical;
+            min-height: 200px;
+            transition: all 0.3s;
+            /* Apple Pencil optimization */
+            touch-action: pan-y;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: default;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        .journal-textarea:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
+            background: rgba(26, 26, 26, 0.95);
+        }
+
+        .journal-textarea::placeholder {
+            color: #666;
+            font-style: italic;
+        }
+
+        .journal-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .save-entry-btn {
+            padding: 15px 35px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffcc00 100%);
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 50px;
+            min-width: 120px;
+        }
+
+        .save-entry-btn:hover {
+            background: #000;
+            color: #fff;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .save-entry-btn:active {
+            transform: scale(0.98);
+        }
+
+        .char-count {
+            color: #999;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* Journal Entries Section */
+        .journal-entries-section {
+            margin-top: 40px;
+        }
+
+        .entries-title {
+            color: #ffd700;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .journal-entries {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .journal-entry {
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.9) 0%, rgba(42, 42, 42, 0.7) 100%);
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .journal-entry:hover {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            transform: translateX(5px);
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .entry-date {
+            color: #ffd700;
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .entry-delete-btn {
+            background: transparent;
+            color: #ff4444;
+            border: 2px solid #ff4444;
+            padding: 6px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 35px;
+        }
+
+        .entry-delete-btn:hover {
+            background: #ff4444;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(255, 68, 68, 0.5);
+        }
+
+        .entry-content {
+            color: #fff;
+            font-size: 15px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .entries-empty {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666;
+            font-size: 16px;
+            font-style: italic;
+        }
+
         @media (max-width: 600px) {
             .container {
                 padding: 20px;
@@ -656,6 +917,31 @@
             .filters {
                 flex-wrap: wrap;
             }
+
+            .tab-navigation {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                width: 100%;
+            }
+
+            .journal-welcome {
+                padding: 20px;
+            }
+
+            .welcome-title {
+                font-size: 1.5rem;
+            }
+
+            .journal-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .save-entry-btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -663,6 +949,14 @@
     <div class="container">
         <h1>My To-Do List</h1>
 
+        <!-- Tab Navigation -->
+        <div class="tab-navigation">
+            <button class="tab-btn active" data-tab="todo">📝 To-Do List</button>
+            <button class="tab-btn" data-tab="journal">📔 Journal</button>
+        </div>
+
+        <!-- To-Do Section -->
+        <div id="todoSection" class="tab-content active">
         <div class="input-section">
             <input type="text" id="todoInput" placeholder="Add a new task..." />
             <button id="addBtn">Add Task</button>
@@ -694,6 +988,40 @@
             <h2 class="chart-title">📊 Monthly Completions</h2>
             <div id="monthlyChart" class="monthly-chart"></div>
         </div>
+        </div>
+        <!-- End To-Do Section -->
+
+        <!-- Journal Section -->
+        <div id="journalSection" class="tab-content">
+            <!-- Welcome Message -->
+            <div class="journal-welcome">
+                <h2 class="welcome-title">✨ Welcome to Your Journal ✨</h2>
+                <p class="welcome-text">A safe space for your thoughts, dreams, and reflections. Write freely and express yourself.</p>
+                <p class="welcome-subtext">📱 Optimized for Apple Pencil Pro - Write naturally with smooth, responsive input</p>
+            </div>
+
+            <!-- Journal Entry Form -->
+            <div class="journal-entry-form">
+                <textarea
+                    id="journalInput"
+                    class="journal-textarea"
+                    placeholder="What's on your mind today? Start writing..."
+                    rows="8"
+                ></textarea>
+                <div class="journal-actions">
+                    <button id="saveEntryBtn" class="save-entry-btn">💾 Save Entry</button>
+                    <span id="charCount" class="char-count">0 characters</span>
+                </div>
+            </div>
+
+            <!-- Journal Entries List -->
+            <div class="journal-entries-section">
+                <h3 class="entries-title">📖 Your Entries</h3>
+                <div id="journalEntries" class="journal-entries"></div>
+            </div>
+        </div>
+        <!-- End Journal Section -->
+
     </div>
 
     <!-- Achievement Badge -->
@@ -1042,6 +1370,160 @@
 
         // Initialize the app
         loadTodos();
+
+        // ===== JOURNAL FUNCTIONALITY =====
+
+        // Journal state
+        let journalEntries = [];
+
+        // Get journal DOM elements
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const todoSection = document.getElementById('todoSection');
+        const journalSection = document.getElementById('journalSection');
+        const journalInput = document.getElementById('journalInput');
+        const saveEntryBtn = document.getElementById('saveEntryBtn');
+        const charCount = document.getElementById('charCount');
+        const journalEntriesContainer = document.getElementById('journalEntries');
+
+        // Tab switching
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.dataset.tab;
+
+                // Remove active class from all tabs
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Show/hide sections
+                if (tab === 'todo') {
+                    todoSection.classList.add('active');
+                    journalSection.classList.remove('active');
+                } else if (tab === 'journal') {
+                    journalSection.classList.add('active');
+                    todoSection.classList.remove('active');
+                }
+            });
+        });
+
+        // Character counter
+        journalInput.addEventListener('input', () => {
+            const count = journalInput.value.length;
+            charCount.textContent = `${count} character${count !== 1 ? 's' : ''}`;
+        });
+
+        // Load journal entries from localStorage
+        function loadJournalEntries() {
+            const savedEntries = localStorage.getItem('journalEntries');
+            if (savedEntries) {
+                journalEntries = JSON.parse(savedEntries);
+                renderJournalEntries();
+            }
+        }
+
+        // Save journal entries to localStorage
+        function saveJournalEntries() {
+            localStorage.setItem('journalEntries', JSON.stringify(journalEntries));
+        }
+
+        // Save new entry
+        function saveEntry() {
+            const content = journalInput.value.trim();
+
+            if (content === '') {
+                alert('Please write something before saving!');
+                return;
+            }
+
+            const entry = {
+                id: Date.now(),
+                content: content,
+                date: new Date().toISOString()
+            };
+
+            journalEntries.unshift(entry); // Add to beginning
+            journalInput.value = '';
+            charCount.textContent = '0 characters';
+            saveJournalEntries();
+            renderJournalEntries();
+
+            // Show success feedback
+            saveEntryBtn.textContent = '✅ Saved!';
+            setTimeout(() => {
+                saveEntryBtn.textContent = '💾 Save Entry';
+            }, 2000);
+        }
+
+        // Delete entry
+        function deleteEntry(id) {
+            if (confirm('Are you sure you want to delete this entry?')) {
+                journalEntries = journalEntries.filter(entry => entry.id !== id);
+                saveJournalEntries();
+                renderJournalEntries();
+            }
+        }
+
+        // Format date
+        function formatDate(isoDate) {
+            const date = new Date(isoDate);
+            const options = {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        // Render journal entries
+        function renderJournalEntries() {
+            if (journalEntries.length === 0) {
+                journalEntriesContainer.innerHTML = '<div class="entries-empty">No entries yet. Start writing to create your first entry!</div>';
+                return;
+            }
+
+            journalEntriesContainer.innerHTML = '';
+            journalEntries.forEach(entry => {
+                const entryDiv = document.createElement('div');
+                entryDiv.className = 'journal-entry';
+
+                const header = document.createElement('div');
+                header.className = 'entry-header';
+
+                const dateSpan = document.createElement('div');
+                dateSpan.className = 'entry-date';
+                dateSpan.innerHTML = `📅 ${formatDate(entry.date)}`;
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'entry-delete-btn';
+                deleteBtn.textContent = '🗑️ Delete';
+                deleteBtn.addEventListener('click', () => deleteEntry(entry.id));
+
+                header.appendChild(dateSpan);
+                header.appendChild(deleteBtn);
+
+                const content = document.createElement('div');
+                content.className = 'entry-content';
+                content.textContent = entry.content;
+
+                entryDiv.appendChild(header);
+                entryDiv.appendChild(content);
+                journalEntriesContainer.appendChild(entryDiv);
+            });
+        }
+
+        // Event listeners
+        saveEntryBtn.addEventListener('click', saveEntry);
+
+        journalInput.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + Enter to save
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                saveEntry();
+            }
+        });
+
+        // Initialize journal
+        loadJournalEntries();
     </script>
 </body>
 </html>

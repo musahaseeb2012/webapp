@@ -10,6 +10,14 @@
     <div class="container">
         <h1>My To-Do List</h1>
 
+        <!-- Tab Navigation -->
+        <div class="tab-navigation">
+            <button class="tab-btn active" data-tab="todo">📝 To-Do List</button>
+            <button class="tab-btn" data-tab="journal">📔 Journal</button>
+        </div>
+
+        <!-- To-Do Section -->
+        <div id="todoSection" class="tab-content active">
         <div class="input-section">
             <input type="text" id="todoInput" placeholder="Add a new task..." />
             <button id="addBtn">Add Task</button>
@@ -41,6 +49,40 @@
             <h2 class="chart-title">📊 Monthly Completions</h2>
             <div id="monthlyChart" class="monthly-chart"></div>
         </div>
+        </div>
+        <!-- End To-Do Section -->
+
+        <!-- Journal Section -->
+        <div id="journalSection" class="tab-content">
+            <!-- Welcome Message -->
+            <div class="journal-welcome">
+                <h2 class="welcome-title">✨ Welcome to Your Journal ✨</h2>
+                <p class="welcome-text">A safe space for your thoughts, dreams, and reflections. Write freely and express yourself.</p>
+                <p class="welcome-subtext">📱 Optimized for Apple Pencil Pro - Write naturally with smooth, responsive input</p>
+            </div>
+
+            <!-- Journal Entry Form -->
+            <div class="journal-entry-form">
+                <textarea
+                    id="journalInput"
+                    class="journal-textarea"
+                    placeholder="What's on your mind today? Start writing..."
+                    rows="8"
+                ></textarea>
+                <div class="journal-actions">
+                    <button id="saveEntryBtn" class="save-entry-btn">💾 Save Entry</button>
+                    <span id="charCount" class="char-count">0 characters</span>
+                </div>
+            </div>
+
+            <!-- Journal Entries List -->
+            <div class="journal-entries-section">
+                <h3 class="entries-title">📖 Your Entries</h3>
+                <div id="journalEntries" class="journal-entries"></div>
+            </div>
+        </div>
+        <!-- End Journal Section -->
+
     </div>
 
     <!-- Achievement Badge -->

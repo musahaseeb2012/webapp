@@ -317,3 +317,157 @@ filterBtns.forEach(btn => {
 
 // Initialize the app
 loadTodos();
+
+// ===== JOURNAL FUNCTIONALITY =====
+
+// Journal state
+let journalEntries = [];
+
+// Get journal DOM elements
+const tabBtns = document.querySelectorAll('.tab-btn');
+const todoSection = document.getElementById('todoSection');
+const journalSection = document.getElementById('journalSection');
+const journalInput = document.getElementById('journalInput');
+const saveEntryBtn = document.getElementById('saveEntryBtn');
+const charCount = document.getElementById('charCount');
+const journalEntriesContainer = document.getElementById('journalEntries');
+
+// Tab switching
+tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+
+        // Remove active class from all tabs
+        tabBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Show/hide sections
+        if (tab === 'todo') {
+            todoSection.classList.add('active');
+            journalSection.classList.remove('active');
+        } else if (tab === 'journal') {
+            journalSection.classList.add('active');
+            todoSection.classList.remove('active');
+        }
+    });
+});
+
+// Character counter
+journalInput.addEventListener('input', () => {
+    const count = journalInput.value.length;
+    charCount.textContent = `${count} character${count !== 1 ? 's' : ''}`;
+});
+
+// Load journal entries from localStorage
+function loadJournalEntries() {
+    const savedEntries = localStorage.getItem('journalEntries');
+    if (savedEntries) {
+        journalEntries = JSON.parse(savedEntries);
+        renderJournalEntries();
+    }
+}
+
+// Save journal entries to localStorage
+function saveJournalEntries() {
+    localStorage.setItem('journalEntries', JSON.stringify(journalEntries));
+}
+
+// Save new entry
+function saveEntry() {
+    const content = journalInput.value.trim();
+
+    if (content === '') {
+        alert('Please write something before saving!');
+        return;
+    }
+
+    const entry = {
+        id: Date.now(),
+        content: content,
+        date: new Date().toISOString()
+    };
+
+    journalEntries.unshift(entry); // Add to beginning
+    journalInput.value = '';
+    charCount.textContent = '0 characters';
+    saveJournalEntries();
+    renderJournalEntries();
+
+    // Show success feedback
+    saveEntryBtn.textContent = '✅ Saved!';
+    setTimeout(() => {
+        saveEntryBtn.textContent = '💾 Save Entry';
+    }, 2000);
+}
+
+// Delete entry
+function deleteEntry(id) {
+    if (confirm('Are you sure you want to delete this entry?')) {
+        journalEntries = journalEntries.filter(entry => entry.id !== id);
+        saveJournalEntries();
+        renderJournalEntries();
+    }
+}
+
+// Format date
+function formatDate(isoDate) {
+    const date = new Date(isoDate);
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    };
+    return date.toLocaleDateString('en-US', options);
+}
+
+// Render journal entries
+function renderJournalEntries() {
+    if (journalEntries.length === 0) {
+        journalEntriesContainer.innerHTML = '<div class="entries-empty">No entries yet. Start writing to create your first entry!</div>';
+        return;
+    }
+
+    journalEntriesContainer.innerHTML = '';
+    journalEntries.forEach(entry => {
+        const entryDiv = document.createElement('div');
+        entryDiv.className = 'journal-entry';
+
+        const header = document.createElement('div');
+        header.className = 'entry-header';
+
+        const dateSpan = document.createElement('div');
+        dateSpan.className = 'entry-date';
+        dateSpan.innerHTML = `📅 ${formatDate(entry.date)}`;
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'entry-delete-btn';
+        deleteBtn.textContent = '🗑️ Delete';
+        deleteBtn.addEventListener('click', () => deleteEntry(entry.id));
+
+        header.appendChild(dateSpan);
+        header.appendChild(deleteBtn);
+
+        const content = document.createElement('div');
+        content.className = 'entry-content';
+        content.textContent = entry.content;
+
+        entryDiv.appendChild(header);
+        entryDiv.appendChild(content);
+        journalEntriesContainer.appendChild(entryDiv);
+    });
+}
+
+// Event listeners
+saveEntryBtn.addEventListener('click', saveEntry);
+
+journalInput.addEventListener('keydown', (e) => {
+    // Ctrl/Cmd + Enter to save
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        saveEntry();
+    }
+});
+
+// Initialize journal
+loadJournalEntries();
