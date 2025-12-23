@@ -688,6 +688,35 @@ h1::after {
     margin-bottom: 30px;
 }
 
+.journal-title-input {
+    width: 100%;
+    padding: 15px 20px;
+    background: rgba(26, 26, 26, 0.8);
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    border-radius: 15px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    margin-bottom: 15px;
+    transition: all 0.3s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.journal-title-input:focus {
+    outline: none;
+    border-color: #ffd700;
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
+    background: rgba(26, 26, 26, 0.95);
+}
+
+.journal-title-input::placeholder {
+    color: #666;
+    font-style: italic;
+    font-weight: 600;
+}
+
 .journal-textarea {
     width: 100%;
     padding: 20px;
@@ -840,6 +869,14 @@ h1::after {
     box-shadow: 0 0 15px rgba(255, 68, 68, 0.5);
 }
 
+.entry-title {
+    color: #ffd700;
+    font-size: 18px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    text-transform: capitalize;
+}
+
 .entry-content {
     color: #fff;
     font-size: 15px;
@@ -854,6 +891,60 @@ h1::after {
     color: #666;
     font-size: 16px;
     font-style: italic;
+}
+
+/* Pagination Controls */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 30px;
+    padding: 20px;
+    background: rgba(26, 26, 26, 0.6);
+    border-radius: 15px;
+    border: 2px solid rgba(255, 215, 0, 0.2);
+}
+
+.page-btn {
+    padding: 12px 25px;
+    background: linear-gradient(135deg, #ffd700 0%, #ffcc00 100%);
+    color: #000;
+    border: none;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 45px;
+}
+
+.page-btn:hover:not(:disabled) {
+    background: #000;
+    color: #fff;
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+    transform: translateY(-2px);
+}
+
+.page-btn:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.page-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    background: rgba(255, 215, 0, 0.3);
+}
+
+.page-info {
+    color: #ffd700;
+    font-size: 15px;
+    font-weight: 700;
+    min-width: 120px;
+    text-align: center;
 }
 
 /* Mobile responsiveness for journal */
@@ -880,6 +971,15 @@ h1::after {
     }
 
     .save-entry-btn {
+        width: 100%;
+    }
+
+    .pagination-controls {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .page-btn {
         width: 100%;
     }
 }

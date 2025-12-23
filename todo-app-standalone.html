@@ -733,6 +733,35 @@
             margin-bottom: 30px;
         }
 
+        .journal-title-input {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(26, 26, 26, 0.8);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .journal-title-input:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.4);
+            background: rgba(26, 26, 26, 0.95);
+        }
+
+        .journal-title-input::placeholder {
+            color: #666;
+            font-style: italic;
+            font-weight: 600;
+        }
+
         .journal-textarea {
             width: 100%;
             padding: 20px;
@@ -885,6 +914,14 @@
             box-shadow: 0 0 15px rgba(255, 68, 68, 0.5);
         }
 
+        .entry-title {
+            color: #ffd700;
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-transform: capitalize;
+        }
+
         .entry-content {
             color: #fff;
             font-size: 15px;
@@ -899,6 +936,60 @@
             color: #666;
             font-size: 16px;
             font-style: italic;
+        }
+
+        /* Pagination Controls */
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(26, 26, 26, 0.6);
+            border-radius: 15px;
+            border: 2px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .page-btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffcc00 100%);
+            color: #000;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 45px;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background: #000;
+            color: #fff;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .page-btn:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        .page-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            background: rgba(255, 215, 0, 0.3);
+        }
+
+        .page-info {
+            color: #ffd700;
+            font-size: 15px;
+            font-weight: 700;
+            min-width: 120px;
+            text-align: center;
         }
 
         @media (max-width: 600px) {
@@ -940,6 +1031,15 @@
             }
 
             .save-entry-btn {
+                width: 100%;
+            }
+
+            .pagination-controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .page-btn {
                 width: 100%;
             }
         }
@@ -1002,6 +1102,13 @@
 
             <!-- Journal Entry Form -->
             <div class="journal-entry-form">
+                <input
+                    type="text"
+                    id="journalTitle"
+                    class="journal-title-input"
+                    placeholder="Give your entry a title..."
+                    maxlength="100"
+                />
                 <textarea
                     id="journalInput"
                     class="journal-textarea"
@@ -1018,6 +1125,12 @@
             <div class="journal-entries-section">
                 <h3 class="entries-title">📖 Your Entries</h3>
                 <div id="journalEntries" class="journal-entries"></div>
+                <!-- Pagination Controls -->
+                <div id="paginationControls" class="pagination-controls">
+                    <button id="prevPageBtn" class="page-btn">⬅️ Previous</button>
+                    <span id="pageInfo" class="page-info">Page 1 of 1</span>
+                    <button id="nextPageBtn" class="page-btn">Next ➡️</button>
+                </div>
             </div>
         </div>
         <!-- End Journal Section -->
@@ -1375,15 +1488,22 @@
 
         // Journal state
         let journalEntries = [];
+        let currentPage = 1;
+        const entriesPerPage = 3;
 
         // Get journal DOM elements
         const tabBtns = document.querySelectorAll('.tab-btn');
         const todoSection = document.getElementById('todoSection');
         const journalSection = document.getElementById('journalSection');
+        const journalTitle = document.getElementById('journalTitle');
         const journalInput = document.getElementById('journalInput');
         const saveEntryBtn = document.getElementById('saveEntryBtn');
         const charCount = document.getElementById('charCount');
         const journalEntriesContainer = document.getElementById('journalEntries');
+        const prevPageBtn = document.getElementById('prevPageBtn');
+        const nextPageBtn = document.getElementById('nextPageBtn');
+        const pageInfo = document.getElementById('pageInfo');
+        const paginationControls = document.getElementById('paginationControls');
 
         // Tab switching
         tabBtns.forEach(btn => {
@@ -1427,6 +1547,7 @@
 
         // Save new entry
         function saveEntry() {
+            const title = journalTitle.value.trim();
             const content = journalInput.value.trim();
 
             if (content === '') {
@@ -1436,13 +1557,16 @@
 
             const entry = {
                 id: Date.now(),
+                title: title || 'Untitled Entry',
                 content: content,
                 date: new Date().toISOString()
             };
 
             journalEntries.unshift(entry); // Add to beginning
+            journalTitle.value = '';
             journalInput.value = '';
             charCount.textContent = '0 characters';
+            currentPage = 1; // Reset to first page
             saveJournalEntries();
             renderJournalEntries();
 
@@ -1475,15 +1599,23 @@
             return date.toLocaleDateString('en-US', options);
         }
 
-        // Render journal entries
+        // Render journal entries with pagination
         function renderJournalEntries() {
             if (journalEntries.length === 0) {
                 journalEntriesContainer.innerHTML = '<div class="entries-empty">No entries yet. Start writing to create your first entry!</div>';
+                paginationControls.style.display = 'none';
                 return;
             }
 
+            // Calculate pagination
+            const totalPages = Math.ceil(journalEntries.length / entriesPerPage);
+            const startIndex = (currentPage - 1) * entriesPerPage;
+            const endIndex = startIndex + entriesPerPage;
+            const currentEntries = journalEntries.slice(startIndex, endIndex);
+
+            // Render entries
             journalEntriesContainer.innerHTML = '';
-            journalEntries.forEach(entry => {
+            currentEntries.forEach(entry => {
                 const entryDiv = document.createElement('div');
                 entryDiv.className = 'journal-entry';
 
@@ -1502,18 +1634,54 @@
                 header.appendChild(dateSpan);
                 header.appendChild(deleteBtn);
 
+                entryDiv.appendChild(header);
+
+                // Add title if exists
+                if (entry.title) {
+                    const title = document.createElement('div');
+                    title.className = 'entry-title';
+                    title.textContent = entry.title;
+                    entryDiv.appendChild(title);
+                }
+
                 const content = document.createElement('div');
                 content.className = 'entry-content';
                 content.textContent = entry.content;
 
-                entryDiv.appendChild(header);
                 entryDiv.appendChild(content);
                 journalEntriesContainer.appendChild(entryDiv);
             });
+
+            // Update pagination controls
+            paginationControls.style.display = 'flex';
+            pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+            prevPageBtn.disabled = currentPage === 1;
+            nextPageBtn.disabled = currentPage === totalPages;
+        }
+
+        // Pagination functions
+        function nextPage() {
+            const totalPages = Math.ceil(journalEntries.length / entriesPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderJournalEntries();
+                journalEntriesContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderJournalEntries();
+                journalEntriesContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         }
 
         // Event listeners
         saveEntryBtn.addEventListener('click', saveEntry);
+
+        prevPageBtn.addEventListener('click', prevPage);
+        nextPageBtn.addEventListener('click', nextPage);
 
         journalInput.addEventListener('keydown', (e) => {
             // Ctrl/Cmd + Enter to save

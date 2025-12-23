@@ -322,15 +322,22 @@ loadTodos();
 
 // Journal state
 let journalEntries = [];
+let currentPage = 1;
+const entriesPerPage = 3;
 
 // Get journal DOM elements
 const tabBtns = document.querySelectorAll('.tab-btn');
 const todoSection = document.getElementById('todoSection');
 const journalSection = document.getElementById('journalSection');
+const journalTitle = document.getElementById('journalTitle');
 const journalInput = document.getElementById('journalInput');
 const saveEntryBtn = document.getElementById('saveEntryBtn');
 const charCount = document.getElementById('charCount');
 const journalEntriesContainer = document.getElementById('journalEntries');
+const prevPageBtn = document.getElementById('prevPageBtn');
+const nextPageBtn = document.getElementById('nextPageBtn');
+const pageInfo = document.getElementById('pageInfo');
+const paginationControls = document.getElementById('paginationControls');
 
 // Tab switching
 tabBtns.forEach(btn => {
@@ -374,6 +381,7 @@ function saveJournalEntries() {
 
 // Save new entry
 function saveEntry() {
+    const title = journalTitle.value.trim();
     const content = journalInput.value.trim();
 
     if (content === '') {
@@ -383,13 +391,16 @@ function saveEntry() {
 
     const entry = {
         id: Date.now(),
+        title: title || 'Untitled Entry',
         content: content,
         date: new Date().toISOString()
     };
 
     journalEntries.unshift(entry); // Add to beginning
+    journalTitle.value = '';
     journalInput.value = '';
     charCount.textContent = '0 characters';
+    currentPage = 1; // Reset to first page
     saveJournalEntries();
     renderJournalEntries();
 
@@ -422,15 +433,23 @@ function formatDate(isoDate) {
     return date.toLocaleDateString('en-US', options);
 }
 
-// Render journal entries
+// Render journal entries with pagination
 function renderJournalEntries() {
     if (journalEntries.length === 0) {
         journalEntriesContainer.innerHTML = '<div class="entries-empty">No entries yet. Start writing to create your first entry!</div>';
+        paginationControls.style.display = 'none';
         return;
     }
 
+    // Calculate pagination
+    const totalPages = Math.ceil(journalEntries.length / entriesPerPage);
+    const startIndex = (currentPage - 1) * entriesPerPage;
+    const endIndex = startIndex + entriesPerPage;
+    const currentEntries = journalEntries.slice(startIndex, endIndex);
+
+    // Render entries
     journalEntriesContainer.innerHTML = '';
-    journalEntries.forEach(entry => {
+    currentEntries.forEach(entry => {
         const entryDiv = document.createElement('div');
         entryDiv.className = 'journal-entry';
 
@@ -449,18 +468,54 @@ function renderJournalEntries() {
         header.appendChild(dateSpan);
         header.appendChild(deleteBtn);
 
+        entryDiv.appendChild(header);
+
+        // Add title if exists
+        if (entry.title) {
+            const title = document.createElement('div');
+            title.className = 'entry-title';
+            title.textContent = entry.title;
+            entryDiv.appendChild(title);
+        }
+
         const content = document.createElement('div');
         content.className = 'entry-content';
         content.textContent = entry.content;
 
-        entryDiv.appendChild(header);
         entryDiv.appendChild(content);
         journalEntriesContainer.appendChild(entryDiv);
     });
+
+    // Update pagination controls
+    paginationControls.style.display = 'flex';
+    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+    prevPageBtn.disabled = currentPage === 1;
+    nextPageBtn.disabled = currentPage === totalPages;
+}
+
+// Pagination functions
+function nextPage() {
+    const totalPages = Math.ceil(journalEntries.length / entriesPerPage);
+    if (currentPage < totalPages) {
+        currentPage++;
+        renderJournalEntries();
+        journalEntriesContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+function prevPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        renderJournalEntries();
+        journalEntriesContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
 }
 
 // Event listeners
 saveEntryBtn.addEventListener('click', saveEntry);
+
+prevPageBtn.addEventListener('click', prevPage);
+nextPageBtn.addEventListener('click', nextPage);
 
 journalInput.addEventListener('keydown', (e) => {
     // Ctrl/Cmd + Enter to save

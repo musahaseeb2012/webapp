@@ -63,6 +63,13 @@
 
             <!-- Journal Entry Form -->
             <div class="journal-entry-form">
+                <input
+                    type="text"
+                    id="journalTitle"
+                    class="journal-title-input"
+                    placeholder="Give your entry a title..."
+                    maxlength="100"
+                />
                 <textarea
                     id="journalInput"
                     class="journal-textarea"
@@ -79,6 +86,12 @@
             <div class="journal-entries-section">
                 <h3 class="entries-title">📖 Your Entries</h3>
                 <div id="journalEntries" class="journal-entries"></div>
+                <!-- Pagination Controls -->
+                <div id="paginationControls" class="pagination-controls">
+                    <button id="prevPageBtn" class="page-btn">⬅️ Previous</button>
+                    <span id="pageInfo" class="page-info">Page 1 of 1</span>
+                    <button id="nextPageBtn" class="page-btn">Next ➡️</button>
+                </div>
             </div>
         </div>
         <!-- End Journal Section -->
