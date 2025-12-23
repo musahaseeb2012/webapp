@@ -10,6 +10,7 @@ const filterBtns = document.querySelectorAll('.filter-btn');
 let todos = [];
 let currentFilter = 'all';
 let totalCompletedCount = 0;
+let completionHistory = {}; // Track completions by month (format: "YYYY-MM": count)
 
 // Load todos from localStorage on page load
 function loadTodos() {
@@ -24,6 +25,13 @@ function loadTodos() {
     if (savedTotal) {
         totalCompletedCount = parseInt(savedTotal);
         updateTotalCompleted();
+    }
+
+    // Load completion history
+    const savedHistory = localStorage.getItem('completionHistory');
+    if (savedHistory) {
+        completionHistory = JSON.parse(savedHistory);
+        renderMonthlyChart();
     }
 }
 
@@ -109,30 +117,92 @@ function showMilestoneBadge() {
     }, 3000);
 }
 
-// Create confetti effect
+// Create F1 car racing through checkered flag celebration
 function createConfetti(isMilestone = false) {
-    const colors = isMilestone
-        ? ['#ff1493', '#ff69b4', '#ffd700', '#fff', '#ffc0cb', '#ffdf00']  // Add gold for milestones
-        : ['#ff1493', '#ff69b4', '#fff', '#ffc0cb'];
+    // Create checkered flag at top left
+    const flag = document.createElement('div');
+    flag.className = 'checkered-flag';
+    flag.textContent = '🏁';
+    document.body.appendChild(flag);
 
-    const count = isMilestone ? 100 : 50;  // Double confetti for milestones
+    // Remove flag after animation
+    setTimeout(() => flag.remove(), 2000);
 
-    for (let i = 0; i < count; i++) {
-        setTimeout(() => {
-            const confetti = document.createElement('div');
-            confetti.className = 'confetti';
-            confetti.style.left = Math.random() * 100 + '%';
-            confetti.style.top = '-10px';
-            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-            confetti.style.width = Math.random() * 10 + 5 + 'px';
-            confetti.style.height = Math.random() * 10 + 5 + 'px';
-            confetti.style.animationDuration = Math.random() * 2 + 2 + 's';
-            confetti.style.animationDelay = Math.random() * 0.5 + 's';
-            document.body.appendChild(confetti);
+    // Create one F1 car
+    const car = document.createElement('div');
+    car.className = 'f1-car';
+    car.textContent = '🏎️';
+    car.style.top = '10%';
+    document.body.appendChild(car);
 
-            setTimeout(() => confetti.remove(), 5000);
-        }, i * (isMilestone ? 20 : 30));  // Faster for milestones
+    // Remove car after animation completes
+    setTimeout(() => car.remove(), 2000);
+}
+
+// Render monthly completion chart
+function renderMonthlyChart() {
+    const chartContainer = document.getElementById('monthlyChart');
+
+    // Get last 6 months including current month
+    const months = [];
+    const currentDate = new Date();
+
+    for (let i = 5; i >= 0; i--) {
+        const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+        const monthKey = date.toISOString().slice(0, 7); // "YYYY-MM"
+        const monthLabel = date.toLocaleDateString('en-US', { month: 'short' });
+        months.push({ key: monthKey, label: monthLabel });
     }
+
+    // Find max value for scaling
+    const values = months.map(m => completionHistory[m.key] || 0);
+    const maxValue = Math.max(...values, 1); // At least 1 to avoid division by zero
+
+    // Check if there's any data
+    const hasData = values.some(v => v > 0);
+
+    if (!hasData) {
+        chartContainer.innerHTML = '<div class="chart-empty">No completed tasks yet. Complete some tasks to see your monthly progress!</div>';
+        return;
+    }
+
+    // Create bars
+    chartContainer.innerHTML = '';
+    months.forEach(month => {
+        const count = completionHistory[month.key] || 0;
+        const heightPercent = (count / maxValue) * 100;
+
+        const barContainer = document.createElement('div');
+        barContainer.style.flex = '1';
+        barContainer.style.display = 'flex';
+        barContainer.style.flexDirection = 'column';
+        barContainer.style.alignItems = 'center';
+        barContainer.style.justifyContent = 'flex-end';
+        barContainer.style.position = 'relative';
+        barContainer.style.height = '100%';
+
+        const bar = document.createElement('div');
+        bar.className = 'chart-bar';
+        bar.style.height = heightPercent + '%';
+        bar.title = `${month.label}: ${count} task${count !== 1 ? 's' : ''}`;
+
+        // Add value label on top of bar
+        if (count > 0) {
+            const valueLabel = document.createElement('span');
+            valueLabel.className = 'chart-bar-value';
+            valueLabel.textContent = count;
+            bar.appendChild(valueLabel);
+        }
+
+        // Add month label below bar
+        const label = document.createElement('span');
+        label.className = 'chart-bar-label';
+        label.textContent = month.label;
+
+        barContainer.appendChild(bar);
+        barContainer.appendChild(label);
+        chartContainer.appendChild(barContainer);
+    });
 }
 
 // Toggle todo completion
@@ -147,6 +217,12 @@ function toggleTodo(id) {
             // Increment total completed count
             totalCompletedCount++;
             updateTotalCompleted();
+
+            // Record completion in monthly history
+            const currentMonth = new Date().toISOString().slice(0, 7); // "YYYY-MM"
+            completionHistory[currentMonth] = (completionHistory[currentMonth] || 0) + 1;
+            localStorage.setItem('completionHistory', JSON.stringify(completionHistory));
+            renderMonthlyChart();
 
             // Check if this is a milestone (every 5 tasks)
             if (totalCompletedCount % 5 === 0) {
@@ -241,3 +317,232 @@ filterBtns.forEach(btn => {
 
 // Initialize the app
 loadTodos();
+
+// ===== JOURNAL FUNCTIONALITY =====
+
+// Journal state
+let journalEntries = [];
+let currentPage = 1;
+const entriesPerPage = 3;
+let selectedColor = '#000000'; // Default black ink
+
+// Get journal DOM elements
+const tabBtns = document.querySelectorAll('.tab-btn');
+const todoSection = document.getElementById('todoSection');
+const journalSection = document.getElementById('journalSection');
+const journalTitle = document.getElementById('journalTitle');
+const journalInput = document.getElementById('journalInput');
+const saveEntryBtn = document.getElementById('saveEntryBtn');
+const charCount = document.getElementById('charCount');
+const journalEntriesContainer = document.getElementById('journalEntries');
+const prevPageBtn = document.getElementById('prevPageBtn');
+const nextPageBtn = document.getElementById('nextPageBtn');
+const pageInfo = document.getElementById('pageInfo');
+const paginationControls = document.getElementById('paginationControls');
+const colorBtns = document.querySelectorAll('.color-btn');
+
+// Tab switching
+tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+
+        // Remove active class from all tabs
+        tabBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Show/hide sections
+        if (tab === 'todo') {
+            todoSection.classList.add('active');
+            journalSection.classList.remove('active');
+        } else if (tab === 'journal') {
+            journalSection.classList.add('active');
+            todoSection.classList.remove('active');
+        }
+    });
+});
+
+// Color picker functionality
+colorBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        // Remove active class from all buttons
+        colorBtns.forEach(b => b.classList.remove('active'));
+        // Add active class to clicked button
+        btn.classList.add('active');
+        // Update selected color
+        selectedColor = btn.dataset.color;
+        // Apply color to textarea and title
+        journalInput.style.color = selectedColor;
+        journalTitle.style.color = selectedColor;
+    });
+});
+
+// Character counter
+journalInput.addEventListener('input', () => {
+    const count = journalInput.value.length;
+    charCount.textContent = `${count} character${count !== 1 ? 's' : ''}`;
+});
+
+// Load journal entries from localStorage
+function loadJournalEntries() {
+    const savedEntries = localStorage.getItem('journalEntries');
+    if (savedEntries) {
+        journalEntries = JSON.parse(savedEntries);
+        renderJournalEntries();
+    }
+}
+
+// Save journal entries to localStorage
+function saveJournalEntries() {
+    localStorage.setItem('journalEntries', JSON.stringify(journalEntries));
+}
+
+// Save new entry
+function saveEntry() {
+    const title = journalTitle.value.trim();
+    const content = journalInput.value.trim();
+
+    if (content === '') {
+        alert('Please write something before saving!');
+        return;
+    }
+
+    const entry = {
+        id: Date.now(),
+        title: title || 'Untitled Entry',
+        content: content,
+        date: new Date().toISOString(),
+        color: selectedColor
+    };
+
+    journalEntries.unshift(entry); // Add to beginning
+    journalTitle.value = '';
+    journalInput.value = '';
+    charCount.textContent = '0 characters';
+    currentPage = 1; // Reset to first page
+    saveJournalEntries();
+    renderJournalEntries();
+
+    // Show success feedback
+    saveEntryBtn.textContent = '✅ Saved!';
+    setTimeout(() => {
+        saveEntryBtn.textContent = '💾 Save Entry';
+    }, 2000);
+}
+
+// Delete entry
+function deleteEntry(id) {
+    if (confirm('Are you sure you want to delete this entry?')) {
+        journalEntries = journalEntries.filter(entry => entry.id !== id);
+        saveJournalEntries();
+        renderJournalEntries();
+    }
+}
+
+// Format date
+function formatDate(isoDate) {
+    const date = new Date(isoDate);
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    };
+    return date.toLocaleDateString('en-US', options);
+}
+
+// Render journal entries with pagination
+function renderJournalEntries() {
+    if (journalEntries.length === 0) {
+        journalEntriesContainer.innerHTML = '<div class="entries-empty">No entries yet. Start writing to create your first entry!</div>';
+        paginationControls.style.display = 'none';
+        return;
+    }
+
+    // Calculate pagination
+    const totalPages = Math.ceil(journalEntries.length / entriesPerPage);
+    const startIndex = (currentPage - 1) * entriesPerPage;
+    const endIndex = startIndex + entriesPerPage;
+    const currentEntries = journalEntries.slice(startIndex, endIndex);
+
+    // Render entries
+    journalEntriesContainer.innerHTML = '';
+    currentEntries.forEach(entry => {
+        const entryDiv = document.createElement('div');
+        entryDiv.className = 'journal-entry';
+
+        const header = document.createElement('div');
+        header.className = 'entry-header';
+
+        const dateSpan = document.createElement('div');
+        dateSpan.className = 'entry-date';
+        dateSpan.innerHTML = `📅 ${formatDate(entry.date)}`;
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'entry-delete-btn';
+        deleteBtn.textContent = '🗑️ Delete';
+        deleteBtn.addEventListener('click', () => deleteEntry(entry.id));
+
+        header.appendChild(dateSpan);
+        header.appendChild(deleteBtn);
+
+        entryDiv.appendChild(header);
+
+        // Add title if exists
+        if (entry.title) {
+            const title = document.createElement('div');
+            title.className = 'entry-title';
+            title.textContent = entry.title;
+            title.style.color = entry.color || '#000000';
+            entryDiv.appendChild(title);
+        }
+
+        const content = document.createElement('div');
+        content.className = 'entry-content';
+        content.textContent = entry.content;
+        content.style.color = entry.color || '#000000';
+
+        entryDiv.appendChild(content);
+        journalEntriesContainer.appendChild(entryDiv);
+    });
+
+    // Update pagination controls
+    paginationControls.style.display = 'flex';
+    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+    prevPageBtn.disabled = currentPage === 1;
+    nextPageBtn.disabled = currentPage === totalPages;
+}
+
+// Pagination functions
+function nextPage() {
+    const totalPages = Math.ceil(journalEntries.length / entriesPerPage);
+    if (currentPage < totalPages) {
+        currentPage++;
+        renderJournalEntries();
+        journalEntriesContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+function prevPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        renderJournalEntries();
+        journalEntriesContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+// Event listeners
+saveEntryBtn.addEventListener('click', saveEntry);
+
+prevPageBtn.addEventListener('click', prevPage);
+nextPageBtn.addEventListener('click', nextPage);
+
+journalInput.addEventListener('keydown', (e) => {
+    // Ctrl/Cmd + Enter to save
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        saveEntry();
+    }
+});
+
+// Initialize journal
+loadJournalEntries();

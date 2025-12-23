@@ -8,8 +8,8 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
     background: #000000;
     background-image:
-        radial-gradient(circle at 20% 50%, rgba(255, 20, 147, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(255, 105, 180, 0.1) 0%, transparent 50%);
+        radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 204, 0, 0.1) 0%, transparent 50%);
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -20,19 +20,19 @@ body {
 .container {
     background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(10px);
-    border: 3px solid #ff1493;
+    border: 3px solid #ffd700;
     border-radius: 20px;
     box-shadow:
-        0 0 40px rgba(255, 20, 147, 0.5),
-        0 0 80px rgba(255, 20, 147, 0.3),
-        inset 0 0 60px rgba(255, 20, 147, 0.05);
+        0 0 40px rgba(255, 215, 0, 0.5),
+        0 0 80px rgba(255, 215, 0, 0.3),
+        inset 0 0 60px rgba(255, 215, 0, 0.05);
     padding: 40px;
     width: 100%;
     max-width: 600px;
 }
 
 h1 {
-    color: #ff1493;
+    color: #ffd700;
     text-align: center;
     margin-bottom: 30px;
     font-size: 2.8rem;
@@ -40,11 +40,11 @@ h1 {
     letter-spacing: 2px;
     text-transform: uppercase;
     text-shadow:
-        0 0 10px rgba(255, 20, 147, 0.8),
-        0 0 20px rgba(255, 20, 147, 0.6),
-        0 0 30px rgba(255, 20, 147, 0.4),
-        0 0 40px rgba(255, 20, 147, 0.2);
-    background: linear-gradient(135deg, #ff1493 0%, #ff69b4 50%, #ff1493 100%);
+        0 0 10px rgba(255, 215, 0, 0.8),
+        0 0 20px rgba(255, 215, 0, 0.6),
+        0 0 30px rgba(255, 215, 0, 0.4),
+        0 0 40px rgba(255, 215, 0, 0.2);
+    background: linear-gradient(135deg, #ffd700 0%, #ffcc00 50%, #ffd700 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -52,20 +52,20 @@ h1 {
 }
 
 h1::before {
-    content: '♥';
+    content: '⚡';
     position: absolute;
     left: -40px;
-    color: #ff1493;
-    -webkit-text-fill-color: #ff1493;
+    color: #ffd700;
+    -webkit-text-fill-color: #ffd700;
     animation: pulse 2s infinite;
 }
 
 h1::after {
-    content: '♥';
+    content: '⚡';
     position: absolute;
     right: -40px;
-    color: #ff1493;
-    -webkit-text-fill-color: #ff1493;
+    color: #ffd700;
+    -webkit-text-fill-color: #ffd700;
     animation: pulse 2s infinite;
 }
 
@@ -89,7 +89,7 @@ h1::after {
 #todoInput {
     flex: 1;
     padding: 15px 20px;
-    border: 2px solid rgba(255, 20, 147, 0.3);
+    border: 2px solid rgba(255, 215, 0, 0.3);
     border-radius: 25px;
     font-size: 16px;
     transition: all 0.3s;
@@ -100,10 +100,10 @@ h1::after {
 
 #todoInput:focus {
     outline: none;
-    border-color: #ff1493;
+    border-color: #ffd700;
     box-shadow:
-        0 0 20px rgba(255, 20, 147, 0.4),
-        inset 0 0 10px rgba(255, 20, 147, 0.1);
+        0 0 20px rgba(255, 215, 0, 0.4),
+        inset 0 0 10px rgba(255, 215, 0, 0.1);
     background: rgba(26, 26, 26, 0.8);
 }
 
@@ -114,8 +114,8 @@ h1::after {
 
 #addBtn {
     padding: 15px 30px;
-    background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
-    color: white;
+    background: linear-gradient(135deg, #ffd700 0%, #ffcc00 100%);
+    color: #000;
     border: none;
     border-radius: 25px;
     font-size: 16px;
@@ -125,7 +125,7 @@ h1::after {
     cursor: pointer;
     transition: all 0.3s;
     box-shadow:
-        0 0 20px rgba(255, 20, 147, 0.6),
+        0 0 20px rgba(255, 215, 0, 0.6),
         0 4px 15px rgba(0, 0, 0, 0.4);
     position: relative;
     overflow: hidden;
@@ -147,9 +147,10 @@ h1::after {
 }
 
 #addBtn:hover {
-    background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
+    background: #000;
+    color: #fff;
     box-shadow:
-        0 0 30px rgba(255, 20, 147, 0.8),
+        0 0 30px rgba(255, 215, 0, 0.8),
         0 4px 20px rgba(0, 0, 0, 0.5);
     transform: translateY(-2px);
 }
@@ -164,7 +165,7 @@ h1::after {
 .filter-btn {
     padding: 10px 24px;
     background: transparent;
-    border: 2px solid #ff1493;
+    border: 2px solid #ffd700;
     border-radius: 20px;
     cursor: pointer;
     transition: all 0.3s;
@@ -172,21 +173,21 @@ h1::after {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: #ff1493;
+    color: #ffd700;
 }
 
 .filter-btn:hover {
-    background: rgba(255, 20, 147, 0.1);
-    border-color: #ff69b4;
-    color: #ff69b4;
-    box-shadow: 0 0 15px rgba(255, 20, 147, 0.3);
+    background: rgba(255, 215, 0, 0.1);
+    border-color: #ffcc00;
+    color: #ffcc00;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
 }
 
 .filter-btn.active {
-    background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
-    color: white;
-    border-color: #ff1493;
-    box-shadow: 0 0 20px rgba(255, 20, 147, 0.6);
+    background: linear-gradient(135deg, #ffd700 0%, #ffcc00 100%);
+    color: #000;
+    border-color: #ffd700;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
 }
 
 .todo-list {
@@ -201,7 +202,7 @@ h1::after {
     align-items: center;
     padding: 18px;
     background: linear-gradient(135deg, rgba(26, 26, 26, 0.8) 0%, rgba(42, 42, 42, 0.6) 100%);
-    border: 1px solid rgba(255, 20, 147, 0.2);
+    border: 1px solid rgba(255, 215, 0, 0.2);
     border-radius: 15px;
     margin-bottom: 12px;
     transition: all 0.3s;
@@ -222,8 +223,8 @@ h1::after {
 
 .todo-item:hover {
     background: linear-gradient(135deg, rgba(42, 42, 42, 0.9) 0%, rgba(51, 51, 51, 0.7) 100%);
-    border-color: #ff1493;
-    box-shadow: 0 0 20px rgba(255, 20, 147, 0.3);
+    border-color: #ffd700;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
     transform: translateX(8px);
 }
 
@@ -237,8 +238,8 @@ h1::after {
     height: 22px;
     margin-right: 15px;
     cursor: pointer;
-    accent-color: #ff1493;
-    filter: drop-shadow(0 0 3px rgba(255, 20, 147, 0.5));
+    accent-color: #ffd700;
+    filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.5));
 }
 
 .todo-text {
@@ -249,8 +250,8 @@ h1::after {
 
 .delete-btn {
     background: transparent;
-    color: #ff1493;
-    border: 2px solid #ff1493;
+    color: #ffd700;
+    border: 2px solid #ffd700;
     padding: 8px 18px;
     border-radius: 20px;
     cursor: pointer;
@@ -262,10 +263,10 @@ h1::after {
 }
 
 .delete-btn:hover {
-    background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
-    color: white;
-    border-color: #ff1493;
-    box-shadow: 0 0 15px rgba(255, 20, 147, 0.5);
+    background: linear-gradient(135deg, #ffd700 0%, #ffcc00 100%);
+    color: #000;
+    border-color: #ffd700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
     transform: scale(1.05);
 }
 
@@ -281,8 +282,8 @@ h1::after {
 
 #clearCompleted {
     background: transparent;
-    color: #ff1493;
-    border: 2px solid #ff1493;
+    color: #ffd700;
+    border: 2px solid #ffd700;
     padding: 8px 18px;
     border-radius: 20px;
     cursor: pointer;
@@ -294,10 +295,10 @@ h1::after {
 }
 
 #clearCompleted:hover {
-    background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
-    color: white;
-    border-color: #ff1493;
-    box-shadow: 0 0 20px rgba(255, 20, 147, 0.6);
+    background: linear-gradient(135deg, #ffd700 0%, #ffcc00 100%);
+    color: #000;
+    border-color: #ffd700;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
     transform: scale(1.05);
 }
 
@@ -321,28 +322,28 @@ h1::after {
     justify-content: center;
     gap: 10px;
     padding: 15px;
-    background: linear-gradient(135deg, rgba(255, 20, 147, 0.1) 0%, rgba(255, 105, 180, 0.1) 100%);
-    border: 2px solid rgba(255, 20, 147, 0.3);
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1) 0%, rgba(255, 204, 0, 0.1) 100%);
+    border: 2px solid rgba(255, 215, 0, 0.3);
     border-radius: 15px;
     transition: all 0.3s;
 }
 
 .total-completed:hover {
-    border-color: #ff1493;
-    box-shadow: 0 0 15px rgba(255, 20, 147, 0.3);
+    border-color: #ffd700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
 }
 
 .completed-icon {
     font-size: 24px;
-    color: #ff1493;
+    color: #ffd700;
     font-weight: bold;
 }
 
 #totalCompleted {
     font-size: 32px;
     font-weight: 900;
-    color: #ff1493;
-    text-shadow: 0 0 10px rgba(255, 20, 147, 0.5);
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
     min-width: 40px;
     text-align: center;
 }
@@ -361,7 +362,7 @@ h1::after {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(0);
-    background: linear-gradient(135deg, #ff1493 0%, #ffd700 50%, #ff1493 100%);
+    background: linear-gradient(135deg, #ffd700 0%, #ffcc00 50%, #ffd700 100%);
     border: 5px solid #ffd700;
     border-radius: 50%;
     width: 250px;
@@ -372,7 +373,7 @@ h1::after {
     justify-content: center;
     box-shadow:
         0 0 60px rgba(255, 215, 0, 0.8),
-        0 0 120px rgba(255, 20, 147, 0.6),
+        0 0 120px rgba(255, 215, 0, 0.6),
         0 15px 40px rgba(0, 0, 0, 0.6);
     z-index: 1001;
     opacity: 0;
@@ -408,21 +409,21 @@ h1::after {
 }
 
 .milestone-badge .milestone-text {
-    color: white;
+    color: #000;
     font-size: 24px;
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 3px;
     text-align: center;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 2px 10px rgba(255, 255, 255, 0.5);
 }
 
 .milestone-badge .milestone-subtext {
-    color: #ffd700;
+    color: #000;
     font-size: 16px;
     margin-top: 10px;
     font-weight: 700;
-    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 2px 5px rgba(255, 255, 255, 0.5);
 }
 
 /* Achievement Badge Styles */
@@ -431,7 +432,7 @@ h1::after {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(0);
-    background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
+    background: linear-gradient(135deg, #ffd700 0%, #ffcc00 100%);
     border: 4px solid #fff;
     border-radius: 50%;
     width: 200px;
@@ -441,8 +442,8 @@ h1::after {
     align-items: center;
     justify-content: center;
     box-shadow:
-        0 0 50px rgba(255, 20, 147, 0.8),
-        0 0 100px rgba(255, 20, 147, 0.5),
+        0 0 50px rgba(255, 215, 0, 0.8),
+        0 0 100px rgba(255, 215, 0, 0.5),
         0 10px 30px rgba(0, 0, 0, 0.5);
     z-index: 1000;
     opacity: 0;
@@ -471,7 +472,7 @@ h1::after {
 }
 
 .achievement-badge .badge-text {
-    color: white;
+    color: #000;
     font-size: 20px;
     font-weight: 900;
     text-transform: uppercase;
@@ -480,52 +481,733 @@ h1::after {
 }
 
 .achievement-badge .badge-subtext {
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(0, 0, 0, 0.8);
     font-size: 14px;
     margin-top: 5px;
     font-weight: 600;
 }
 
-/* Confetti Styles */
-.confetti {
+/* F1 Car and Checkered Flag Animation */
+.f1-car {
     position: fixed;
-    width: 10px;
-    height: 10px;
-    background: #ff1493;
-    position: absolute;
-    animation: confettiFall 3s linear forwards;
+    font-size: 60px;
     z-index: 999;
+    transform: scaleX(-1); /* Flip car to face forward */
+    animation: raceCar 2s ease-in-out forwards;
 }
 
-@keyframes confettiFall {
+@keyframes raceCar {
     0% {
-        transform: translateY(0) rotateZ(0deg);
-        opacity: 1;
+        left: -100px;
     }
     100% {
-        transform: translateY(100vh) rotateZ(720deg);
-        opacity: 0;
+        left: 110%;
     }
 }
 
-.sparkle {
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    background: #ff1493;
-    border-radius: 50%;
-    animation: sparkleFloat 1s ease-out forwards;
-    pointer-events: none;
+.checkered-flag {
+    position: fixed;
+    font-size: 60px;
+    top: 10%;
+    left: 10%;
     z-index: 998;
+    animation: waveFlag 0.5s ease-in-out infinite;
 }
 
-@keyframes sparkleFloat {
-    0% {
-        transform: translate(0, 0) scale(1);
-        opacity: 1;
+@keyframes waveFlag {
+    0%, 100% {
+        transform: rotate(-5deg);
     }
-    100% {
-        transform: translate(var(--tx), var(--ty)) scale(0);
+    50% {
+        transform: rotate(5deg);
+    }
+}
+
+/* Monthly Chart Styles */
+.monthly-chart-section {
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 2px solid #333;
+}
+
+.chart-title {
+    color: #ffd700;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.monthly-chart {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    gap: 8px;
+    height: 200px;
+    padding: 10px;
+    background: rgba(26, 26, 26, 0.6);
+    border-radius: 15px;
+    border: 2px solid rgba(255, 215, 0, 0.2);
+}
+
+.chart-bar {
+    flex: 1;
+    background: linear-gradient(to top, #ffd700 0%, #ffcc00 100%);
+    border-radius: 8px 8px 0 0;
+    position: relative;
+    min-width: 40px;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.chart-bar:hover {
+    background: linear-gradient(to top, #ffeb3b 0%, #ffd700 100%);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+}
+
+.chart-bar-label {
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    color: #999;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.chart-bar-value {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 13px;
+    color: #ffd700;
+    font-weight: 700;
+}
+
+.chart-empty {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-size: 14px;
+}
+
+/* Tab Navigation */
+.tab-navigation {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    justify-content: center;
+}
+
+.tab-btn {
+    padding: 12px 30px;
+    background: transparent;
+    border: 2px solid #ffd700;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffd700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.tab-btn:hover {
+    background: rgba(255, 215, 0, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+.tab-btn.active {
+    background: linear-gradient(135deg, #ffd700 0%, #ffcc00 100%);
+    color: #000;
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
         opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Journal Styles - Realistic Notebook */
+#journalSection {
+    background:
+        /* Paper texture */
+        linear-gradient(90deg, transparent 0px, transparent 40px, rgba(139, 69, 19, 0.1) 40px, rgba(139, 69, 19, 0.1) 42px, transparent 42px),
+        /* Notebook lines */
+        repeating-linear-gradient(
+            transparent,
+            transparent 31px,
+            rgba(0, 0, 0, 0.05) 31px,
+            rgba(0, 0, 0, 0.05) 32px
+        ),
+        /* Paper color with slight texture */
+        linear-gradient(110deg, #f9f6f0 60%, #f5f2ea 100%);
+    padding: 40px 50px 40px 60px;
+    padding: max(40px, env(safe-area-inset-top)) max(50px, env(safe-area-inset-right)) max(40px, env(safe-area-inset-bottom)) max(60px, env(safe-area-inset-left));
+    border-radius: 0;
+    box-shadow: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    max-width: none !important;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 9999 !important;
+    margin: 0 !important;
+    transform: none !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Spiral binding holes */
+#journalSection::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    bottom: 20px;
+    width: 10px;
+    background: repeating-linear-gradient(
+        transparent,
+        transparent 25px,
+        rgba(139, 69, 19, 0.3) 25px,
+        rgba(139, 69, 19, 0.3) 30px,
+        transparent 30px,
+        transparent 35px
+    );
+    border-radius: 10px;
+}
+
+.journal-welcome {
+    background: rgba(255, 243, 205, 0.5);
+    border: 2px dashed #d4a373;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 30px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.welcome-title {
+    color: #8b4513;
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+    font-family: 'Caveat', cursive;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.welcome-text {
+    color: #5c4033;
+    font-size: 16px;
+    line-height: 1.8;
+    margin-bottom: 10px;
+    font-family: 'Patrick Hand', cursive;
+}
+
+.welcome-subtext {
+    color: #8b6f47;
+    font-size: 14px;
+    font-weight: 600;
+    font-style: italic;
+    font-family: 'Indie Flower', cursive;
+}
+
+/* Journal Entry Form */
+.journal-entry-form {
+    margin-bottom: 30px;
+}
+
+.journal-title-input {
+    width: 100%;
+    padding: 15px 20px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid #d4a373;
+    border-radius: 0;
+    color: #2c2416;
+    font-size: 24px;
+    font-weight: 700;
+    font-family: 'Caveat', cursive;
+    margin-bottom: 20px;
+    transition: all 0.3s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.journal-title-input:focus {
+    outline: none;
+    border-bottom-color: #8b4513;
+    background: rgba(255, 243, 205, 0.3);
+}
+
+.journal-title-input::placeholder {
+    color: #999;
+    font-style: italic;
+    font-weight: 600;
+}
+
+.journal-textarea {
+    width: 100%;
+    padding: 20px;
+    background: transparent;
+    border: 1px dashed #d4a373;
+    border-radius: 10px;
+    color: #000000;
+    font-size: 18px;
+    line-height: 2;
+    font-family: 'Patrick Hand', cursive;
+    resize: vertical;
+    min-height: 250px;
+    transition: all 0.3s;
+    /* Apple Pencil optimization */
+    touch-action: pan-y;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: default;
+    -webkit-user-select: text;
+    user-select: text;
+    letter-spacing: 0.5px;
+}
+
+.journal-textarea:focus {
+    outline: none;
+    border-color: #8b4513;
+    background: rgba(255, 243, 205, 0.2);
+    box-shadow: 0 0 15px rgba(212, 163, 115, 0.3);
+}
+
+.journal-textarea::placeholder {
+    color: #999;
+    font-style: italic;
+    font-family: 'Indie Flower', cursive;
+}
+
+.journal-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.save-entry-btn {
+    padding: 15px 35px;
+    background: linear-gradient(135deg, #ffd700 0%, #ffcc00 100%);
+    color: #000;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 50px;
+    min-width: 120px;
+}
+
+.save-entry-btn:hover {
+    background: #000;
+    color: #fff;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+    transform: translateY(-2px);
+}
+
+.save-entry-btn:active {
+    transform: scale(0.98);
+}
+
+.char-count {
+    color: #999;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Journal Entries Section */
+.journal-entries-section {
+    margin-top: 40px;
+}
+
+.entries-title {
+    color: #8b4513;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+    text-align: center;
+    font-family: 'Caveat', cursive;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.journal-entries {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.journal-entry {
+    background: rgba(255, 250, 240, 0.6);
+    border: 2px solid #d4a373;
+    border-left: 4px solid #8b4513;
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.3s;
+    animation: slideIn 0.3s ease-out;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+.journal-entry:hover {
+    border-left-width: 6px;
+    box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.15);
+    transform: translateX(3px);
+}
+
+/* Paper fold corner effect */
+.journal-entry::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 20px 20px 0;
+    border-color: transparent #f5f2ea transparent transparent;
+}
+
+.entry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #d4a373;
+}
+
+.entry-date {
+    color: #8b6f47;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'Indie Flower', cursive;
+}
+
+.entry-delete-btn {
+    background: transparent;
+    color: #cc4444;
+    border: 2px solid #cc4444;
+    padding: 5px 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 30px;
+    font-family: 'Patrick Hand', cursive;
+}
+
+.entry-delete-btn:hover {
+    background: #cc4444;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(204, 68, 68, 0.4);
+}
+
+.entry-title {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    font-family: 'Caveat', cursive;
+    text-transform: capitalize;
+    letter-spacing: 0.5px;
+}
+
+.entry-content {
+    font-size: 17px;
+    line-height: 2;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: 'Patrick Hand', cursive;
+    letter-spacing: 0.3px;
+}
+
+.entries-empty {
+    text-align: center;
+    padding: 50px 20px;
+    color: #8b6f47;
+    font-size: 18px;
+    font-style: italic;
+    font-family: 'Indie Flower', cursive;
+}
+
+/* Pagination Controls */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 30px;
+    padding: 20px;
+    background: rgba(26, 26, 26, 0.6);
+    border-radius: 15px;
+    border: 2px solid rgba(255, 215, 0, 0.2);
+}
+
+.page-btn {
+    padding: 12px 25px;
+    background: linear-gradient(135deg, #ffd700 0%, #ffcc00 100%);
+    color: #000;
+    border: none;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 45px;
+}
+
+.page-btn:hover:not(:disabled) {
+    background: #000;
+    color: #fff;
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+    transform: translateY(-2px);
+}
+
+.page-btn:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.page-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    background: rgba(255, 215, 0, 0.3);
+}
+
+.page-info {
+    color: #ffd700;
+    font-size: 15px;
+    font-weight: 700;
+    min-width: 120px;
+    text-align: center;
+}
+
+/* Mobile responsiveness for journal */
+@media (max-width: 600px) {
+    .tab-navigation {
+        flex-direction: column;
+    }
+
+    .tab-btn {
+        width: 100%;
+    }
+
+    .journal-welcome {
+        padding: 20px;
+    }
+
+    .welcome-title {
+        font-size: 1.5rem;
+    }
+
+    .journal-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .save-entry-btn {
+        width: 100%;
+    }
+
+    .pagination-controls {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .page-btn {
+        width: 100%;
+    }
+}
+
+/* Color Picker Styles */
+.color-picker-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(255, 243, 205, 0.3);
+    border-radius: 10px;
+    border: 1px dashed #d4a373;
+}
+
+.color-label {
+    color: #8b4513;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Patrick Hand', cursive;
+}
+
+.color-options {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.color-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 20px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.color-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.color-btn.active {
+    border-color: #ffd700;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.6), 0 2px 5px rgba(0, 0, 0, 0.3);
+    transform: scale(1.15);
+}
+
+/* iPad Pro Optimizations */
+@media only screen
+and (min-device-width: 768px)
+and (max-device-width: 1024px)
+and (-webkit-min-device-pixel-ratio: 2) {
+
+    /* Larger touch targets for iPad */
+    .tab-btn {
+        padding: 18px 40px;
+        font-size: 18px;
+        min-height: 56px;
+    }
+
+    .save-entry-btn {
+        padding: 20px 45px;
+        font-size: 20px;
+        min-height: 60px;
+        min-width: 150px;
+    }
+
+    .color-btn {
+        width: 48px;
+        height: 48px;
+        font-size: 24px;
+    }
+
+    /* Enhanced journal for larger screen */
+    #journalSection {
+        padding: max(50px, env(safe-area-inset-top)) max(80px, env(safe-area-inset-right)) max(50px, env(safe-area-inset-bottom)) max(90px, env(safe-area-inset-left));
+    }
+
+    .journal-textarea {
+        font-size: 22px;
+        min-height: 400px;
+        line-height: 2.2;
+        padding: 30px;
+    }
+
+    .journal-title-input {
+        font-size: 32px;
+        padding: 20px 25px;
+    }
+
+    .welcome-title {
+        font-size: 2.5rem;
+    }
+
+    .welcome-text {
+        font-size: 20px;
+    }
+
+    .entry-title {
+        font-size: 28px;
+    }
+
+    .entry-content {
+        font-size: 20px;
+        line-height: 2.2;
+    }
+
+    .color-label {
+        font-size: 18px;
+    }
+
+    .page-btn {
+        padding: 16px 35px;
+        font-size: 18px;
+        min-height: 56px;
+    }
+}
+
+/* iPad Pro 12.9" specific */
+@media only screen
+and (min-device-width: 1024px)
+and (max-device-width: 1366px)
+and (-webkit-min-device-pixel-ratio: 2) {
+
+    #journalSection {
+        padding: max(60px, env(safe-area-inset-top)) max(100px, env(safe-area-inset-right)) max(60px, env(safe-area-inset-bottom)) max(110px, env(safe-area-inset-left));
+    }
+
+    .journal-textarea {
+        font-size: 24px;
+        min-height: 500px;
+        line-height: 2.3;
+        padding: 35px;
+    }
+
+    .journal-title-input {
+        font-size: 36px;
+        padding: 25px 30px;
     }
 }

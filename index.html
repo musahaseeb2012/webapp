@@ -2,14 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>To-Do List App</title>
+    <!-- Google Fonts for handwriting style -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Patrick+Hand&family=Indie+Flower&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <h1>My To-Do List</h1>
 
+        <!-- Tab Navigation -->
+        <div class="tab-navigation">
+            <button class="tab-btn active" data-tab="todo">📝 To-Do List</button>
+            <button class="tab-btn" data-tab="journal">📔 Journal</button>
+        </div>
+
+        <!-- To-Do Section -->
+        <div id="todoSection" class="tab-content active">
         <div class="input-section">
             <input type="text" id="todoInput" placeholder="Add a new task..." />
             <button id="addBtn">Add Task</button>
@@ -35,6 +49,75 @@
                 <span class="completed-label">Tasks Completed</span>
             </div>
         </div>
+
+        <!-- Monthly Chart -->
+        <div class="monthly-chart-section">
+            <h2 class="chart-title">📊 Monthly Completions</h2>
+            <div id="monthlyChart" class="monthly-chart"></div>
+        </div>
+        </div>
+        <!-- End To-Do Section -->
+
+        <!-- Journal Section -->
+        <div id="journalSection" class="tab-content">
+            <!-- Welcome Message -->
+            <div class="journal-welcome">
+                <h2 class="welcome-title">✨ Welcome to Your Journal ✨</h2>
+                <p class="welcome-text">A safe space for your thoughts, dreams, and reflections. Write freely and express yourself.</p>
+                <p class="welcome-subtext">📱 Optimized for Apple Pencil Pro - Write naturally with smooth, responsive input</p>
+            </div>
+
+            <!-- Journal Entry Form -->
+            <div class="journal-entry-form">
+                <input
+                    type="text"
+                    id="journalTitle"
+                    class="journal-title-input"
+                    placeholder="Give your entry a title..."
+                    maxlength="100"
+                />
+
+                <!-- Color Picker -->
+                <div class="color-picker-section">
+                    <label class="color-label">✍️ Ink Color:</label>
+                    <div class="color-options">
+                        <button class="color-btn active" data-color="#000000" style="background: #000000;" title="Black Ink">●</button>
+                        <button class="color-btn" data-color="#0066cc" style="background: #0066cc;" title="Blue Ink">●</button>
+                        <button class="color-btn" data-color="#cc0000" style="background: #cc0000;" title="Red Ink">●</button>
+                        <button class="color-btn" data-color="#00aa00" style="background: #00aa00;" title="Green Ink">●</button>
+                        <button class="color-btn" data-color="#9933cc" style="background: #9933cc;" title="Purple Ink">●</button>
+                        <button class="color-btn" data-color="#ff6600" style="background: #ff6600;" title="Orange Ink">●</button>
+                        <button class="color-btn" data-color="#cc6600" style="background: #cc6600;" title="Brown Ink">●</button>
+                        <button class="color-btn" data-color="#666666" style="background: #666666;" title="Gray Ink">●</button>
+                    </div>
+                </div>
+
+                <textarea
+                    id="journalInput"
+                    class="journal-textarea"
+                    placeholder="What's on your mind today? Start writing..."
+                    rows="8"
+                ></textarea>
+                <div class="journal-actions">
+                    <button id="saveEntryBtn" class="save-entry-btn">💾 Save Entry</button>
+                    <span id="charCount" class="char-count">0 characters</span>
+                </div>
+            </div>
+
+            <!-- Journal Entries List -->
+            <div class="journal-entries-section">
+                <h3 class="entries-title">📖 Your Entries</h3>
+                <div id="journalEntries" class="journal-entries"></div>
+                <!-- Pagination Controls -->
+                <div id="paginationControls" class="pagination-controls">
+                    <button id="prevPageBtn" class="page-btn">⬅️ Previous</button>
+                    <span id="pageInfo" class="page-info">Page 1 of 1</span>
+                    <button id="nextPageBtn" class="page-btn">Next ➡️</button>
+                </div>
+            </div>
+        </div>
+        <!-- End Journal Section -->
+
     </div>
 
     <!-- Achievement Badge -->
