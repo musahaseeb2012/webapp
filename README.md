@@ -22,7 +22,7 @@ A collection of creative web applications built with vanilla HTML, CSS, and Java
 - **Script editor**: Write and view comic scripts alongside your visual panels
 - **Save/Load**: Export your comics as JSON files and reload them later
 - **Auto-save**: Automatic saving every 30 seconds to prevent data loss
-- **BLACKPINK-inspired theme**: Beautiful pink and black gradient design
+- **Demon Slayer theme**: Stunning purple, teal, and black gradient design inspired by Demon Slayer
 
 ## Getting Started
 
@@ -43,6 +43,22 @@ A collection of creative web applications built with vanilla HTML, CSS, and Java
    ```
 
 3. Open your browser and go to: `http://localhost:3000`
+
+### Accessing from Mobile Devices (iPhone/iPad)
+
+To access the Comic Creator from your iPhone or iPad:
+
+1. Make sure your mobile device is on the **same Wi-Fi network** as your computer
+2. Find your computer's IP address:
+   - On Linux: Run `hostname -I`
+   - On Mac: System Preferences → Network → Your IP will be shown
+   - On Windows: Run `ipconfig` and look for IPv4 Address
+3. On your iPhone/iPad, open Safari or any browser
+4. Go to: `http://YOUR_IP_ADDRESS:3000`
+   - Example: `http://21.0.0.152:3000`
+5. Bookmark it for easy access!
+
+**Note**: The server must be running on your computer for mobile access to work.
 
 ## Usage
 
