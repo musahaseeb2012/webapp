@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Logo Designer - Ferrari Edition</title>
+    <link rel="stylesheet" href="car-logo-designer.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Car Logo Designer</h1>
+            <p class="subtitle">Create stunning automotive logos inspired by legendary design</p>
+        </div>
+
+        <div class="designer-section">
+            <div class="input-panel">
+                <h2>Design Your Logo</h2>
+
+                <div class="form-group">
+                    <label for="carName">Car Brand Name</label>
+                    <input type="text" id="carName" placeholder="Enter brand name..." maxlength="20">
+                </div>
+
+                <div class="form-group">
+                    <label for="country">Country of Origin</label>
+                    <select id="country">
+                        <option value="">Select Country...</option>
+                        <option value="Italy">🇮🇹 Italy</option>
+                        <option value="Germany">🇩🇪 Germany</option>
+                        <option value="USA">🇺🇸 United States</option>
+                        <option value="Japan">🇯🇵 Japan</option>
+                        <option value="UK">🇬🇧 United Kingdom</option>
+                        <option value="France">🇫🇷 France</option>
+                        <option value="Sweden">🇸🇪 Sweden</option>
+                        <option value="South Korea">🇰🇷 South Korea</option>
+                        <option value="Spain">🇪🇸 Spain</option>
+                        <option value="China">🇨🇳 China</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="logoStyle">Logo Style</label>
+                    <select id="logoStyle">
+                        <option value="shield">Shield - Classic & Bold</option>
+                        <option value="circle">Circle - Modern & Sleek</option>
+                        <option value="badge">Badge - Premium & Elegant</option>
+                        <option value="minimal">Minimal - Clean & Contemporary</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="colorScheme">Color Scheme</label>
+                    <select id="colorScheme">
+                        <option value="ferrari">Ferrari Red - Racing Heritage</option>
+                        <option value="dark">Black & Gold - Luxury</option>
+                        <option value="silver">Silver & Chrome - Innovation</option>
+                        <option value="blue">Blue & White - Performance</option>
+                    </select>
+                </div>
+
+                <button id="generateBtn" class="generate-btn">Generate Logo</button>
+                <button id="randomizeBtn" class="randomize-btn">Randomize</button>
+            </div>
+
+            <div class="preview-panel">
+                <h2>Logo Preview</h2>
+                <div id="logoPreview" class="logo-preview">
+                    <div class="placeholder">
+                        <svg viewBox="0 0 200 200" width="150" height="150">
+                            <path d="M100,10 L190,100 L100,190 L10,100 Z" fill="rgba(220,0,0,0.1)" stroke="rgba(220,0,0,0.3)" stroke-width="2"/>
+                            <text x="100" y="110" text-anchor="middle" fill="rgba(220,0,0,0.3)" font-size="16" font-weight="bold">PREVIEW</text>
+                        </svg>
+                        <p>Enter details and generate your logo</p>
+                    </div>
+                </div>
+
+                <div class="logo-info">
+                    <div class="info-item">
+                        <span class="info-label">Brand:</span>
+                        <span id="infoBrand">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Origin:</span>
+                        <span id="infoCountry">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Style:</span>
+                        <span id="infoStyle">-</span>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="downloadBtn" class="download-btn" disabled>Download Logo</button>
+                    <button id="shareBtn" class="share-btn" disabled>Copy as SVG</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="gallery-section">
+            <h2>Recently Created</h2>
+            <div id="recentGallery" class="gallery">
+                <p class="gallery-empty">Your created logos will appear here</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="car-logo-designer.js"></script>
+</body>
+</html>
