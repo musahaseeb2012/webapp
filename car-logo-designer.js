@@ -543,3 +543,99 @@ loadRecentLogos();
 const stripe = document.createElement('div');
 stripe.className = 'racing-stripe';
 document.body.prepend(stripe);
+
+// iPad and touch device optimizations
+(function initTouchOptimizations() {
+    // Detect if device is iPad or touch-enabled
+    const isIPad = /iPad|Macintosh/.test(navigator.userAgent) && 'ontouchend' in document;
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+    if (isIPad || isTouchDevice) {
+        // Prevent double-tap zoom on buttons
+        const buttons = document.querySelectorAll('button');
+        buttons.forEach(button => {
+            button.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                button.click();
+            }, { passive: false });
+        });
+
+        // Add touch feedback to gallery items
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        galleryItems.forEach(item => {
+            item.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.98)';
+            }, { passive: true });
+
+            item.addEventListener('touchend', function() {
+                this.style.transform = '';
+            }, { passive: true });
+        });
+
+        // Improve scrolling performance
+        document.body.style.overflow = 'auto';
+        document.body.style.webkitOverflowScrolling = 'touch';
+
+        // Add visual feedback for button presses
+        document.querySelectorAll('button, .gallery-item').forEach(element => {
+            element.addEventListener('touchstart', function() {
+                this.style.opacity = '0.8';
+            }, { passive: true });
+
+            element.addEventListener('touchend', function() {
+                setTimeout(() => {
+                    this.style.opacity = '';
+                }, 150);
+            }, { passive: true });
+        });
+
+        // Prevent pull-to-refresh interfering with scrolling
+        let startY = 0;
+        document.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].pageY;
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (e) => {
+            const currentY = e.touches[0].pageY;
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            // Prevent pull-to-refresh at top of page
+            if (scrollTop <= 0 && currentY > startY) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        // Add orientation change handling
+        window.addEventListener('orientationchange', () => {
+            // Scroll to top on orientation change for better UX
+            setTimeout(() => {
+                window.scrollTo(0, 0);
+            }, 100);
+        });
+
+        console.log('✓ Touch optimizations enabled for iPad/tablet');
+    }
+})();
+
+// Update gallery rendering to include touch handlers
+const originalRenderGallery = renderGallery;
+renderGallery = function() {
+    originalRenderGallery();
+
+    // Re-attach touch handlers to new gallery items
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    if (isTouchDevice) {
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        galleryItems.forEach(item => {
+            item.addEventListener('touchstart', function() {
+                this.style.opacity = '0.8';
+            }, { passive: true });
+
+            item.addEventListener('touchend', function() {
+                setTimeout(() => {
+                    this.style.opacity = '';
+                }, 150);
+            }, { passive: true });
+        });
+    }
+};
