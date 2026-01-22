@@ -2,55 +2,214 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do List App</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Web Apps Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #ffffff;
+        }
+
+        .portal-container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #DC0000, #FF69b4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 40px rgba(220, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 60px;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .app-card {
+            background: linear-gradient(135deg, rgba(20, 20, 20, 0.9) 0%, rgba(40, 40, 40, 0.8) 100%);
+            border: 3px solid transparent;
+            border-radius: 20px;
+            padding: 40px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .app-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 18px;
+            padding: 3px;
+            background: linear-gradient(135deg, #DC0000, #ff69b4);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .app-card:hover::before {
+            opacity: 1;
+        }
+
+        .app-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(220, 0, 0, 0.4);
+        }
+
+        .app-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .app-card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #DC0000;
+        }
+
+        .app-card.todo h2 {
+            color: #ff69b4;
+        }
+
+        .app-description {
+            color: #aaa;
+            text-align: center;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .app-badge {
+            background: rgba(220, 0, 0, 0.2);
+            color: #DC0000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-align: center;
+            border: 1px solid rgba(220, 0, 0, 0.4);
+        }
+
+        .app-card.todo .app-badge {
+            background: rgba(255, 105, 180, 0.2);
+            color: #ff69b4;
+            border: 1px solid rgba(255, 105, 180, 0.4);
+        }
+
+        .featured {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #DC0000, #FF0000);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 20px rgba(220, 0, 0, 0.6);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 0.9rem;
+            }
+
+            .apps-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .app-card {
+                padding: 30px;
+            }
+        }
+
+        /* Touch optimizations for iPad */
+        @media (hover: none) and (pointer: coarse) {
+            .app-card {
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            .app-card:active {
+                transform: scale(0.98);
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>My To-Do List</h1>
+    <div class="portal-container">
+        <h1>Web Apps Portal</h1>
+        <p class="subtitle">Choose an application to get started</p>
 
-        <div class="input-section">
-            <input type="text" id="todoInput" placeholder="Add a new task..." />
-            <button id="addBtn">Add Task</button>
-        </div>
+        <div class="apps-grid">
+            <a href="/car-logo-designer.html" class="app-card logo-designer">
+                <span class="featured">New!</span>
+                <div class="app-icon">🏎️</div>
+                <h2>Car Logo Designer</h2>
+                <p class="app-description">
+                    Create stunning automotive logos with Ferrari-inspired design.
+                    Choose from 4 styles, multiple color schemes, and download your creations.
+                    Optimized for iPad Pro.
+                </p>
+                <div class="app-badge">Ferrari Edition</div>
+            </a>
 
-        <div class="filters">
-            <button class="filter-btn active" data-filter="all">All</button>
-            <button class="filter-btn" data-filter="active">Active</button>
-            <button class="filter-btn" data-filter="completed">Completed</button>
-        </div>
-
-        <ul id="todoList" class="todo-list"></ul>
-
-        <div class="stats">
-            <span id="taskCount">0 tasks remaining</span>
-            <button id="clearCompleted">Clear Completed</button>
-        </div>
-
-        <div class="achievement-stats">
-            <div class="total-completed">
-                <span class="completed-icon">✓</span>
-                <span id="totalCompleted">0</span>
-                <span class="completed-label">Tasks Completed</span>
-            </div>
+            <a href="/todo-app-standalone.html" class="app-card todo">
+                <div class="app-icon">✓</div>
+                <h2>To-Do List</h2>
+                <p class="app-description">
+                    Manage your tasks with style. Features include filters, completion tracking,
+                    and milestone celebrations. Beautiful pink theme with achievement badges.
+                </p>
+                <div class="app-badge">Task Manager</div>
+            </a>
         </div>
     </div>
-
-    <!-- Achievement Badge -->
-    <div id="achievementBadge" class="achievement-badge">
-        <div class="badge-icon">⭐</div>
-        <div class="badge-text">Well Done!</div>
-        <div class="badge-subtext">Task Completed</div>
-    </div>
-
-    <!-- Milestone Badge -->
-    <div id="milestoneBadge" class="milestone-badge">
-        <div class="milestone-icon">🏆</div>
-        <div class="milestone-text">You're Crushing It!</div>
-        <div class="milestone-subtext">5 Tasks Milestone!</div>
-    </div>
-
-    <script src="app.js"></script>
 </body>
 </html>
