@@ -2,9 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Web Apps Portal</title>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
+    <title>Car Logo Designer - Ferrari Edition</title>
+    <meta http-equiv="refresh" content="0; url=car-logo-designer.html">
     <style>
         * {
             margin: 0;
@@ -19,197 +22,67 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
             color: #ffffff;
         }
 
-        .portal-container {
-            max-width: 1200px;
-            width: 100%;
+        .redirect-message {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(220, 0, 0, 0.2);
+            border-top: 5px solid #DC0000;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         h1 {
-            text-align: center;
-            font-size: 3rem;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, #DC0000, #FF69b4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 0 40px rgba(220, 0, 0, 0.3);
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #aaa;
-            margin-bottom: 60px;
-            font-size: 1.1rem;
-            letter-spacing: 1px;
-        }
-
-        .apps-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-
-        .app-card {
-            background: linear-gradient(135deg, rgba(20, 20, 20, 0.9) 0%, rgba(40, 40, 40, 0.8) 100%);
-            border: 3px solid transparent;
-            border-radius: 20px;
-            padding: 40px;
-            text-decoration: none;
-            color: inherit;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-        }
-
-        .app-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border-radius: 18px;
-            padding: 3px;
-            background: linear-gradient(135deg, #DC0000, #ff69b4);
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .app-card:hover::before {
-            opacity: 1;
-        }
-
-        .app-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 60px rgba(220, 0, 0, 0.4);
-        }
-
-        .app-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .app-card h2 {
-            font-size: 1.8rem;
+            font-size: 2rem;
+            color: #DC0000;
             margin-bottom: 15px;
-            text-align: center;
-            color: #DC0000;
         }
 
-        .app-card.todo h2 {
-            color: #ff69b4;
-        }
-
-        .app-description {
+        p {
             color: #aaa;
-            text-align: center;
-            line-height: 1.6;
             margin-bottom: 20px;
         }
 
-        .app-badge {
-            background: rgba(220, 0, 0, 0.2);
+        a {
             color: #DC0000;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.85rem;
+            text-decoration: none;
             font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-align: center;
-            border: 1px solid rgba(220, 0, 0, 0.4);
+            padding: 10px 20px;
+            border: 2px solid #DC0000;
+            border-radius: 10px;
+            display: inline-block;
+            transition: all 0.3s;
         }
 
-        .app-card.todo .app-badge {
-            background: rgba(255, 105, 180, 0.2);
-            color: #ff69b4;
-            border: 1px solid rgba(255, 105, 180, 0.4);
-        }
-
-        .featured {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #DC0000, #FF0000);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-size: 0.75rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 0 20px rgba(220, 0, 0, 0.6);
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-
-            .subtitle {
-                font-size: 0.9rem;
-            }
-
-            .apps-grid {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-
-            .app-card {
-                padding: 30px;
-            }
-        }
-
-        /* Touch optimizations for iPad */
-        @media (hover: none) and (pointer: coarse) {
-            .app-card {
-                -webkit-tap-highlight-color: transparent;
-            }
-
-            .app-card:active {
-                transform: scale(0.98);
-            }
+        a:hover {
+            background: #DC0000;
+            color: #ffffff;
         }
     </style>
+    <script>
+        // Immediate redirect to car logo designer
+        window.location.replace('car-logo-designer.html');
+    </script>
 </head>
 <body>
-    <div class="portal-container">
-        <h1>Web Apps Portal</h1>
-        <p class="subtitle">Choose an application to get started</p>
-
-        <div class="apps-grid">
-            <a href="/car-logo-designer.html" class="app-card logo-designer">
-                <span class="featured">New!</span>
-                <div class="app-icon">🏎️</div>
-                <h2>Car Logo Designer</h2>
-                <p class="app-description">
-                    Create stunning automotive logos with Ferrari-inspired design.
-                    Choose from 4 styles, multiple color schemes, and download your creations.
-                    Optimized for iPad Pro.
-                </p>
-                <div class="app-badge">Ferrari Edition</div>
-            </a>
-
-            <a href="/todo-app-standalone.html" class="app-card todo">
-                <div class="app-icon">✓</div>
-                <h2>To-Do List</h2>
-                <p class="app-description">
-                    Manage your tasks with style. Features include filters, completion tracking,
-                    and milestone celebrations. Beautiful pink theme with achievement badges.
-                </p>
-                <div class="app-badge">Task Manager</div>
-            </a>
-        </div>
+    <div class="redirect-message">
+        <div class="loader"></div>
+        <h1>Redirecting to Car Logo Designer...</h1>
+        <p>If you are not redirected automatically, click below:</p>
+        <a href="car-logo-designer.html">Go to Car Logo Designer</a>
     </div>
 </body>
 </html>
