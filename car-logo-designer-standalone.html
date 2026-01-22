@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
+    <title>Car Logo Designer - Ferrari Edition</title>
+    <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    /* Smooth scrolling for iOS */
+    -webkit-overflow-scrolling: touch;
+}
+
+html {
+    /* Prevent iOS text size adjustment */
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background: #000000;
+    background-image:
+        radial-gradient(circle at 20% 30%, rgba(220, 0, 0, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(255, 242, 0, 0.08) 0%, transparent 50%);
+    min-height: 100vh;
+    padding: 40px 20px;
+    color: #ffffff;
+    /* Prevent pull-to-refresh on iOS */
+    overscroll-behavior-y: contain;
+    /* Better font rendering on iPad */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Header Section */
+.header {
+    text-align: center;
+    margin-bottom: 50px;
+    position: relative;
+}
+
+.header h1 {
+    font-size: 4rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, #DC0000 0%, #FF0000 50%, #DC0000 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 40px rgba(220, 0, 0, 0.5);
+    margin-bottom: 15px;
+    position: relative;
+    animation: titleGlow 3s ease-in-out infinite;
+}
+
+@keyframes titleGlow {
+    0%, 100% {
+        filter: drop-shadow(0 0 20px rgba(220, 0, 0, 0.5));
+    }
+    50% {
+        filter: drop-shadow(0 0 40px rgba(220, 0, 0, 0.8));
+    }
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: #aaa;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 300;
+}
+
+/* Designer Section */
+.designer-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 60px;
+}
+
+.input-panel,
+.preview-panel {
+    background: linear-gradient(135deg, rgba(20, 20, 20, 0.9) 0%, rgba(40, 40, 40, 0.8) 100%);
+    border: 3px solid #DC0000;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow:
+        0 0 40px rgba(220, 0, 0, 0.3),
+        0 10px 40px rgba(0, 0, 0, 0.5),
+        inset 0 0 60px rgba(220, 0, 0, 0.03);
+    position: relative;
+    overflow: hidden;
+}
+
+.input-panel::before,
+.preview-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #DC0000, #FFF200, #DC0000);
+    animation: borderSlide 3s linear infinite;
+}
+
+@keyframes borderSlide {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+h2 {
+    color: #DC0000;
+    font-size: 1.8rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+    text-shadow: 0 0 20px rgba(220, 0, 0, 0.5);
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    color: #FFF200;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+input[type="text"],
+select {
+    width: 100%;
+    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid rgba(220, 0, 0, 0.3);
+    border-radius: 10px;
+    color: #ffffff;
+    font-size: 16px;
+    transition: all 0.3s;
+    font-family: inherit;
+    /* Prevent zoom on iOS when focusing inputs */
+    font-size: max(16px, 1em);
+    /* Better touch experience */
+    -webkit-appearance: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+input[type="text"]:focus,
+select:focus {
+    outline: none;
+    border-color: #DC0000;
+    box-shadow: 0 0 20px rgba(220, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.8);
+}
+
+input[type="text"]::placeholder {
+    color: #666;
+}
+
+select {
+    cursor: pointer;
+    /* Better select styling for iOS */
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23DC0000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 20px;
+    padding-right: 45px;
+}
+
+select option {
+    background: #1a1a1a;
+    color: #ffffff;
+}
+
+/* Custom scrollbar for webkit browsers (Safari on iPad) */
+.gallery::-webkit-scrollbar,
+.logo-preview::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.gallery::-webkit-scrollbar-track,
+.logo-preview::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+}
+
+.gallery::-webkit-scrollbar-thumb,
+.logo-preview::-webkit-scrollbar-thumb {
+    background: rgba(220, 0, 0, 0.5);
+    border-radius: 4px;
+}
+
+.gallery::-webkit-scrollbar-thumb:hover,
+.logo-preview::-webkit-scrollbar-thumb:hover {
+    background: rgba(220, 0, 0, 0.7);
+}
+
+/* Buttons */
+.generate-btn,
+.randomize-btn,
+.download-btn,
+.share-btn {
+    padding: 18px 40px;
+    font-size: 16px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+    /* Touch optimizations */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.generate-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #DC0000 0%, #FF0000 100%);
+    color: #ffffff;
+    margin-bottom: 15px;
+    box-shadow:
+        0 0 30px rgba(220, 0, 0, 0.6),
+        0 5px 20px rgba(0, 0, 0, 0.4);
+}
+
+.generate-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.generate-btn:hover::before {
+    left: 100%;
+}
+
+.generate-btn:hover {
+    background: linear-gradient(135deg, #FF0000 0%, #DC0000 100%);
+    box-shadow:
+        0 0 50px rgba(220, 0, 0, 0.8),
+        0 5px 25px rgba(0, 0, 0, 0.5);
+    transform: translateY(-2px);
+}
+
+.randomize-btn {
+    width: 100%;
+    background: transparent;
+    color: #FFF200;
+    border: 2px solid #FFF200;
+    box-shadow: 0 0 20px rgba(255, 242, 0, 0.3);
+}
+
+.randomize-btn:hover {
+    background: #FFF200;
+    color: #000000;
+    box-shadow: 0 0 30px rgba(255, 242, 0, 0.6);
+    transform: translateY(-2px);
+}
+
+/* Logo Preview */
+.logo-preview {
+    min-height: 400px;
+    background: radial-gradient(circle at center, rgba(220, 0, 0, 0.05) 0%, transparent 70%);
+    border: 2px dashed rgba(220, 0, 0, 0.3);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+    padding: 40px;
+    position: relative;
+}
+
+.placeholder {
+    text-align: center;
+    color: #666;
+}
+
+.placeholder p {
+    margin-top: 20px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#generatedLogo {
+    max-width: 100%;
+    height: auto;
+    filter: drop-shadow(0 0 30px rgba(220, 0, 0, 0.6));
+    animation: logoAppear 0.5s ease-out;
+}
+
+@keyframes logoAppear {
+    0% {
+        opacity: 0;
+        transform: scale(0.8) rotateY(-90deg);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotateY(0deg);
+    }
+}
+
+/* Logo Info */
+.logo-info {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(220, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(220, 0, 0, 0.2);
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    color: #FFF200;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+}
+
+.info-item span:last-child {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.download-btn {
+    background: linear-gradient(135deg, #DC0000 0%, #FF0000 100%);
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(220, 0, 0, 0.4);
+}
+
+.download-btn:hover:not(:disabled) {
+    box-shadow: 0 0 30px rgba(220, 0, 0, 0.6);
+    transform: translateY(-2px);
+}
+
+.share-btn {
+    background: transparent;
+    color: #FFF200;
+    border: 2px solid #FFF200;
+}
+
+.share-btn:hover:not(:disabled) {
+    background: rgba(255, 242, 0, 0.1);
+    box-shadow: 0 0 20px rgba(255, 242, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+.download-btn:disabled,
+.share-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Gallery Section */
+.gallery-section {
+    background: linear-gradient(135deg, rgba(20, 20, 20, 0.9) 0%, rgba(40, 40, 40, 0.8) 100%);
+    border: 3px solid #DC0000;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow:
+        0 0 40px rgba(220, 0, 0, 0.3),
+        0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.gallery-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #666;
+    padding: 40px;
+    font-style: italic;
+}
+
+.gallery-item {
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid rgba(220, 0, 0, 0.3);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    /* Touch optimizations */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+.gallery-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(220, 0, 0, 0.1) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.gallery-item:hover {
+    border-color: #DC0000;
+    box-shadow: 0 0 30px rgba(220, 0, 0, 0.5);
+    transform: translateY(-5px);
+}
+
+.gallery-item:hover::before {
+    opacity: 1;
+}
+
+.gallery-item svg {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 15px;
+    filter: drop-shadow(0 0 10px rgba(220, 0, 0, 0.4));
+}
+
+.gallery-item-name {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.gallery-item-country {
+    color: #FFF200;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Touch Device Optimization */
+@media (hover: none) and (pointer: coarse) {
+    /* Larger touch targets for all interactive elements */
+    button,
+    input,
+    select,
+    .gallery-item {
+        min-height: 48px;
+    }
+
+    /* Remove hover effects on touch devices, use active instead */
+    .gallery-item:hover {
+        transform: none;
+    }
+
+    .gallery-item:active {
+        border-color: #DC0000;
+        box-shadow: 0 0 30px rgba(220, 0, 0, 0.5);
+        transform: scale(0.98);
+    }
+
+    button:active {
+        transform: scale(0.98);
+    }
+
+    /* Prevent text selection during touch */
+    .gallery-item,
+    button {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+}
+
+/* iPad Pro 12.9" Landscape (2732 x 2048) */
+@media only screen
+    and (min-device-width: 1024px)
+    and (max-device-width: 1366px)
+    and (orientation: landscape) {
+
+    .container {
+        max-width: 95%;
+        padding: 0 30px;
+    }
+
+    .header h1 {
+        font-size: 3.5rem;
+    }
+
+    .designer-section {
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+    }
+
+    .input-panel,
+    .preview-panel {
+        padding: 35px;
+    }
+
+    .gallery {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 25px;
+    }
+
+    /* Larger buttons for touch */
+    .generate-btn,
+    .randomize-btn,
+    .download-btn,
+    .share-btn {
+        padding: 20px 45px;
+        font-size: 17px;
+        min-height: 56px;
+    }
+
+    /* Better input sizes */
+    input[type="text"],
+    select {
+        padding: 18px 22px;
+        font-size: 17px;
+        min-height: 56px;
+    }
+
+    label {
+        font-size: 1rem;
+    }
+
+    .logo-preview {
+        min-height: 450px;
+    }
+}
+
+/* iPad Pro 12.9" Portrait (2048 x 2732) */
+@media only screen
+    and (min-device-width: 1024px)
+    and (max-device-width: 1366px)
+    and (orientation: portrait) {
+
+    .container {
+        max-width: 90%;
+    }
+
+    .header h1 {
+        font-size: 3.2rem;
+    }
+
+    .designer-section {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .logo-preview {
+        min-height: 500px;
+    }
+
+    .gallery {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+}
+
+/* iPad Pro 11" Landscape (2388 x 1668) and general tablets */
+@media only screen
+    and (min-device-width: 768px)
+    and (max-device-width: 1024px)
+    and (orientation: landscape) {
+
+    .container {
+        max-width: 95%;
+    }
+
+    .header h1 {
+        font-size: 3rem;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+    }
+
+    .designer-section {
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+    }
+
+    .input-panel,
+    .preview-panel {
+        padding: 30px;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    .gallery {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 20px;
+    }
+
+    /* Touch-optimized buttons */
+    .generate-btn,
+    .randomize-btn,
+    .download-btn,
+    .share-btn {
+        padding: 18px 40px;
+        font-size: 16px;
+        min-height: 52px;
+    }
+
+    input[type="text"],
+    select {
+        padding: 16px 20px;
+        font-size: 16px;
+        min-height: 52px;
+    }
+}
+
+/* iPad Pro 11" Portrait (1668 x 2388) and standard iPad portrait */
+@media only screen
+    and (min-device-width: 768px)
+    and (max-device-width: 1024px)
+    and (orientation: portrait) {
+
+    .container {
+        max-width: 85%;
+    }
+
+    .header h1 {
+        font-size: 2.8rem;
+    }
+
+    .designer-section {
+        grid-template-columns: 1fr;
+    }
+
+    .logo-preview {
+        min-height: 450px;
+    }
+
+    .gallery {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+
+    .action-buttons {
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+}
+
+/* Responsive Design for smaller screens */
+@media (max-width: 767px) {
+    body {
+        padding: 20px 10px;
+    }
+
+    .header h1 {
+        font-size: 2.2rem;
+        letter-spacing: 2px;
+    }
+
+    .subtitle {
+        font-size: 0.9rem;
+    }
+
+    .designer-section {
+        grid-template-columns: 1fr;
+    }
+
+    .input-panel,
+    .preview-panel,
+    .gallery-section {
+        padding: 25px;
+    }
+
+    h2 {
+        font-size: 1.4rem;
+    }
+
+    .action-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .gallery {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 15px;
+    }
+
+    .generate-btn,
+    .randomize-btn,
+    .download-btn,
+    .share-btn {
+        padding: 16px 30px;
+        font-size: 15px;
+    }
+}
+
+/* Success Animation */
+@keyframes successPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.success-animation {
+    animation: successPulse 0.6s ease-out;
+}
+
+/* Racing Stripe Effect */
+.racing-stripe {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg,
+        #DC0000 0%,
+        #FFF200 25%,
+        #ffffff 50%,
+        #FFF200 75%,
+        #DC0000 100%);
+    z-index: 1000;
+    animation: stripeMove 2s linear infinite;
+}
+
+@keyframes stripeMove {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Car Logo Designer</h1>
+            <p class="subtitle">Create stunning automotive logos inspired by legendary design</p>
+        </div>
+
+        <div class="designer-section">
+            <div class="input-panel">
+                <h2>Design Your Logo</h2>
+
+                <div class="form-group">
+                    <label for="carName">Car Brand Name</label>
+                    <input type="text" id="carName" placeholder="Enter brand name..." maxlength="20">
+                </div>
+
+                <div class="form-group">
+                    <label for="country">Country of Origin</label>
+                    <select id="country">
+                        <option value="">Select Country...</option>
+                        <option value="Italy">🇮🇹 Italy</option>
+                        <option value="Germany">🇩🇪 Germany</option>
+                        <option value="USA">🇺🇸 United States</option>
+                        <option value="Japan">🇯🇵 Japan</option>
+                        <option value="UK">🇬🇧 United Kingdom</option>
+                        <option value="France">🇫🇷 France</option>
+                        <option value="Sweden">🇸🇪 Sweden</option>
+                        <option value="South Korea">🇰🇷 South Korea</option>
+                        <option value="Spain">🇪🇸 Spain</option>
+                        <option value="China">🇨🇳 China</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="logoStyle">Logo Style</label>
+                    <select id="logoStyle">
+                        <option value="shield">Shield - Classic & Bold</option>
+                        <option value="circle">Circle - Modern & Sleek</option>
+                        <option value="badge">Badge - Premium & Elegant</option>
+                        <option value="minimal">Minimal - Clean & Contemporary</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="colorScheme">Color Scheme</label>
+                    <select id="colorScheme">
+                        <option value="ferrari">Ferrari Red - Racing Heritage</option>
+                        <option value="dark">Black & Gold - Luxury</option>
+                        <option value="silver">Silver & Chrome - Innovation</option>
+                        <option value="blue">Blue & White - Performance</option>
+                    </select>
+                </div>
+
+                <button id="generateBtn" class="generate-btn">Generate Logo</button>
+                <button id="randomizeBtn" class="randomize-btn">Randomize</button>
+            </div>
+
+            <div class="preview-panel">
+                <h2>Logo Preview</h2>
+                <div id="logoPreview" class="logo-preview">
+                    <div class="placeholder">
+                        <svg viewBox="0 0 200 200" width="150" height="150">
+                            <path d="M100,10 L190,100 L100,190 L10,100 Z" fill="rgba(220,0,0,0.1)" stroke="rgba(220,0,0,0.3)" stroke-width="2"/>
+                            <text x="100" y="110" text-anchor="middle" fill="rgba(220,0,0,0.3)" font-size="16" font-weight="bold">PREVIEW</text>
+                        </svg>
+                        <p>Enter details and generate your logo</p>
+                    </div>
+                </div>
+
+                <div class="logo-info">
+                    <div class="info-item">
+                        <span class="info-label">Brand:</span>
+                        <span id="infoBrand">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Origin:</span>
+                        <span id="infoCountry">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Style:</span>
+                        <span id="infoStyle">-</span>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="downloadBtn" class="download-btn" disabled>Download Logo</button>
+                    <button id="shareBtn" class="share-btn" disabled>Copy as SVG</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="gallery-section">
+            <h2>Recently Created</h2>
+            <div id="recentGallery" class="gallery">
+                <p class="gallery-empty">Your created logos will appear here</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+// Get DOM elements
+const carNameInput = document.getElementById('carName');
+const countrySelect = document.getElementById('country');
+const logoStyleSelect = document.getElementById('logoStyle');
+const colorSchemeSelect = document.getElementById('colorScheme');
+const generateBtn = document.getElementById('generateBtn');
+const randomizeBtn = document.getElementById('randomizeBtn');
+const downloadBtn = document.getElementById('downloadBtn');
+const shareBtn = document.getElementById('shareBtn');
+const logoPreview = document.getElementById('logoPreview');
+const recentGallery = document.getElementById('recentGallery');
+
+// Info displays
+const infoBrand = document.getElementById('infoBrand');
+const infoCountry = document.getElementById('infoCountry');
+const infoStyle = document.getElementById('infoStyle');
+
+// State
+let currentLogo = null;
+let recentLogos = [];
+
+// Load recent logos from localStorage
+function loadRecentLogos() {
+    const saved = localStorage.getItem('carLogos');
+    if (saved) {
+        recentLogos = JSON.parse(saved);
+        renderGallery();
+    }
+}
+
+// Save recent logos to localStorage
+function saveRecentLogos() {
+    localStorage.setItem('carLogos', JSON.stringify(recentLogos));
+}
+
+// Color schemes
+const colorSchemes = {
+    ferrari: {
+        primary: '#DC0000',
+        secondary: '#000000',
+        accent: '#FFF200',
+        text: '#FFFFFF'
+    },
+    dark: {
+        primary: '#000000',
+        secondary: '#FFD700',
+        accent: '#C0C0C0',
+        text: '#FFFFFF'
+    },
+    silver: {
+        primary: '#C0C0C0',
+        secondary: '#1a1a1a',
+        accent: '#4a90e2',
+        text: '#000000'
+    },
+    blue: {
+        primary: '#0066CC',
+        secondary: '#FFFFFF',
+        accent: '#003366',
+        text: '#FFFFFF'
+    }
+};
+
+// Generate logo based on style
+function generateLogo(name, country, style, colorScheme) {
+    const colors = colorSchemes[colorScheme];
+    const nameParts = name.split(' ');
+    const initials = nameParts.map(part => part[0]).join('').toUpperCase().substring(0, 3);
+    const brandName = name.toUpperCase();
+
+    let svg = '';
+
+    switch (style) {
+        case 'shield':
+            svg = generateShieldLogo(brandName, initials, colors);
+            break;
+        case 'circle':
+            svg = generateCircleLogo(brandName, initials, colors);
+            break;
+        case 'badge':
+            svg = generateBadgeLogo(brandName, initials, colors);
+            break;
+        case 'minimal':
+            svg = generateMinimalLogo(brandName, initials, colors);
+            break;
+        default:
+            svg = generateShieldLogo(brandName, initials, colors);
+    }
+
+    return svg;
+}
+
+// Shield Logo Style (Ferrari-inspired)
+function generateShieldLogo(name, initials, colors) {
+    return `
+        <svg viewBox="0 0 300 350" xmlns="http://www.w3.org/2000/svg" width="300" height="350">
+            <defs>
+                <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:${colors.primary};stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:${darkenColor(colors.primary, 30)};stop-opacity:1" />
+                </linearGradient>
+                <filter id="shadow">
+                    <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="${colors.primary}" flood-opacity="0.6"/>
+                </filter>
+            </defs>
+
+            <!-- Shield Shape -->
+            <path d="M 150 20 L 270 80 L 270 180 Q 270 280 150 330 Q 30 280 30 180 L 30 80 Z"
+                  fill="url(#shieldGrad)"
+                  stroke="${colors.accent}"
+                  stroke-width="4"
+                  filter="url(#shadow)"/>
+
+            <!-- Inner Border -->
+            <path d="M 150 35 L 255 85 L 255 180 Q 255 270 150 315 Q 45 270 45 180 L 45 85 Z"
+                  fill="none"
+                  stroke="${colors.accent}"
+                  stroke-width="2"
+                  opacity="0.5"/>
+
+            <!-- Top Banner -->
+            <rect x="60" y="90" width="180" height="40"
+                  fill="${colors.secondary}"
+                  stroke="${colors.accent}"
+                  stroke-width="2"/>
+
+            <!-- Brand Initials -->
+            <text x="150" y="118"
+                  font-family="Arial, sans-serif"
+                  font-size="24"
+                  font-weight="900"
+                  fill="${colors.accent}"
+                  text-anchor="middle">
+                ${initials}
+            </text>
+
+            <!-- Brand Name -->
+            <text x="150" y="200"
+                  font-family="Arial, sans-serif"
+                  font-size="${name.length > 10 ? 24 : 32}"
+                  font-weight="900"
+                  fill="${colors.text}"
+                  text-anchor="middle">
+                ${name}
+            </text>
+
+            <!-- Bottom Accent -->
+            <path d="M 80 260 Q 150 280 220 260"
+                  stroke="${colors.accent}"
+                  stroke-width="3"
+                  fill="none"/>
+        </svg>
+    `;
+}
+
+// Circle Logo Style
+function generateCircleLogo(name, initials, colors) {
+    return `
+        <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" width="300" height="300">
+            <defs>
+                <linearGradient id="circleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:${colors.primary};stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:${darkenColor(colors.primary, 20)};stop-opacity:1" />
+                </linearGradient>
+                <filter id="glow">
+                    <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+
+            <!-- Outer Circle -->
+            <circle cx="150" cy="150" r="140"
+                    fill="url(#circleGrad)"
+                    stroke="${colors.accent}"
+                    stroke-width="6"
+                    filter="url(#glow)"/>
+
+            <!-- Inner Circle -->
+            <circle cx="150" cy="150" r="120"
+                    fill="none"
+                    stroke="${colors.accent}"
+                    stroke-width="2"
+                    opacity="0.6"/>
+
+            <!-- Center Circle for Initials -->
+            <circle cx="150" cy="150" r="60"
+                    fill="${colors.secondary}"
+                    stroke="${colors.accent}"
+                    stroke-width="3"/>
+
+            <!-- Brand Initials -->
+            <text x="150" y="165"
+                  font-family="Arial, sans-serif"
+                  font-size="40"
+                  font-weight="900"
+                  fill="${colors.accent}"
+                  text-anchor="middle">
+                ${initials}
+            </text>
+
+            <!-- Brand Name (Curved) -->
+            <path id="circlePath" d="M 40,150 A 110,110 0 0,1 260,150" fill="none"/>
+            <text font-family="Arial, sans-serif"
+                  font-size="20"
+                  font-weight="700"
+                  fill="${colors.text}"
+                  letter-spacing="4">
+                <textPath href="#circlePath" startOffset="50%" text-anchor="middle">
+                    ${name}
+                </textPath>
+            </text>
+        </svg>
+    `;
+}
+
+// Badge Logo Style
+function generateBadgeLogo(name, initials, colors) {
+    return `
+        <svg viewBox="0 0 320 380" xmlns="http://www.w3.org/2000/svg" width="320" height="380">
+            <defs>
+                <linearGradient id="badgeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:${lightenColor(colors.primary, 10)};stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:${colors.primary};stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:${darkenColor(colors.primary, 20)};stop-opacity:1" />
+                </linearGradient>
+                <filter id="badgeShadow">
+                    <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000000" flood-opacity="0.4"/>
+                </filter>
+            </defs>
+
+            <!-- Badge Shape -->
+            <path d="M 160 20 L 290 70 L 290 200 L 250 320 L 160 360 L 70 320 L 30 200 L 30 70 Z"
+                  fill="url(#badgeGrad)"
+                  stroke="${colors.accent}"
+                  stroke-width="4"
+                  filter="url(#badgeShadow)"/>
+
+            <!-- Inner Frame -->
+            <path d="M 160 40 L 270 80 L 270 195 L 235 305 L 160 340 L 85 305 L 50 195 L 50 80 Z"
+                  fill="none"
+                  stroke="${colors.accent}"
+                  stroke-width="2"
+                  opacity="0.4"/>
+
+            <!-- Top Emblem -->
+            <ellipse cx="160" cy="100" rx="80" ry="35"
+                     fill="${colors.secondary}"
+                     stroke="${colors.accent}"
+                     stroke-width="3"/>
+
+            <!-- Brand Initials -->
+            <text x="160" y="110"
+                  font-family="Arial, sans-serif"
+                  font-size="28"
+                  font-weight="900"
+                  fill="${colors.accent}"
+                  text-anchor="middle">
+                ${initials}
+            </text>
+
+            <!-- Divider Line -->
+            <line x1="70" y1="150" x2="250" y2="150"
+                  stroke="${colors.accent}"
+                  stroke-width="2"
+                  opacity="0.6"/>
+
+            <!-- Brand Name -->
+            <text x="160" y="210"
+                  font-family="Arial, sans-serif"
+                  font-size="${name.length > 12 ? 22 : 28}"
+                  font-weight="900"
+                  fill="${colors.text}"
+                  text-anchor="middle">
+                ${name}
+            </text>
+
+            <!-- Bottom Decoration -->
+            <path d="M 100 270 L 160 290 L 220 270"
+                  stroke="${colors.accent}"
+                  stroke-width="3"
+                  fill="none"/>
+            <circle cx="160" cy="270" r="8" fill="${colors.accent}"/>
+        </svg>
+    `;
+}
+
+// Minimal Logo Style
+function generateMinimalLogo(name, initials, colors) {
+    return `
+        <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" width="300" height="300">
+            <defs>
+                <linearGradient id="minimalGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:${colors.primary};stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:${colors.accent};stop-opacity:1" />
+                </linearGradient>
+            </defs>
+
+            <!-- Simple Square Frame -->
+            <rect x="30" y="30" width="240" height="240"
+                  fill="none"
+                  stroke="url(#minimalGrad)"
+                  stroke-width="8"/>
+
+            <!-- Inner Accent Lines -->
+            <line x1="50" y1="50" x2="250" y2="50"
+                  stroke="${colors.accent}"
+                  stroke-width="2"
+                  opacity="0.5"/>
+            <line x1="50" y1="250" x2="250" y2="250"
+                  stroke="${colors.accent}"
+                  stroke-width="2"
+                  opacity="0.5"/>
+
+            <!-- Large Initials -->
+            <text x="150" y="170"
+                  font-family="Arial, sans-serif"
+                  font-size="80"
+                  font-weight="900"
+                  fill="${colors.primary}"
+                  text-anchor="middle">
+                ${initials}
+            </text>
+
+            <!-- Brand Name Below -->
+            <text x="150" y="220"
+                  font-family="Arial, sans-serif"
+                  font-size="18"
+                  font-weight="700"
+                  fill="${colors.secondary}"
+                  text-anchor="middle"
+                  letter-spacing="3">
+                ${name}
+            </text>
+
+            <!-- Corner Accents -->
+            <circle cx="30" cy="30" r="5" fill="${colors.accent}"/>
+            <circle cx="270" cy="30" r="5" fill="${colors.accent}"/>
+            <circle cx="30" cy="270" r="5" fill="${colors.accent}"/>
+            <circle cx="270" cy="270" r="5" fill="${colors.accent}"/>
+        </svg>
+    `;
+}
+
+// Helper function to darken color
+function darkenColor(color, percent) {
+    const num = parseInt(color.replace("#", ""), 16);
+    const amt = Math.round(2.55 * percent);
+    const R = (num >> 16) - amt;
+    const G = (num >> 8 & 0x00FF) - amt;
+    const B = (num & 0x0000FF) - amt;
+    return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+        (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+        (B < 255 ? B < 1 ? 0 : B : 255))
+        .toString(16).slice(1);
+}
+
+// Helper function to lighten color
+function lightenColor(color, percent) {
+    const num = parseInt(color.replace("#", ""), 16);
+    const amt = Math.round(2.55 * percent);
+    const R = (num >> 16) + amt;
+    const G = (num >> 8 & 0x00FF) + amt;
+    const B = (num & 0x0000FF) + amt;
+    return "#" + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+        (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+        (B < 255 ? B < 1 ? 0 : B : 255))
+        .toString(16).slice(1);
+}
+
+// Generate and display logo
+function handleGenerate() {
+    const carName = carNameInput.value.trim();
+    const country = countrySelect.value;
+    const logoStyle = logoStyleSelect.value;
+    const colorScheme = colorSchemeSelect.value;
+
+    if (!carName) {
+        alert('Please enter a car brand name!');
+        carNameInput.focus();
+        return;
+    }
+
+    if (!country) {
+        alert('Please select a country!');
+        countrySelect.focus();
+        return;
+    }
+
+    // Generate the logo
+    const logoSVG = generateLogo(carName, country, logoStyle, colorScheme);
+
+    // Store current logo
+    currentLogo = {
+        name: carName,
+        country: country,
+        style: logoStyle,
+        colorScheme: colorScheme,
+        svg: logoSVG,
+        timestamp: Date.now()
+    };
+
+    // Display the logo
+    logoPreview.innerHTML = logoSVG;
+    logoPreview.classList.add('success-animation');
+    setTimeout(() => logoPreview.classList.remove('success-animation'), 600);
+
+    // Update info
+    infoBrand.textContent = carName;
+    infoCountry.textContent = country;
+    infoStyle.textContent = logoStyle.charAt(0).toUpperCase() + logoStyle.slice(1);
+
+    // Enable buttons
+    downloadBtn.disabled = false;
+    shareBtn.disabled = false;
+
+    // Add to recent logos
+    addToGallery(currentLogo);
+}
+
+// Add logo to gallery
+function addToGallery(logo) {
+    // Add to beginning of array
+    recentLogos.unshift(logo);
+
+    // Keep only last 12
+    if (recentLogos.length > 12) {
+        recentLogos = recentLogos.slice(0, 12);
+    }
+
+    saveRecentLogos();
+    renderGallery();
+}
+
+// Render gallery
+function renderGallery() {
+    if (recentLogos.length === 0) {
+        recentGallery.innerHTML = '<p class="gallery-empty">Your created logos will appear here</p>';
+        return;
+    }
+
+    recentGallery.innerHTML = recentLogos.map((logo, index) => `
+        <div class="gallery-item" onclick="loadLogoFromGallery(${index})">
+            ${logo.svg}
+            <div class="gallery-item-name">${logo.name}</div>
+            <div class="gallery-item-country">${logo.country}</div>
+        </div>
+    `).join('');
+}
+
+// Load logo from gallery
+window.loadLogoFromGallery = function(index) {
+    const logo = recentLogos[index];
+
+    // Populate form
+    carNameInput.value = logo.name;
+    countrySelect.value = logo.country;
+    logoStyleSelect.value = logo.style;
+    colorSchemeSelect.value = logo.colorScheme;
+
+    // Display logo
+    currentLogo = logo;
+    logoPreview.innerHTML = logo.svg;
+
+    // Update info
+    infoBrand.textContent = logo.name;
+    infoCountry.textContent = logo.country;
+    infoStyle.textContent = logo.style.charAt(0).toUpperCase() + logo.style.slice(1);
+
+    // Enable buttons
+    downloadBtn.disabled = false;
+    shareBtn.disabled = false;
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+// Randomize inputs
+function handleRandomize() {
+    const randomNames = ['Veloce', 'Apex', 'Strada', 'Turismo', 'Corso', 'Rapido', 'Forza', 'Presto'];
+    const countries = Array.from(countrySelect.options).filter(opt => opt.value).map(opt => opt.value);
+    const styles = ['shield', 'circle', 'badge', 'minimal'];
+    const schemes = ['ferrari', 'dark', 'silver', 'blue'];
+
+    carNameInput.value = randomNames[Math.floor(Math.random() * randomNames.length)];
+    countrySelect.value = countries[Math.floor(Math.random() * countries.length)];
+    logoStyleSelect.value = styles[Math.floor(Math.random() * styles.length)];
+    colorSchemeSelect.value = schemes[Math.floor(Math.random() * schemes.length)];
+
+    // Auto generate after randomize
+    setTimeout(() => handleGenerate(), 300);
+}
+
+// Download logo as SVG
+function handleDownload() {
+    if (!currentLogo) return;
+
+    const blob = new Blob([currentLogo.svg], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${currentLogo.name.replace(/\s+/g, '-')}-logo.svg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
+
+// Copy SVG to clipboard
+async function handleShare() {
+    if (!currentLogo) return;
+
+    try {
+        await navigator.clipboard.writeText(currentLogo.svg);
+        shareBtn.textContent = 'Copied!';
+        setTimeout(() => {
+            shareBtn.textContent = 'Copy as SVG';
+        }, 2000);
+    } catch (err) {
+        alert('Failed to copy to clipboard');
+    }
+}
+
+// Event listeners
+generateBtn.addEventListener('click', handleGenerate);
+randomizeBtn.addEventListener('click', handleRandomize);
+downloadBtn.addEventListener('click', handleDownload);
+shareBtn.addEventListener('click', handleShare);
+
+// Enter key to generate
+carNameInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        handleGenerate();
+    }
+});
+
+// Initialize
+loadRecentLogos();
+
+// Add racing stripe effect to page
+const stripe = document.createElement('div');
+stripe.className = 'racing-stripe';
+document.body.prepend(stripe);
+
+// iPad and touch device optimizations
+(function initTouchOptimizations() {
+    // Detect if device is iPad or touch-enabled
+    const isIPad = /iPad|Macintosh/.test(navigator.userAgent) && 'ontouchend' in document;
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+    if (isIPad || isTouchDevice) {
+        // Prevent double-tap zoom on buttons
+        const buttons = document.querySelectorAll('button');
+        buttons.forEach(button => {
+            button.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                button.click();
+            }, { passive: false });
+        });
+
+        // Add touch feedback to gallery items
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        galleryItems.forEach(item => {
+            item.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.98)';
+            }, { passive: true });
+
+            item.addEventListener('touchend', function() {
+                this.style.transform = '';
+            }, { passive: true });
+        });
+
+        // Improve scrolling performance
+        document.body.style.overflow = 'auto';
+        document.body.style.webkitOverflowScrolling = 'touch';
+
+        // Add visual feedback for button presses
+        document.querySelectorAll('button, .gallery-item').forEach(element => {
+            element.addEventListener('touchstart', function() {
+                this.style.opacity = '0.8';
+            }, { passive: true });
+
+            element.addEventListener('touchend', function() {
+                setTimeout(() => {
+                    this.style.opacity = '';
+                }, 150);
+            }, { passive: true });
+        });
+
+        // Prevent pull-to-refresh interfering with scrolling
+        let startY = 0;
+        document.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].pageY;
+        }, { passive: true });
+
+        document.addEventListener('touchmove', (e) => {
+            const currentY = e.touches[0].pageY;
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            // Prevent pull-to-refresh at top of page
+            if (scrollTop <= 0 && currentY > startY) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        // Add orientation change handling
+        window.addEventListener('orientationchange', () => {
+            // Scroll to top on orientation change for better UX
+            setTimeout(() => {
+                window.scrollTo(0, 0);
+            }, 100);
+        });
+
+        console.log('✓ Touch optimizations enabled for iPad/tablet');
+    }
+})();
+
+// Update gallery rendering to include touch handlers
+const originalRenderGallery = renderGallery;
+renderGallery = function() {
+    originalRenderGallery();
+
+    // Re-attach touch handlers to new gallery items
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    if (isTouchDevice) {
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        galleryItems.forEach(item => {
+            item.addEventListener('touchstart', function() {
+                this.style.opacity = '0.8';
+            }, { passive: true });
+
+            item.addEventListener('touchend', function() {
+                setTimeout(() => {
+                    this.style.opacity = '';
+                }, 150);
+            }, { passive: true });
+        });
+    }
+};
+    </script>
+</body>
+</html>

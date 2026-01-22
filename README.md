@@ -6,7 +6,10 @@ A stunning car logo designer web application with Ferrari-inspired design. Creat
 
 Once deployed to GitHub Pages, access directly at:
 - **Main URL**: `https://musahaseeb2012.github.io/webapp/` (auto-redirects to Car Logo Designer)
-- **Direct Link**: `https://musahaseeb2012.github.io/webapp/car-logo-designer.html`
+- **Direct Link (iPad Pro Optimized)**: `https://musahaseeb2012.github.io/webapp/car-logo-designer-standalone.html`
+
+### 📱 iPad Pro Quick Access
+The standalone version (`car-logo-designer-standalone.html`) is a single HTML file with everything embedded - perfect for iPad Pro! No external files needed.
 
 ## ✨ Features
 
@@ -28,8 +31,12 @@ Once deployed to GitHub Pages, access directly at:
 
 ## 🚀 Quick Start
 
-### Option 1: Open Directly (Recommended)
-Simply open `car-logo-designer.html` in your browser - no server needed!
+### Option 1: Open Standalone Version (Recommended for iPad Pro)
+Simply open `car-logo-designer-standalone.html` in any browser - completely self-contained!
+- **No server needed**
+- **No internet required** (after first download)
+- **Works on any device**
+- **Perfect for iPad Pro** - just upload to iCloud Drive or Dropbox and open!
 
 ### Option 2: Using Node.js Server
 ```bash
