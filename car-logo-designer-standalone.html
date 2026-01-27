@@ -969,7 +969,7 @@ function generateLogo(name, country, style, colorScheme) {
     return svg;
 }
 
-// Shield Logo Style (Ferrari-inspired)
+// Shield Logo Style (Ferrari-inspired with Prancing Horse)
 function generateShieldLogo(name, initials, colors) {
     return `
         <svg viewBox="0 0 300 350" xmlns="http://www.w3.org/2000/svg" width="300" height="350">
@@ -1013,10 +1013,39 @@ function generateShieldLogo(name, initials, colors) {
                 ${initials}
             </text>
 
+            <!-- Prancing Horse (Ferrari-style) -->
+            <g transform="translate(150, 190)">
+                <!-- Horse Body -->
+                <path d="M -25,-20 Q -30,-15 -30,-5 L -28,10 Q -25,15 -20,15 L -15,15 Q -12,20 -8,20 L -5,18 L 0,25 L 5,18 L 8,20 Q 12,20 15,15 L 20,15 Q 25,15 28,10 L 30,-5 Q 30,-15 25,-20 L 20,-22 Q 15,-25 10,-25 L -10,-25 Q -15,-25 -20,-22 Z"
+                      fill="${colors.accent}"
+                      stroke="${colors.secondary}"
+                      stroke-width="1.5"/>
+                <!-- Horse Head & Neck -->
+                <path d="M -10,-25 Q -15,-30 -18,-38 L -20,-45 Q -22,-50 -25,-52 L -30,-50 L -28,-45 Q -25,-40 -22,-35 L -15,-28"
+                      fill="${colors.accent}"
+                      stroke="${colors.secondary}"
+                      stroke-width="1.5"/>
+                <!-- Mane -->
+                <path d="M -18,-38 L -22,-40 M -20,-43 L -24,-45 M -22,-48 L -26,-50"
+                      stroke="${colors.secondary}"
+                      stroke-width="1.5"
+                      fill="none"/>
+                <!-- Tail -->
+                <path d="M 25,-18 Q 30,-15 35,-12 Q 38,-8 40,-5"
+                      stroke="${colors.secondary}"
+                      stroke-width="2"
+                      fill="none"/>
+                <!-- Legs -->
+                <line x1="-15" y1="15" x2="-15" y2="30" stroke="${colors.secondary}" stroke-width="2"/>
+                <line x1="-5" y1="18" x2="-5" y2="32" stroke="${colors.secondary}" stroke-width="2"/>
+                <line x1="5" y1="18" x2="5" y2="32" stroke="${colors.secondary}" stroke-width="2"/>
+                <line x1="15" y1="15" x2="15" y2="30" stroke="${colors.secondary}" stroke-width="2"/>
+            </g>
+
             <!-- Brand Name -->
-            <text x="150" y="200"
+            <text x="150" y="245"
                   font-family="Arial, sans-serif"
-                  font-size="${name.length > 10 ? 24 : 32}"
+                  font-size="${name.length > 10 ? 20 : 26}"
                   font-weight="900"
                   fill="${colors.text}"
                   text-anchor="middle">
@@ -1024,7 +1053,7 @@ function generateShieldLogo(name, initials, colors) {
             </text>
 
             <!-- Bottom Accent -->
-            <path d="M 80 260 Q 150 280 220 260"
+            <path d="M 80 275 Q 150 285 220 275"
                   stroke="${colors.accent}"
                   stroke-width="3"
                   fill="none"/>
@@ -1032,7 +1061,7 @@ function generateShieldLogo(name, initials, colors) {
     `;
 }
 
-// Circle Logo Style
+// Circle Logo Style (with Eagle Wings)
 function generateCircleLogo(name, initials, colors) {
     return `
         <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" width="300" height="300">
@@ -1057,6 +1086,46 @@ function generateCircleLogo(name, initials, colors) {
                     stroke-width="6"
                     filter="url(#glow)"/>
 
+            <!-- Eagle Wings Spread -->
+            <g transform="translate(150, 150)">
+                <!-- Left Wing -->
+                <path d="M -20,-10 Q -60,-30 -100,-15 Q -110,-10 -115,-5 Q -110,-8 -105,-10 Q -70,-22 -40,-12 L -30,-8 Q -25,-5 -20,-5 Z"
+                      fill="${colors.accent}"
+                      stroke="${colors.secondary}"
+                      stroke-width="1.5"
+                      opacity="0.9"/>
+                <!-- Right Wing -->
+                <path d="M 20,-10 Q 60,-30 100,-15 Q 110,-10 115,-5 Q 110,-8 105,-10 Q 70,-22 40,-12 L 30,-8 Q 25,-5 20,-5 Z"
+                      fill="${colors.accent}"
+                      stroke="${colors.secondary}"
+                      stroke-width="1.5"
+                      opacity="0.9"/>
+                <!-- Eagle Body -->
+                <ellipse cx="0" cy="0" rx="18" ry="25"
+                         fill="${colors.accent}"
+                         stroke="${colors.secondary}"
+                         stroke-width="1.5"/>
+                <!-- Eagle Head -->
+                <circle cx="0" cy="-20" r="12"
+                        fill="${colors.accent}"
+                        stroke="${colors.secondary}"
+                        stroke-width="1.5"/>
+                <!-- Beak -->
+                <path d="M 0,-20 L 8,-22 L 6,-20 Z"
+                      fill="${colors.secondary}"/>
+                <!-- Wing Feathers Detail -->
+                <path d="M -40,-12 L -45,-18 M -50,-15 L -55,-20 M -60,-17 L -65,-22 M -70,-18 L -75,-23"
+                      stroke="${colors.secondary}"
+                      stroke-width="1"
+                      fill="none"
+                      opacity="0.7"/>
+                <path d="M 40,-12 L 45,-18 M 50,-15 L 55,-20 M 60,-17 L 65,-22 M 70,-18 L 75,-23"
+                      stroke="${colors.secondary}"
+                      stroke-width="1"
+                      fill="none"
+                      opacity="0.7"/>
+            </g>
+
             <!-- Inner Circle -->
             <circle cx="150" cy="150" r="120"
                     fill="none"
@@ -1065,15 +1134,15 @@ function generateCircleLogo(name, initials, colors) {
                     opacity="0.6"/>
 
             <!-- Center Circle for Initials -->
-            <circle cx="150" cy="150" r="60"
+            <circle cx="150" cy="150" r="50"
                     fill="${colors.secondary}"
                     stroke="${colors.accent}"
                     stroke-width="3"/>
 
             <!-- Brand Initials -->
-            <text x="150" y="165"
+            <text x="150" y="160"
                   font-family="Arial, sans-serif"
-                  font-size="40"
+                  font-size="32"
                   font-weight="900"
                   fill="${colors.accent}"
                   text-anchor="middle">
@@ -1095,7 +1164,7 @@ function generateCircleLogo(name, initials, colors) {
     `;
 }
 
-// Badge Logo Style
+// Badge Logo Style (with Lion Head)
 function generateBadgeLogo(name, initials, colors) {
     return `
         <svg viewBox="0 0 320 380" xmlns="http://www.w3.org/2000/svg" width="320" height="380">
@@ -1146,10 +1215,42 @@ function generateBadgeLogo(name, initials, colors) {
                   stroke-width="2"
                   opacity="0.6"/>
 
+            <!-- Lion Head -->
+            <g transform="translate(160, 195)">
+                <!-- Lion Mane -->
+                <circle cx="0" cy="0" r="35"
+                        fill="${colors.accent}"
+                        stroke="${colors.secondary}"
+                        stroke-width="2"
+                        opacity="0.8"/>
+                <!-- Mane Spikes -->
+                <path d="M 0,-35 L -5,-45 L 5,-45 Z M -25,-25 L -32,-32 L -22,-28 Z M 25,-25 L 32,-32 L 22,-28 Z M -32,5 L -40,5 L -35,-2 Z M 32,5 L 40,5 L 35,-2 Z M -18,30 L -22,38 L -14,33 Z M 18,30 L 22,38 L 14,33 Z"
+                      fill="${colors.accent}"
+                      stroke="${colors.secondary}"
+                      stroke-width="1"
+                      opacity="0.9"/>
+                <!-- Lion Face -->
+                <circle cx="0" cy="0" r="22"
+                        fill="${colors.secondary}"
+                        stroke="${colors.accent}"
+                        stroke-width="2"/>
+                <!-- Eyes -->
+                <circle cx="-8" cy="-5" r="3" fill="${colors.accent}"/>
+                <circle cx="8" cy="-5" r="3" fill="${colors.accent}"/>
+                <!-- Nose -->
+                <path d="M 0,0 L -3,5 L 3,5 Z"
+                      fill="${colors.accent}"/>
+                <!-- Mouth -->
+                <path d="M -8,8 Q 0,12 8,8"
+                      stroke="${colors.accent}"
+                      stroke-width="2"
+                      fill="none"/>
+            </g>
+
             <!-- Brand Name -->
-            <text x="160" y="210"
+            <text x="160" y="255"
                   font-family="Arial, sans-serif"
-                  font-size="${name.length > 12 ? 22 : 28}"
+                  font-size="${name.length > 12 ? 20 : 26}"
                   font-weight="900"
                   fill="${colors.text}"
                   text-anchor="middle">
@@ -1157,16 +1258,16 @@ function generateBadgeLogo(name, initials, colors) {
             </text>
 
             <!-- Bottom Decoration -->
-            <path d="M 100 270 L 160 290 L 220 270"
+            <path d="M 100 290 L 160 305 L 220 290"
                   stroke="${colors.accent}"
                   stroke-width="3"
                   fill="none"/>
-            <circle cx="160" cy="270" r="8" fill="${colors.accent}"/>
+            <circle cx="160" cy="290" r="8" fill="${colors.accent}"/>
         </svg>
     `;
 }
 
-// Minimal Logo Style
+// Minimal Logo Style (with Bull Silhouette)
 function generateMinimalLogo(name, initials, colors) {
     return `
         <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" width="300" height="300">
@@ -1193,10 +1294,39 @@ function generateMinimalLogo(name, initials, colors) {
                   stroke-width="2"
                   opacity="0.5"/>
 
+            <!-- Bull Silhouette (Lamborghini-style) -->
+            <g transform="translate(150, 110)">
+                <!-- Bull Head -->
+                <path d="M -15,-25 Q -20,-30 -25,-32 L -30,-28 Q -28,-25 -25,-22 M 15,-25 Q 20,-30 25,-32 L 30,-28 Q 28,-25 25,-22"
+                      stroke="${colors.primary}"
+                      stroke-width="3"
+                      fill="none"/>
+                <!-- Bull Body -->
+                <ellipse cx="0" cy="0" rx="30" ry="20"
+                         fill="${colors.primary}"
+                         opacity="0.9"/>
+                <!-- Bull Legs -->
+                <rect x="-22" y="15" width="6" height="15" fill="${colors.primary}"/>
+                <rect x="-8" y="15" width="6" height="15" fill="${colors.primary}"/>
+                <rect x="2" y="15" width="6" height="15" fill="${colors.primary}"/>
+                <rect x="16" y="15" width="6" height="15" fill="${colors.primary}"/>
+                <!-- Horns (Curved) -->
+                <path d="M -15,-20 Q -22,-28 -28,-30 M 15,-20 Q 22,-28 28,-30"
+                      stroke="${colors.primary}"
+                      stroke-width="4"
+                      stroke-linecap="round"
+                      fill="none"/>
+                <!-- Bull Tail -->
+                <path d="M 30,0 Q 38,5 42,10"
+                      stroke="${colors.primary}"
+                      stroke-width="3"
+                      fill="none"/>
+            </g>
+
             <!-- Large Initials -->
-            <text x="150" y="170"
+            <text x="150" y="180"
                   font-family="Arial, sans-serif"
-                  font-size="80"
+                  font-size="50"
                   font-weight="900"
                   fill="${colors.primary}"
                   text-anchor="middle">
