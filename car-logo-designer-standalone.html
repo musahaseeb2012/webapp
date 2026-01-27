@@ -813,20 +813,28 @@ select option {
                 <div class="form-group">
                     <label for="logoStyle">Logo Style</label>
                     <select id="logoStyle">
-                        <option value="shield">Shield - Classic & Bold</option>
-                        <option value="circle">Circle - Modern & Sleek</option>
-                        <option value="badge">Badge - Premium & Elegant</option>
-                        <option value="minimal">Minimal - Clean & Contemporary</option>
+                        <option value="shield">Shield - Prancing Horse 🐴</option>
+                        <option value="circle">Circle - Eagle Wings 🦅</option>
+                        <option value="badge">Badge - Lion Head 🦁</option>
+                        <option value="minimal">Minimal - Charging Bull 🐂</option>
+                        <option value="tiger">Tiger Face - Power & Aggression 🐯</option>
+                        <option value="cheetah">Cheetah Face - Speed & Precision 🐆</option>
+                        <option value="gorilla">Gorilla Face - Strength & Dominance 🦍</option>
+                        <option value="zebra">Zebra Face - Elegance & Style 🦓</option>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label for="colorScheme">Color Scheme</label>
                     <select id="colorScheme">
-                        <option value="ferrari">Ferrari Red - Racing Heritage</option>
-                        <option value="dark">Black & Gold - Luxury</option>
-                        <option value="silver">Silver & Chrome - Innovation</option>
-                        <option value="blue">Blue & White - Performance</option>
+                        <option value="ferrari">Ferrari Red - Racing Heritage 🔴</option>
+                        <option value="dark">Black & Gold - Luxury ⚫</option>
+                        <option value="silver">Silver & Chrome - Innovation ⚪</option>
+                        <option value="blue">Blue & White - Performance 🔵</option>
+                        <option value="emerald">Emerald Green - Nature Power 💚</option>
+                        <option value="jungle">Jungle Green - Wild Spirit 🌿</option>
+                        <option value="ruby">Ruby Red - Passion & Energy ❤️</option>
+                        <option value="racing">Racing Red & Green - Dynamic 🏁</option>
                     </select>
                 </div>
 
@@ -937,6 +945,30 @@ const colorSchemes = {
         secondary: '#FFFFFF',
         accent: '#003366',
         text: '#FFFFFF'
+    },
+    emerald: {
+        primary: '#00A86B',
+        secondary: '#004D40',
+        accent: '#76FF03',
+        text: '#FFFFFF'
+    },
+    jungle: {
+        primary: '#228B22',
+        secondary: '#FFD700',
+        accent: '#FF6347',
+        text: '#FFFFFF'
+    },
+    ruby: {
+        primary: '#E0115F',
+        secondary: '#FFD700',
+        accent: '#8B0000',
+        text: '#FFFFFF'
+    },
+    racing: {
+        primary: '#FF0000',
+        secondary: '#00FF00',
+        accent: '#000000',
+        text: '#FFFFFF'
     }
 };
 
@@ -961,6 +993,18 @@ function generateLogo(name, country, style, colorScheme) {
             break;
         case 'minimal':
             svg = generateMinimalLogo(brandName, initials, colors);
+            break;
+        case 'tiger':
+            svg = generateTigerLogo(brandName, initials, colors);
+            break;
+        case 'cheetah':
+            svg = generateCheetahLogo(brandName, initials, colors);
+            break;
+        case 'gorilla':
+            svg = generateGorillaLogo(brandName, initials, colors);
+            break;
+        case 'zebra':
+            svg = generateZebraLogo(brandName, initials, colors);
             break;
         default:
             svg = generateShieldLogo(brandName, initials, colors);
@@ -1349,6 +1393,508 @@ function generateMinimalLogo(name, initials, colors) {
             <circle cx="270" cy="30" r="5" fill="${colors.accent}"/>
             <circle cx="30" cy="270" r="5" fill="${colors.accent}"/>
             <circle cx="270" cy="270" r="5" fill="${colors.accent}"/>
+        </svg>
+    `;
+}
+
+// Tiger Logo Style (with Tiger Face)
+function generateTigerLogo(name, initials, colors) {
+    return `
+        <svg viewBox="0 0 320 360" xmlns="http://www.w3.org/2000/svg" width="320" height="360">
+            <defs>
+                <linearGradient id="tigerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:${colors.primary};stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:${darkenColor(colors.primary, 30)};stop-opacity:1" />
+                </linearGradient>
+                <filter id="tigerShadow">
+                    <feDropShadow dx="0" dy="4" stdDeviation="10" flood-color="${colors.primary}" flood-opacity="0.6"/>
+                </filter>
+            </defs>
+
+            <!-- Background Circle -->
+            <circle cx="160" cy="180" r="160"
+                    fill="url(#tigerGrad)"
+                    stroke="${colors.accent}"
+                    stroke-width="5"
+                    filter="url(#tigerShadow)"/>
+
+            <!-- Tiger Face -->
+            <g transform="translate(160, 140)">
+                <!-- Head Shape -->
+                <ellipse cx="0" cy="0" rx="70" ry="65"
+                         fill="#FF8C00"
+                         stroke="#000000"
+                         stroke-width="3"/>
+
+                <!-- Ears -->
+                <ellipse cx="-50" cy="-45" rx="25" ry="30"
+                         fill="#FF8C00"
+                         stroke="#000000"
+                         stroke-width="2"/>
+                <ellipse cx="50" cy="-45" rx="25" ry="30"
+                         fill="#FF8C00"
+                         stroke="#000000"
+                         stroke-width="2"/>
+                <ellipse cx="-50" cy="-42" rx="15" ry="18"
+                         fill="#FFA500"/>
+                <ellipse cx="50" cy="-42" rx="15" ry="18"
+                         fill="#FFA500"/>
+
+                <!-- Black Stripes on Head -->
+                <path d="M -60,-20 Q -50,-25 -40,-20"
+                      stroke="#000000"
+                      stroke-width="4"
+                      fill="none"/>
+                <path d="M -65,0 Q -55,-5 -45,0"
+                      stroke="#000000"
+                      stroke-width="4"
+                      fill="none"/>
+                <path d="M 40,-20 Q 50,-25 60,-20"
+                      stroke="#000000"
+                      stroke-width="4"
+                      fill="none"/>
+                <path d="M 45,0 Q 55,-5 65,0"
+                      stroke="#000000"
+                      stroke-width="4"
+                      fill="none"/>
+
+                <!-- White Face Patch -->
+                <ellipse cx="0" cy="10" rx="45" ry="40"
+                         fill="#FFFFFF"
+                         opacity="0.9"/>
+
+                <!-- Eyes -->
+                <ellipse cx="-25" cy="-10" rx="12" ry="18"
+                         fill="#FFFFFF"/>
+                <ellipse cx="25" cy="-10" rx="12" ry="18"
+                         fill="#FFFFFF"/>
+                <circle cx="-25" cy="-8" r="8"
+                        fill="#000000"/>
+                <circle cx="25" cy="-8" r="8"
+                        fill="#000000"/>
+                <circle cx="-23" cy="-10" r="4"
+                        fill="#FFFFFF"/>
+                <circle cx="27" cy="-10" r="4"
+                        fill="#FFFFFF"/>
+
+                <!-- Nose -->
+                <path d="M 0,10 L -8,18 L 8,18 Z"
+                      fill="#FF1493"
+                      stroke="#000000"
+                      stroke-width="1.5"/>
+
+                <!-- Mouth -->
+                <path d="M 0,18 Q -15,25 -25,20 M 0,18 Q 15,25 25,20"
+                      stroke="#000000"
+                      stroke-width="3"
+                      fill="none"
+                      stroke-linecap="round"/>
+
+                <!-- Whiskers -->
+                <line x1="-45" y1="5" x2="-80" y2="0" stroke="#000000" stroke-width="2"/>
+                <line x1="-45" y1="15" x2="-80" y2="15" stroke="#000000" stroke-width="2"/>
+                <line x1="-45" y1="25" x2="-80" y2="30" stroke="#000000" stroke-width="2"/>
+                <line x1="45" y1="5" x2="80" y2="0" stroke="#000000" stroke-width="2"/>
+                <line x1="45" y1="15" x2="80" y2="15" stroke="#000000" stroke-width="2"/>
+                <line x1="45" y1="25" x2="80" y2="30" stroke="#000000" stroke-width="2"/>
+            </g>
+
+            <!-- Brand Initials -->
+            <text x="160" y="80"
+                  font-family="Arial, sans-serif"
+                  font-size="36"
+                  font-weight="900"
+                  fill="${colors.accent}"
+                  text-anchor="middle"
+                  stroke="${colors.secondary}"
+                  stroke-width="1">
+                ${initials}
+            </text>
+
+            <!-- Brand Name -->
+            <text x="160" y="310"
+                  font-family="Arial, sans-serif"
+                  font-size="${name.length > 10 ? 22 : 28}"
+                  font-weight="900"
+                  fill="${colors.text}"
+                  text-anchor="middle">
+                ${name}
+            </text>
+        </svg>
+    `;
+}
+
+// Cheetah Logo Style (with Cheetah Face)
+function generateCheetahLogo(name, initials, colors) {
+    return `
+        <svg viewBox="0 0 320 360" xmlns="http://www.w3.org/2000/svg" width="320" height="360">
+            <defs>
+                <linearGradient id="cheetahGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:${colors.primary};stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:${darkenColor(colors.primary, 30)};stop-opacity:1" />
+                </linearGradient>
+                <radialGradient id="spotPattern">
+                    <stop offset="70%" style="stop-color:#F4A460;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#D2691E;stop-opacity:1" />
+                </radialGradient>
+            </defs>
+
+            <!-- Speed Lines Background -->
+            <path d="M 20,180 L 300,180" stroke="${colors.accent}" stroke-width="3" opacity="0.4"/>
+            <path d="M 30,160 L 290,160" stroke="${colors.accent}" stroke-width="2" opacity="0.3"/>
+            <path d="M 30,200 L 290,200" stroke="${colors.accent}" stroke-width="2" opacity="0.3"/>
+
+            <!-- Background Hexagon -->
+            <path d="M 160,20 L 280,80 L 280,260 L 160,320 L 40,260 L 40,80 Z"
+                  fill="url(#cheetahGrad)"
+                  stroke="${colors.accent}"
+                  stroke-width="5"/>
+
+            <!-- Cheetah Face -->
+            <g transform="translate(160, 150)">
+                <!-- Head Shape -->
+                <ellipse cx="0" cy="0" rx="65" ry="60"
+                         fill="#F4A460"
+                         stroke="#000000"
+                         stroke-width="3"/>
+
+                <!-- Ears -->
+                <ellipse cx="-45" cy="-40" rx="20" ry="25"
+                         fill="#F4A460"
+                         stroke="#000000"
+                         stroke-width="2"/>
+                <ellipse cx="45" cy="-40" rx="20" ry="25"
+                         fill="#F4A460"
+                         stroke="#000000"
+                         stroke-width="2"/>
+                <ellipse cx="-45" cy="-37" rx="12" ry="15"
+                         fill="#8B4513"/>
+                <ellipse cx="45" cy="-37" rx="12" ry="15"
+                         fill="#8B4513"/>
+
+                <!-- Cheetah Spots on Face -->
+                <circle cx="-50" cy="-10" r="4" fill="#000000" opacity="0.8"/>
+                <circle cx="-40" cy="-25" r="3" fill="#000000" opacity="0.8"/>
+                <circle cx="-35" cy="10" r="4" fill="#000000" opacity="0.8"/>
+                <circle cx="50" cy="-10" r="4" fill="#000000" opacity="0.8"/>
+                <circle cx="40" cy="-25" r="3" fill="#000000" opacity="0.8"/>
+                <circle cx="35" cy="10" r="4" fill="#000000" opacity="0.8"/>
+
+                <!-- Eyes -->
+                <ellipse cx="-22" cy="-8" rx="14" ry="16"
+                         fill="#FFFF00"
+                         stroke="#000000"
+                         stroke-width="2"/>
+                <ellipse cx="22" cy="-8" rx="14" ry="16"
+                         fill="#FFFF00"
+                         stroke="#000000"
+                         stroke-width="2"/>
+                <ellipse cx="-22" cy="-6" rx="5" ry="10"
+                        fill="#000000"/>
+                <ellipse cx="22" cy="-6" rx="5" ry="10"
+                        fill="#000000"/>
+                <circle cx="-20" cy="-8" r="3"
+                        fill="#FFFFFF"/>
+                <circle cx="24" cy="-8" r="3"
+                        fill="#FFFFFF"/>
+
+                <!-- Tear Marks (Distinctive Cheetah Feature) -->
+                <path d="M -18,0 L -18,25"
+                      stroke="#000000"
+                      stroke-width="4"
+                      stroke-linecap="round"/>
+                <path d="M 18,0 L 18,25"
+                      stroke="#000000"
+                      stroke-width="4"
+                      stroke-linecap="round"/>
+
+                <!-- Nose -->
+                <path d="M 0,15 L -6,22 L 6,22 Z"
+                      fill="#000000"/>
+
+                <!-- Mouth -->
+                <path d="M 0,22 Q -12,28 -20,25 M 0,22 Q 12,28 20,25"
+                      stroke="#000000"
+                      stroke-width="2.5"
+                      fill="none"/>
+
+                <!-- Whisker Dots -->
+                <circle cx="-30" cy="20" r="2" fill="#000000"/>
+                <circle cx="-35" cy="25" r="2" fill="#000000"/>
+                <circle cx="30" cy="20" r="2" fill="#000000"/>
+                <circle cx="35" cy="25" r="2" fill="#000000"/>
+            </g>
+
+            <!-- Brand Initials -->
+            <text x="160" y="70"
+                  font-family="Arial, sans-serif"
+                  font-size="32"
+                  font-weight="900"
+                  fill="${colors.accent}"
+                  text-anchor="middle">
+                ${initials}
+            </text>
+
+            <!-- Brand Name -->
+            <text x="160" y="305"
+                  font-family="Arial, sans-serif"
+                  font-size="${name.length > 10 ? 20 : 26}"
+                  font-weight="900"
+                  fill="${colors.text}"
+                  text-anchor="middle">
+                ${name}
+            </text>
+        </svg>
+    `;
+}
+
+// Gorilla Logo Style (with Gorilla Face)
+function generateGorillaLogo(name, initials, colors) {
+    return `
+        <svg viewBox="0 0 320 380" xmlns="http://www.w3.org/2000/svg" width="320" height="380">
+            <defs>
+                <linearGradient id="gorillaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:${colors.primary};stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:${darkenColor(colors.primary, 30)};stop-opacity:1" />
+                </linearGradient>
+            </defs>
+
+            <!-- Strength Shield Background -->
+            <path d="M 160,20 L 280,70 L 280,250 L 160,340 L 40,250 L 40,70 Z"
+                  fill="url(#gorillaGrad)"
+                  stroke="${colors.accent}"
+                  stroke-width="6"/>
+
+            <!-- Inner Shield -->
+            <path d="M 160,40 L 260,80 L 260,240 L 160,315 L 60,240 L 60,80 Z"
+                  fill="none"
+                  stroke="${colors.accent}"
+                  stroke-width="2"
+                  opacity="0.5"/>
+
+            <!-- Gorilla Face -->
+            <g transform="translate(160, 160)">
+                <!-- Head Shape (wide and powerful) -->
+                <ellipse cx="0" cy="0" rx="75" ry="70"
+                         fill="#2F2F2F"
+                         stroke="#000000"
+                         stroke-width="3"/>
+
+                <!-- Forehead Ridge -->
+                <ellipse cx="0" cy="-30" rx="60" ry="25"
+                         fill="#1A1A1A"
+                         opacity="0.8"/>
+
+                <!-- Face Center (lighter) -->
+                <ellipse cx="0" cy="15" rx="50" ry="45"
+                         fill="#4A4A4A"/>
+
+                <!-- Eyes (intense gaze) -->
+                <ellipse cx="-25" cy="-10" rx="15" ry="12"
+                         fill="#000000"/>
+                <ellipse cx="25" cy="-10" rx="15" ry="12"
+                         fill="#000000"/>
+                <circle cx="-25" cy="-10" r="6"
+                        fill="#8B4513"/>
+                <circle cx="25" cy="-10" r="6"
+                        fill="#8B4513"/>
+                <circle cx="-23" cy="-12" r="3"
+                        fill="#FFFFFF"/>
+                <circle cx="27" cy="-12" r="3"
+                        fill="#FFFFFF"/>
+
+                <!-- Nose (wide and flat) -->
+                <ellipse cx="0" cy="10" rx="25" ry="20"
+                         fill="#1A1A1A"
+                         stroke="#000000"
+                         stroke-width="2"/>
+                <circle cx="-8" cy="8" r="6"
+                        fill="#000000"/>
+                <circle cx="8" cy="8" r="6"
+                        fill="#000000"/>
+
+                <!-- Nostrils -->
+                <ellipse cx="-8" cy="10" rx="3" ry="5"
+                         fill="#000000"/>
+                <ellipse cx="8" cy="10" rx="3" ry="5"
+                         fill="#000000"/>
+
+                <!-- Mouth -->
+                <path d="M -20,30 Q 0,35 20,30"
+                      stroke="#000000"
+                      stroke-width="3"
+                      fill="none"/>
+                <path d="M -15,33 L -15,38 M -7,34 L -7,40 M 0,35 L 0,41 M 7,34 L 7,40 M 15,33 L 15,38"
+                      stroke="#000000"
+                      stroke-width="2"/>
+
+                <!-- Brow Ridge -->
+                <path d="M -50,-20 Q -30,-25 -10,-22"
+                      stroke="#000000"
+                      stroke-width="3"
+                      fill="none"/>
+                <path d="M 50,-20 Q 30,-25 10,-22"
+                      stroke="#000000"
+                      stroke-width="3"
+                      fill="none"/>
+            </g>
+
+            <!-- Brand Initials (Top) -->
+            <text x="160" y="60"
+                  font-family="Arial, sans-serif"
+                  font-size="34"
+                  font-weight="900"
+                  fill="${colors.accent}"
+                  text-anchor="middle"
+                  stroke="${colors.secondary}"
+                  stroke-width="1">
+                ${initials}
+            </text>
+
+            <!-- Brand Name (Bottom) -->
+            <text x="160" y="305"
+                  font-family="Arial, sans-serif"
+                  font-size="${name.length > 10 ? 22 : 28}"
+                  font-weight="900"
+                  fill="${colors.text}"
+                  text-anchor="middle">
+                ${name}
+            </text>
+        </svg>
+    `;
+}
+
+// Zebra Logo Style (with Zebra Face)
+function generateZebraLogo(name, initials, colors) {
+    return `
+        <svg viewBox="0 0 320 360" xmlns="http://www.w3.org/2000/svg" width="320" height="360">
+            <defs>
+                <linearGradient id="zebraGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:${colors.primary};stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:${darkenColor(colors.primary, 30)};stop-opacity:1" />
+                </linearGradient>
+                <pattern id="stripes" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                    <rect x="0" y="0" width="10" height="20" fill="#000000"/>
+                    <rect x="10" y="0" width="10" height="20" fill="#FFFFFF"/>
+                </pattern>
+            </defs>
+
+            <!-- Striped Background Border -->
+            <rect x="30" y="30" width="260" height="300"
+                  fill="url(#zebraGrad)"
+                  stroke="${colors.accent}"
+                  stroke-width="8"
+                  rx="20"/>
+
+            <!-- Zebra Face -->
+            <g transform="translate(160, 160)">
+                <!-- Head Shape -->
+                <ellipse cx="0" cy="0" rx="65" ry="75"
+                         fill="#FFFFFF"
+                         stroke="#000000"
+                         stroke-width="3"/>
+
+                <!-- Black and White Stripes on Face -->
+                <path d="M -65,0 Q -50,-20 -35,-10 Q -40,10 -50,20 Z"
+                      fill="#000000"
+                      opacity="0.9"/>
+                <path d="M 65,0 Q 50,-20 35,-10 Q 40,10 50,20 Z"
+                      fill="#000000"
+                      opacity="0.9"/>
+                <path d="M -30,-65 Q -15,-70 0,-65 Q -15,-55 -30,-65 Z"
+                      fill="#000000"/>
+                <path d="M 30,-65 Q 15,-70 0,-65 Q 15,-55 30,-65 Z"
+                      fill="#000000"/>
+
+                <!-- Ears -->
+                <ellipse cx="-40" cy="-55" rx="18" ry="28"
+                         fill="#FFFFFF"
+                         stroke="#000000"
+                         stroke-width="2.5"/>
+                <ellipse cx="40" cy="-55" rx="18" ry="28"
+                         fill="#FFFFFF"
+                         stroke="#000000"
+                         stroke-width="2.5"/>
+                <ellipse cx="-40" cy="-52" rx="10" ry="18"
+                         fill="#000000"/>
+                <ellipse cx="40" cy="-52" rx="10" ry="18"
+                         fill="#000000"/>
+
+                <!-- Eyes -->
+                <ellipse cx="-25" cy="-15" rx="14" ry="16"
+                         fill="#000000"/>
+                <ellipse cx="25" cy="-15" rx="14" ry="16"
+                         fill="#000000"/>
+                <circle cx="-25" cy="-15" r="9"
+                        fill="#8B4513"/>
+                <circle cx="25" cy="-15" r="9"
+                        fill="#8B4513"/>
+                <circle cx="-22" cy="-17" r="4"
+                        fill="#FFFFFF"/>
+                <circle cx="28" cy="-17" r="4"
+                        fill="#FFFFFF"/>
+
+                <!-- Muzzle/Snout -->
+                <ellipse cx="0" cy="25" rx="35" ry="30"
+                         fill="#F5F5F5"
+                         stroke="#000000"
+                         stroke-width="2"/>
+
+                <!-- Nose -->
+                <ellipse cx="0" cy="15" rx="15" ry="12"
+                         fill="#000000"/>
+                <ellipse cx="-5" cy="13" rx="4" ry="5"
+                         fill="#4A4A4A"/>
+                <ellipse cx="5" cy="13" rx="4" ry="5"
+                         fill="#4A4A4A"/>
+
+                <!-- Mouth -->
+                <path d="M 0,25 L 0,35 M -15,35 Q 0,40 15,35"
+                      stroke="#000000"
+                      stroke-width="2.5"
+                      fill="none"
+                      stroke-linecap="round"/>
+
+                <!-- Distinctive Zebra Stripes -->
+                <path d="M -20,-40 Q -25,-30 -20,-20"
+                      stroke="#000000"
+                      stroke-width="8"
+                      fill="none"/>
+                <path d="M 20,-40 Q 25,-30 20,-20"
+                      stroke="#000000"
+                      stroke-width="8"
+                      fill="none"/>
+                <path d="M -10,-45 Q -12,-35 -10,-25"
+                      stroke="#000000"
+                      stroke-width="6"
+                      fill="none"/>
+                <path d="M 10,-45 Q 12,-35 10,-25"
+                      stroke="#000000"
+                      stroke-width="6"
+                      fill="none"/>
+            </g>
+
+            <!-- Brand Initials -->
+            <text x="160" y="65"
+                  font-family="Arial, sans-serif"
+                  font-size="34"
+                  font-weight="900"
+                  fill="${colors.accent}"
+                  text-anchor="middle"
+                  stroke="${colors.secondary}"
+                  stroke-width="1.5">
+                ${initials}
+            </text>
+
+            <!-- Brand Name -->
+            <text x="160" y="315"
+                  font-family="Arial, sans-serif"
+                  font-size="${name.length > 10 ? 22 : 28}"
+                  font-weight="900"
+                  fill="${colors.text}"
+                  text-anchor="middle">
+                ${name}
+            </text>
         </svg>
     `;
 }
