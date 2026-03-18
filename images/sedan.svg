@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0e0e0e"/><stop offset="100%" stop-color="#050505"/></linearGradient>
+  <linearGradient id="bd" x1="0.1" y1="0" x2="0.1" y2="1"><stop offset="0%" stop-color="#e0e0e0"/><stop offset="30%" stop-color="#c5c5c5"/><stop offset="65%" stop-color="#909090"/><stop offset="100%" stop-color="#606060"/></linearGradient>
+  <linearGradient id="hl" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(255,255,255,0.18)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></linearGradient>
+  <radialGradient id="gs" cx="50%" cy="100%" r="55%"><stop offset="0%" stop-color="rgba(0,0,0,0.7)"/><stop offset="100%" stop-color="rgba(0,0,0,0)"/></radialGradient>
+  <radialGradient id="wg" cx="35%" cy="30%" r="60%"><stop offset="0%" stop-color="#888"/><stop offset="50%" stop-color="#555"/><stop offset="100%" stop-color="#2a2a2a"/></radialGradient>
+</defs>
+<rect width="900" height="400" fill="url(#bg)"/>
+<!-- ground shadow -->
+<ellipse cx="455" cy="345" rx="340" ry="16" fill="url(#gs)"/>
+<!-- body -->
+<path d="M760,330 L763,270 L750,238 L720,210 L688,196 C660,188 625,168 585,148 L540,128 L510,104 L388,96 L280,108 L235,162 L210,200 L185,212 L162,250 L138,330 Z" fill="url(#bd)" stroke="#222" stroke-width="1.5"/>
+<!-- highlight stripe -->
+<path d="M760,270 L750,238 L720,210 L688,196 C660,188 625,168 585,148 L540,128 L510,104 L388,96 L280,108 L235,162" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="3" stroke-linecap="round"/>
+<!-- window glass -->
+<path d="M535,130 L510,106 L392,98 L286,110 L240,162 L248,168 L395,158 L530,158 Z" fill="rgba(80,110,145,0.55)" stroke="rgba(120,160,200,0.3)" stroke-width="1"/>
+<!-- rear quarter window -->
+<path d="M240,163 L248,169 L220,200 L210,200 L218,170 Z" fill="rgba(80,110,145,0.45)" stroke="rgba(120,160,200,0.3)" stroke-width="1"/>
+<!-- C-pillar -->
+<path d="M533,158 L535,130 L544,150 L540,162 Z" fill="rgba(40,40,40,0.8)"/>
+<!-- wheels -->
+<circle cx="215" cy="330" r="55" fill="#111" stroke="#1a1a1a" stroke-width="2"/>
+<circle cx="215" cy="330" r="42" fill="url(#wg)"/>
+<circle cx="215" cy="330" r="12" fill="#1a1a1a"/>
+<g transform="translate(215,330)">
+  <line x1="0" y1="-42" x2="0" y2="-14" stroke="#bbb" stroke-width="4" stroke-linecap="round"/>
+  <line x1="0" y1="-42" x2="0" y2="-14" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(72)"/>
+  <line x1="0" y1="-42" x2="0" y2="-14" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(144)"/>
+  <line x1="0" y1="-42" x2="0" y2="-14" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(216)"/>
+  <line x1="0" y1="-42" x2="0" y2="-14" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(288)"/>
+</g>
+<circle cx="695" cy="330" r="55" fill="#111" stroke="#1a1a1a" stroke-width="2"/>
+<circle cx="695" cy="330" r="42" fill="url(#wg)"/>
+<circle cx="695" cy="330" r="12" fill="#1a1a1a"/>
+<g transform="translate(695,330)">
+  <line x1="0" y1="-42" x2="0" y2="-14" stroke="#bbb" stroke-width="4" stroke-linecap="round"/>
+  <line x1="0" y1="-42" x2="0" y2="-14" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(72)"/>
+  <line x1="0" y1="-42" x2="0" y2="-14" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(144)"/>
+  <line x1="0" y1="-42" x2="0" y2="-14" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(216)"/>
+  <line x1="0" y1="-42" x2="0" y2="-14" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(288)"/>
+</g>
+<!-- headlight -->
+<path d="M762,263 L755,248 L740,240 L730,248 L730,262 L745,268 Z" fill="rgba(255,255,220,0.9)"/>
+<circle cx="748" cy="255" r="9" fill="rgba(255,255,200,0.25)"/>
+<!-- taillight -->
+<path d="M140,260 L148,248 L162,248 L165,265 L152,272 Z" fill="rgba(200,30,30,0.9)"/>
+</svg>

@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0e0e0e"/><stop offset="100%" stop-color="#050505"/></linearGradient>
+  <linearGradient id="bd" x1="0.1" y1="0" x2="0.1" y2="1"><stop offset="0%" stop-color="#e0e0e0"/><stop offset="30%" stop-color="#c5c5c5"/><stop offset="65%" stop-color="#909090"/><stop offset="100%" stop-color="#606060"/></linearGradient>
+  <radialGradient id="gs" cx="50%" cy="100%" r="55%"><stop offset="0%" stop-color="rgba(0,0,0,0.7)"/><stop offset="100%" stop-color="rgba(0,0,0,0)"/></radialGradient>
+  <radialGradient id="wg" cx="35%" cy="30%" r="60%"><stop offset="0%" stop-color="#888"/><stop offset="50%" stop-color="#555"/><stop offset="100%" stop-color="#2a2a2a"/></radialGradient>
+</defs>
+<rect width="900" height="400" fill="url(#bg)"/>
+<ellipse cx="450" cy="348" rx="345" ry="16" fill="url(#gs)"/>
+<!-- Rounded crossover SUV body -->
+<path d="M765,330 L768,268 L754,235 L724,212 L692,200 C665,192 635,172 595,150 L540,128 L505,108 L340,105 L248,115 L215,148 L194,185 L174,225 L148,268 L135,330 Z" fill="url(#bd)" stroke="#222" stroke-width="1.5"/>
+<!-- Roof highlight -->
+<path d="M765,268 L754,235 L724,212 L692,200 C665,192 635,172 595,150 L540,128 L505,108 L340,105 L248,115" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="3" stroke-linecap="round"/>
+<!-- Windows -->
+<path d="M540,130 L507,110 L344,107 L252,116 L218,148 L226,156 L346,148 L536,148 Z" fill="rgba(80,110,145,0.55)" stroke="rgba(120,160,200,0.3)" stroke-width="1"/>
+<!-- Rear quarter window -->
+<path d="M218,148 L226,156 L210,190 L196,188 L200,158 Z" fill="rgba(80,110,145,0.45)" stroke="rgba(120,160,200,0.3)" stroke-width="1"/>
+<!-- Roof rack line -->
+<line x1="260" y1="106" x2="545" y2="110" stroke="rgba(200,200,200,0.25)" stroke-width="3" stroke-linecap="round"/>
+<!-- Wheels (bigger for SUV) -->
+<circle cx="218" cy="330" r="58" fill="#111" stroke="#1a1a1a" stroke-width="2"/>
+<circle cx="218" cy="330" r="44" fill="url(#wg)"/>
+<circle cx="218" cy="330" r="12" fill="#1a1a1a"/>
+<g transform="translate(218,330)">
+  <line x1="0" y1="-44" x2="0" y2="-14" stroke="#bbb" stroke-width="5" stroke-linecap="round"/>
+  <line x1="0" y1="-44" x2="0" y2="-14" stroke="#bbb" stroke-width="5" stroke-linecap="round" transform="rotate(72)"/>
+  <line x1="0" y1="-44" x2="0" y2="-14" stroke="#bbb" stroke-width="5" stroke-linecap="round" transform="rotate(144)"/>
+  <line x1="0" y1="-44" x2="0" y2="-14" stroke="#bbb" stroke-width="5" stroke-linecap="round" transform="rotate(216)"/>
+  <line x1="0" y1="-44" x2="0" y2="-14" stroke="#bbb" stroke-width="5" stroke-linecap="round" transform="rotate(288)"/>
+</g>
+<circle cx="700" cy="330" r="58" fill="#111" stroke="#1a1a1a" stroke-width="2"/>
+<circle cx="700" cy="330" r="44" fill="url(#wg)"/>
+<circle cx="700" cy="330" r="12" fill="#1a1a1a"/>
+<g transform="translate(700,330)">
+  <line x1="0" y1="-44" x2="0" y2="-14" stroke="#bbb" stroke-width="5" stroke-linecap="round"/>
+  <line x1="0" y1="-44" x2="0" y2="-14" stroke="#bbb" stroke-width="5" stroke-linecap="round" transform="rotate(72)"/>
+  <line x1="0" y1="-44" x2="0" y2="-14" stroke="#bbb" stroke-width="5" stroke-linecap="round" transform="rotate(144)"/>
+  <line x1="0" y1="-44" x2="0" y2="-14" stroke="#bbb" stroke-width="5" stroke-linecap="round" transform="rotate(216)"/>
+  <line x1="0" y1="-44" x2="0" y2="-14" stroke="#bbb" stroke-width="5" stroke-linecap="round" transform="rotate(288)"/>
+</g>
+<!-- Headlight -->
+<path d="M766,262 L760,248 L744,240 L734,248 L735,262 L748,268 Z" fill="rgba(255,255,220,0.9)"/>
+<!-- Taillight -->
+<path d="M137,268 L145,255 L160,255 L162,270 L150,278 Z" fill="rgba(200,30,30,0.9)"/>
+</svg>

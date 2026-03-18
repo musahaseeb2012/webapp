@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0e0e0e"/><stop offset="100%" stop-color="#050505"/></linearGradient>
+  <linearGradient id="bd" x1="0.1" y1="0" x2="0.1" y2="1"><stop offset="0%" stop-color="#e0e0e0"/><stop offset="25%" stop-color="#c8c8c8"/><stop offset="60%" stop-color="#888"/><stop offset="100%" stop-color="#555"/></linearGradient>
+  <radialGradient id="gs" cx="50%" cy="100%" r="55%"><stop offset="0%" stop-color="rgba(0,0,0,0.7)"/><stop offset="100%" stop-color="rgba(0,0,0,0)"/></radialGradient>
+  <radialGradient id="wg" cx="35%" cy="30%" r="60%"><stop offset="0%" stop-color="#888"/><stop offset="50%" stop-color="#555"/><stop offset="100%" stop-color="#2a2a2a"/></radialGradient>
+</defs>
+<rect width="900" height="400" fill="url(#bg)"/>
+<ellipse cx="455" cy="342" rx="348" ry="14" fill="url(#gs)"/>
+<!-- Roadster/convertible - open top, long hood, low -->
+<path d="M788,330 L792,306 L778,278 L748,255 L710,240 L640,226 L560,218 L510,210 C475,202 440,178 395,155 L340,135 L290,125 L245,128 L222,145 L210,165 L200,188 L215,192 L245,188 L310,182 L365,178 L370,188 L358,210 L345,225 L328,248 L310,270 L300,295 L300,330 Z" fill="url(#bd)" stroke="#222" stroke-width="1.5"/>
+<!-- Hood highlight -->
+<path d="M788,306 L778,278 L748,255 L710,240 L640,226 L560,218 L510,210 C475,202 440,178 395,155 L340,135 L290,125" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="3" stroke-linecap="round"/>
+<!-- Windshield only (open top) -->
+<path d="M368,180 L310,183 L248,188 L222,147 L243,130 L285,126 L335,136 L375,158 L375,172 Z" fill="rgba(80,110,145,0.55)" stroke="rgba(120,160,200,0.3)" stroke-width="1"/>
+<!-- Open cabin area (dark) -->
+<path d="M370,188 L358,210 L345,225 L328,248 L310,270 L300,295 L300,330 L370,330 L375,320 L380,280 L378,240 L375,210 Z" fill="rgba(15,15,15,0.9)"/>
+<!-- Interior hint -->
+<path d="M360,230 C355,225 350,220 340,218 L325,260 L338,265 Z" fill="rgba(40,35,30,0.9)"/>
+<!-- Wheels -->
+<circle cx="218" cy="330" r="50" fill="#111" stroke="#1a1a1a" stroke-width="2"/>
+<circle cx="218" cy="330" r="38" fill="url(#wg)"/>
+<circle cx="218" cy="330" r="10" fill="#1a1a1a"/>
+<g transform="translate(218,330)">
+  <line x1="0" y1="-38" x2="0" y2="-12" stroke="#bbb" stroke-width="4" stroke-linecap="round"/>
+  <line x1="0" y1="-38" x2="0" y2="-12" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(60)"/>
+  <line x1="0" y1="-38" x2="0" y2="-12" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(120)"/>
+  <line x1="0" y1="-38" x2="0" y2="-12" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(180)"/>
+  <line x1="0" y1="-38" x2="0" y2="-12" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(240)"/>
+  <line x1="0" y1="-38" x2="0" y2="-12" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(300)"/>
+</g>
+<circle cx="710" cy="330" r="50" fill="#111" stroke="#1a1a1a" stroke-width="2"/>
+<circle cx="710" cy="330" r="38" fill="url(#wg)"/>
+<circle cx="710" cy="330" r="10" fill="#1a1a1a"/>
+<g transform="translate(710,330)">
+  <line x1="0" y1="-38" x2="0" y2="-12" stroke="#bbb" stroke-width="4" stroke-linecap="round"/>
+  <line x1="0" y1="-38" x2="0" y2="-12" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(60)"/>
+  <line x1="0" y1="-38" x2="0" y2="-12" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(120)"/>
+  <line x1="0" y1="-38" x2="0" y2="-12" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(180)"/>
+  <line x1="0" y1="-38" x2="0" y2="-12" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(240)"/>
+  <line x1="0" y1="-38" x2="0" y2="-12" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(300)"/>
+</g>
+<path d="M790,305 L784,288 L770,278 L760,284 L762,298 L775,308 Z" fill="rgba(255,255,220,0.9)"/>
+<path d="M303,295 L308,278 L322,276 L324,292 L314,300 Z" fill="rgba(200,30,30,0.9)"/>
+</svg>

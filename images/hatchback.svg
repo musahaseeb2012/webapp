@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0e0e0e"/><stop offset="100%" stop-color="#050505"/></linearGradient>
+  <linearGradient id="bd" x1="0.1" y1="0" x2="0.1" y2="1"><stop offset="0%" stop-color="#e0e0e0"/><stop offset="30%" stop-color="#c5c5c5"/><stop offset="65%" stop-color="#909090"/><stop offset="100%" stop-color="#606060"/></linearGradient>
+  <radialGradient id="gs" cx="50%" cy="100%" r="55%"><stop offset="0%" stop-color="rgba(0,0,0,0.7)"/><stop offset="100%" stop-color="rgba(0,0,0,0)"/></radialGradient>
+  <radialGradient id="wg" cx="35%" cy="30%" r="60%"><stop offset="0%" stop-color="#888"/><stop offset="50%" stop-color="#555"/><stop offset="100%" stop-color="#2a2a2a"/></radialGradient>
+</defs>
+<rect width="900" height="400" fill="url(#bg)"/>
+<ellipse cx="455" cy="345" rx="330" ry="15" fill="url(#gs)"/>
+<!-- Compact hatchback with steeply sloped rear -->
+<path d="M745,330 L748,270 L736,238 L710,215 L680,202 C658,194 628,172 592,152 L548,128 L512,108 L370,105 L296,115 L260,148 L240,182 L225,230 L218,270 L210,310 L202,330 Z" fill="url(#bd)" stroke="#222" stroke-width="1.5"/>
+<!-- Roof -->
+<path d="M745,270 L736,238 L710,215 L680,202 C658,194 628,172 592,152 L548,128 L512,108 L370,105 L296,115" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="3" stroke-linecap="round"/>
+<!-- Windows -->
+<path d="M548,130 L514,110 L372,107 L300,116 L266,148 L274,156 L374,145 L542,148 Z" fill="rgba(80,110,145,0.55)" stroke="rgba(120,160,200,0.3)" stroke-width="1"/>
+<!-- Rear hatch window (steeply angled) -->
+<path d="M276,156 L268,148 L248,182 L240,215 L258,215 L278,182 Z" fill="rgba(80,110,145,0.5)" stroke="rgba(120,160,200,0.3)" stroke-width="1"/>
+<!-- Wheels (smaller) -->
+<circle cx="228" cy="330" r="50" fill="#111" stroke="#1a1a1a" stroke-width="2"/>
+<circle cx="228" cy="330" r="38" fill="url(#wg)"/>
+<circle cx="228" cy="330" r="10" fill="#1a1a1a"/>
+<g transform="translate(228,330)">
+  <line x1="0" y1="-38" x2="0" y2="-12" stroke="#bbb" stroke-width="4" stroke-linecap="round"/>
+  <line x1="0" y1="-38" x2="0" y2="-12" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(72)"/>
+  <line x1="0" y1="-38" x2="0" y2="-12" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(144)"/>
+  <line x1="0" y1="-38" x2="0" y2="-12" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(216)"/>
+  <line x1="0" y1="-38" x2="0" y2="-12" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(288)"/>
+</g>
+<circle cx="672" cy="330" r="50" fill="#111" stroke="#1a1a1a" stroke-width="2"/>
+<circle cx="672" cy="330" r="38" fill="url(#wg)"/>
+<circle cx="672" cy="330" r="10" fill="#1a1a1a"/>
+<g transform="translate(672,330)">
+  <line x1="0" y1="-38" x2="0" y2="-12" stroke="#bbb" stroke-width="4" stroke-linecap="round"/>
+  <line x1="0" y1="-38" x2="0" y2="-12" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(72)"/>
+  <line x1="0" y1="-38" x2="0" y2="-12" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(144)"/>
+  <line x1="0" y1="-38" x2="0" y2="-12" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(216)"/>
+  <line x1="0" y1="-38" x2="0" y2="-12" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(288)"/>
+</g>
+<path d="M746,264 L741,250 L726,242 L718,250 L719,263 L731,269 Z" fill="rgba(255,255,220,0.9)"/>
+<path d="M204,312 L210,295 L224,293 L226,308 L215,316 Z" fill="rgba(200,30,30,0.9)"/>
+</svg>

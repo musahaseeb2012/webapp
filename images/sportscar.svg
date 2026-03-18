@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0e0e0e"/><stop offset="100%" stop-color="#050505"/></linearGradient>
+  <linearGradient id="bd" x1="0.1" y1="0" x2="0.1" y2="1"><stop offset="0%" stop-color="#e0e0e0"/><stop offset="25%" stop-color="#c8c8c8"/><stop offset="60%" stop-color="#888"/><stop offset="100%" stop-color="#555"/></linearGradient>
+  <radialGradient id="gs" cx="50%" cy="100%" r="55%"><stop offset="0%" stop-color="rgba(0,0,0,0.7)"/><stop offset="100%" stop-color="rgba(0,0,0,0)"/></radialGradient>
+  <radialGradient id="wg" cx="35%" cy="30%" r="60%"><stop offset="0%" stop-color="#888"/><stop offset="50%" stop-color="#555"/><stop offset="100%" stop-color="#2a2a2a"/></radialGradient>
+</defs>
+<rect width="900" height="400" fill="url(#bg)"/>
+<ellipse cx="455" cy="342" rx="350" ry="14" fill="url(#gs)"/>
+<!-- Very long hood, very low profile AMG GT body -->
+<path d="M795,330 L800,310 L790,285 L765,258 L730,242 L680,228 L580,218 L510,208 C480,200 445,172 400,148 L340,128 L290,118 L232,122 L210,138 L198,160 L186,188 L170,220 L145,270 L132,330 Z" fill="url(#bd)" stroke="#222" stroke-width="1.5"/>
+<!-- Long hood highlight -->
+<path d="M795,310 L790,285 L765,258 L730,242 L680,228 L580,218 L510,208 C480,200 445,172 400,148 L340,128" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="3" stroke-linecap="round"/>
+<!-- Windshield (very raked) -->
+<path d="M512,208 C480,200 445,172 400,148 L340,130 L300,120 L295,128 L340,140 L395,162 L505,218 Z" fill="rgba(80,110,145,0.55)" stroke="rgba(120,160,200,0.3)" stroke-width="1"/>
+<!-- Small side window -->
+<path d="M296,128 L232,124 L216,140 L204,162 L214,168 L295,135 Z" fill="rgba(80,110,145,0.5)" stroke="rgba(120,160,200,0.3)" stroke-width="1"/>
+<!-- Air vent on hood -->
+<path d="M620,224 L640,218 L660,220 L658,228 L638,232 Z" fill="#222" stroke="#444" stroke-width="1"/>
+<!-- Wheels -->
+<circle cx="198" cy="330" r="52" fill="#111" stroke="#1a1a1a" stroke-width="2"/>
+<circle cx="198" cy="330" r="40" fill="url(#wg)"/>
+<circle cx="198" cy="330" r="11" fill="#1a1a1a"/>
+<g transform="translate(198,330)">
+  <line x1="0" y1="-40" x2="0" y2="-13" stroke="#bbb" stroke-width="4" stroke-linecap="round"/>
+  <line x1="0" y1="-40" x2="0" y2="-13" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(60)"/>
+  <line x1="0" y1="-40" x2="0" y2="-13" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(120)"/>
+  <line x1="0" y1="-40" x2="0" y2="-13" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(180)"/>
+  <line x1="0" y1="-40" x2="0" y2="-13" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(240)"/>
+  <line x1="0" y1="-40" x2="0" y2="-13" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(300)"/>
+</g>
+<circle cx="720" cy="330" r="52" fill="#111" stroke="#1a1a1a" stroke-width="2"/>
+<circle cx="720" cy="330" r="40" fill="url(#wg)"/>
+<circle cx="720" cy="330" r="11" fill="#1a1a1a"/>
+<g transform="translate(720,330)">
+  <line x1="0" y1="-40" x2="0" y2="-13" stroke="#bbb" stroke-width="4" stroke-linecap="round"/>
+  <line x1="0" y1="-40" x2="0" y2="-13" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(60)"/>
+  <line x1="0" y1="-40" x2="0" y2="-13" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(120)"/>
+  <line x1="0" y1="-40" x2="0" y2="-13" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(180)"/>
+  <line x1="0" y1="-40" x2="0" y2="-13" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(240)"/>
+  <line x1="0" y1="-40" x2="0" y2="-13" stroke="#bbb" stroke-width="4" stroke-linecap="round" transform="rotate(300)"/>
+</g>
+<!-- Headlight strip -->
+<path d="M798,308 L792,290 L778,278 L766,282 L770,298 L784,312 Z" fill="rgba(255,255,220,0.9)"/>
+<circle cx="785" cy="295" r="8" fill="rgba(255,255,200,0.2)"/>
+<!-- Taillight strip -->
+<path d="M134,275 L140,258 L155,256 L158,272 L148,280 Z" fill="rgba(200,30,30,0.9)"/>
+<!-- Rear diffuser -->
+<path d="M133,330 L145,310 L165,308 L162,330 Z" fill="#1a1a1a" stroke="#333" stroke-width="1"/>
+</svg>

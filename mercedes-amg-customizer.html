@@ -272,13 +272,27 @@
     .car-canvas-wrap {
       position: relative;
       width: 100%;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #0e0e0e;
     }
 
-    #carCanvas {
+    .car-img {
       width: 100%;
       height: auto;
       display: block;
-      filter: drop-shadow(0 20px 60px rgba(0,0,0,0.9));
+      transition: opacity 0.35s ease;
+    }
+
+    .car-img.loading { opacity: 0; }
+
+    .color-overlay {
+      position: absolute;
+      inset: 0;
+      mix-blend-mode: multiply;
+      opacity: 0.52;
+      pointer-events: none;
+      transition: background 0.3s;
     }
 
     .car-info {
@@ -488,7 +502,8 @@
   <main class="display">
     <div class="car-stage">
       <div class="car-canvas-wrap">
-        <canvas id="carCanvas" width="820" height="420"></canvas>
+        <img id="carImg" class="car-img" src="./images/sportscar.svg" alt="Mercedes-AMG" />
+        <div id="colorOverlay" class="color-overlay"></div>
       </div>
       <div class="car-info">
         <div class="car-name" id="carName">AMG <strong>GT 63 S</strong></div>
@@ -604,6 +619,17 @@ const EXTRAS = [
   { name: "AMG Driving Assistance",     sub: "Pro package",        price: 4000 },
   { name: "AMG Driver's Package",       sub: "300 km/h top speed", price: 3500 },
 ];
+
+const TYPE_IMAGES = {
+  sedan:     './images/sedan.svg',
+  coupe:     './images/coupe.svg',
+  suv:       './images/suv.svg',
+  gwagon:    './images/gwagon.svg',
+  sportscar: './images/sportscar.svg',
+  hypercar:  './images/hypercar.svg',
+  roadster:  './images/roadster.svg',
+  hatchback: './images/hatchback.svg',
+};
 
 // ─────────────────────────────────────────────
 //  STATE
@@ -768,26 +794,26 @@ function bindSliders() {
 }
 
 // ─────────────────────────────────────────────
-//  CANVAS RENDERER
+//  RENDERER
 // ─────────────────────────────────────────────
 function render() {
-  const canvas = document.getElementById('carCanvas');
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-  ctx.clearRect(0, 0, W, H);
-
   const model = AMG_MODELS[state.model] || AMG_MODELS["GT 63 S AMG"];
   const color = COLORS[state.colorIdx];
-  const wheel = WHEELS[state.wheelIdx];
-  const interior = INTERIORS[state.interiorIdx];
   const type = model.type;
 
-  const rideOffset = state.ride * 0.3;
-  const cy = H * 0.62 + rideOffset;
+  // Car image
+  const img = document.getElementById('carImg');
+  const src = TYPE_IMAGES[type] || TYPE_IMAGES.sedan;
+  if (img.getAttribute('src') !== src) {
+    img.classList.add('loading');
+    img.onload = () => img.classList.remove('loading');
+    img.onerror = () => img.classList.remove('loading');
+    img.src = src;
+  }
 
-  drawCar(ctx, W, H, cy, color, wheel, interior, type);
-  drawReflection(ctx, W, H, cy, color, type);
-  drawGround(ctx, W, H, cy);
+  // Color overlay
+  document.getElementById('colorOverlay').style.background = color.hex;
+
   updateInfo(model);
 }
 

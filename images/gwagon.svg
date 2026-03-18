@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0e0e0e"/><stop offset="100%" stop-color="#050505"/></linearGradient>
+  <linearGradient id="bd" x1="0.1" y1="0" x2="0.1" y2="1"><stop offset="0%" stop-color="#e0e0e0"/><stop offset="30%" stop-color="#c8c8c8"/><stop offset="65%" stop-color="#909090"/><stop offset="100%" stop-color="#606060"/></linearGradient>
+  <radialGradient id="gs" cx="50%" cy="100%" r="55%"><stop offset="0%" stop-color="rgba(0,0,0,0.7)"/><stop offset="100%" stop-color="rgba(0,0,0,0)"/></radialGradient>
+  <radialGradient id="wg" cx="35%" cy="30%" r="60%"><stop offset="0%" stop-color="#888"/><stop offset="50%" stop-color="#555"/><stop offset="100%" stop-color="#2a2a2a"/></radialGradient>
+</defs>
+<rect width="900" height="400" fill="url(#bg)"/>
+<ellipse cx="455" cy="350" rx="345" ry="16" fill="url(#gs)"/>
+<!-- VERY boxy G-Wagon body -->
+<path d="M760,330 L762,265 L748,232 L720,215 L698,205 L688,120 L672,112 L230,112 L218,128 L212,200 L180,208 L155,248 L132,330 Z" fill="url(#bd)" stroke="#222" stroke-width="1.5"/>
+<!-- Flat roof highlight -->
+<rect x="226" y="112" width="446" height="10" rx="2" fill="rgba(255,255,255,0.3)"/>
+<!-- Front window (very upright) -->
+<path d="M690,205 L686,128 L674,120 L668,120 L680,205 Z" fill="rgba(80,110,145,0.55)" stroke="rgba(120,160,200,0.3)" stroke-width="1"/>
+<!-- Main side windows (rectangular) -->
+<rect x="270" y="128" width="120" height="75" rx="4" fill="rgba(80,110,145,0.55)" stroke="rgba(120,160,200,0.3)" stroke-width="1"/>
+<rect x="405" y="128" width="130" height="75" rx="4" fill="rgba(80,110,145,0.55)" stroke="rgba(120,160,200,0.3)" stroke-width="1"/>
+<rect x="550" y="128" width="100" height="75" rx="4" fill="rgba(80,110,145,0.55)" stroke="rgba(120,160,200,0.3)" stroke-width="1"/>
+<!-- Rear window (vertical) -->
+<path d="M213,200 L215,136 L230,126 L230,200 Z" fill="rgba(80,110,145,0.5)" stroke="rgba(120,160,200,0.3)" stroke-width="1"/>
+<!-- Spare wheel on rear -->
+<circle cx="150" cy="220" r="35" fill="#111" stroke="#333" stroke-width="2"/>
+<circle cx="150" cy="220" r="26" fill="#444"/>
+<circle cx="150" cy="220" r="8" fill="#222"/>
+<!-- Wheels -->
+<circle cx="218" cy="330" r="60" fill="#111" stroke="#1a1a1a" stroke-width="2"/>
+<circle cx="218" cy="330" r="46" fill="url(#wg)"/>
+<circle cx="218" cy="330" r="13" fill="#1a1a1a"/>
+<g transform="translate(218,330)">
+  <line x1="0" y1="-46" x2="0" y2="-15" stroke="#bbb" stroke-width="5" stroke-linecap="round"/>
+  <line x1="0" y1="-46" x2="0" y2="-15" stroke="#bbb" stroke-width="5" stroke-linecap="round" transform="rotate(60)"/>
+  <line x1="0" y1="-46" x2="0" y2="-15" stroke="#bbb" stroke-width="5" stroke-linecap="round" transform="rotate(120)"/>
+  <line x1="0" y1="-46" x2="0" y2="-15" stroke="#bbb" stroke-width="5" stroke-linecap="round" transform="rotate(180)"/>
+  <line x1="0" y1="-46" x2="0" y2="-15" stroke="#bbb" stroke-width="5" stroke-linecap="round" transform="rotate(240)"/>
+  <line x1="0" y1="-46" x2="0" y2="-15" stroke="#bbb" stroke-width="5" stroke-linecap="round" transform="rotate(300)"/>
+</g>
+<circle cx="698" cy="330" r="60" fill="#111" stroke="#1a1a1a" stroke-width="2"/>
+<circle cx="698" cy="330" r="46" fill="url(#wg)"/>
+<circle cx="698" cy="330" r="13" fill="#1a1a1a"/>
+<g transform="translate(698,330)">
+  <line x1="0" y1="-46" x2="0" y2="-15" stroke="#bbb" stroke-width="5" stroke-linecap="round" transform="rotate(0)"/>
+  <line x1="0" y1="-46" x2="0" y2="-15" stroke="#bbb" stroke-width="5" stroke-linecap="round" transform="rotate(60)"/>
+  <line x1="0" y1="-46" x2="0" y2="-15" stroke="#bbb" stroke-width="5" stroke-linecap="round" transform="rotate(120)"/>
+  <line x1="0" y1="-46" x2="0" y2="-15" stroke="#bbb" stroke-width="5" stroke-linecap="round" transform="rotate(180)"/>
+  <line x1="0" y1="-46" x2="0" y2="-15" stroke="#bbb" stroke-width="5" stroke-linecap="round" transform="rotate(240)"/>
+  <line x1="0" y1="-46" x2="0" y2="-15" stroke="#bbb" stroke-width="5" stroke-linecap="round" transform="rotate(300)"/>
+</g>
+<!-- Round headlights (G-Wagon iconic) -->
+<circle cx="748" cy="250" r="22" fill="#111" stroke="#555" stroke-width="2"/>
+<circle cx="748" cy="250" r="16" fill="rgba(255,255,220,0.85)"/>
+<circle cx="748" cy="250" r="20" fill="rgba(255,255,200,0.12)"/>
+<!-- Grill slats -->
+<rect x="745" y="215" width="20" height="4" rx="1" fill="#333"/>
+<rect x="745" y="222" width="20" height="4" rx="1" fill="#333"/>
+<rect x="745" y="229" width="20" height="4" rx="1" fill="#333"/>
+<!-- taillight -->
+<rect x="130" y="248" width="18" height="30" rx="2" fill="rgba(200,30,30,0.9)"/>
+</svg>
