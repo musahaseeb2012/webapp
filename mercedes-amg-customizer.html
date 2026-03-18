@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mercedes-AMG Customizer</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111;
+      --surface2: #1a1a1a;
+      --border: #2a2a2a;
+      --accent: #c8a95b;
+      --accent2: #e8c97b;
+      --text: #f0f0f0;
+      --text-muted: #888;
+      --red: #cc2222;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-star {
+      width: 44px;
+      height: 44px;
+    }
+
+    .logo-text {
+      font-size: 1.35rem;
+      font-weight: 300;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+
+    .logo-text span {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .subtitle {
+      font-size: 0.7rem;
+      letter-spacing: 5px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .main {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      min-height: calc(100vh - 77px);
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .section-title {
+      font-size: 0.65rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+
+    /* Model Selector */
+    .select-group { display: flex; flex-direction: column; gap: 8px; }
+
+    .select-group label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+    }
+
+    select {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      width: 100%;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c8a95b' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+    }
+
+    select:focus { outline: none; border-color: var(--accent); }
+
+    /* Color Swatches */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+
+    .color-swatch {
+      aspect-ratio: 1;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.2s, border-color 0.2s;
+      position: relative;
+    }
+
+    .color-swatch:hover { transform: scale(1.12); }
+    .color-swatch.active { border-color: var(--accent); transform: scale(1.1); }
+    .color-swatch.active::after {
+      content: '✓';
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      color: white;
+      text-shadow: 0 0 3px rgba(0,0,0,0.8);
+    }
+
+    /* Option Buttons */
+    .option-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .opt-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 0.82rem;
+      transition: background 0.15s, border-color 0.15s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .opt-btn:hover { background: #222; border-color: #444; }
+    .opt-btn.active { background: #1c160a; border-color: var(--accent); color: var(--accent); }
+    .opt-btn .price-tag { font-size: 0.7rem; color: var(--text-muted); }
+    .opt-btn.active .price-tag { color: var(--accent); }
+
+    /* Toggle rows */
+    .toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .toggle-row:last-child { border-bottom: none; }
+
+    .toggle-label { font-size: 0.82rem; }
+    .toggle-sub { font-size: 0.7rem; color: var(--text-muted); }
+
+    .toggle {
+      width: 40px;
+      height: 22px;
+      background: var(--border);
+      border-radius: 11px;
+      cursor: pointer;
+      position: relative;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .toggle.on { background: var(--accent); }
+
+    .toggle::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: white;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: left 0.2s;
+    }
+
+    .toggle.on::after { left: 21px; }
+
+    /* Range sliders */
+    .range-group { display: flex; flex-direction: column; gap: 6px; }
+    .range-header { display: flex; justify-content: space-between; font-size: 0.82rem; }
+    .range-val { color: var(--accent); font-weight: 600; }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      outline: none;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+    }
+
+    /* ── DISPLAY AREA ── */
+    .display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      background: radial-gradient(ellipse at center, #1a1a1a 0%, #0a0a0a 70%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .display::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.4;
+    }
+
+    .car-stage {
+      width: 100%;
+      max-width: 820px;
+      position: relative;
+    }
+
+    .car-canvas-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    #carCanvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      filter: drop-shadow(0 20px 60px rgba(0,0,0,0.9));
+    }
+
+    .car-info {
+      text-align: center;
+      margin-top: 32px;
+    }
+
+    .car-name {
+      font-size: 2rem;
+      font-weight: 300;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+
+    .car-name strong { font-weight: 700; color: var(--accent); }
+
+    .car-year-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      letter-spacing: 4px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .specs-bar {
+      display: flex;
+      gap: 32px;
+      justify-content: center;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .spec-item { text-align: center; }
+    .spec-value { font-size: 1.5rem; font-weight: 700; color: var(--accent); line-height: 1; }
+    .spec-label { font-size: 0.6rem; letter-spacing: 3px; color: var(--text-muted); text-transform: uppercase; margin-top: 4px; }
+
+    /* Summary panel */
+    .summary-bar {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      width: calc(100% - 340px);
+      background: rgba(10,10,10,0.97);
+      border-top: 1px solid var(--border);
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(10px);
+      z-index: 10;
+    }
+
+    .summary-items { display: flex; gap: 24px; flex-wrap: wrap; }
+    .summary-item { font-size: 0.75rem; color: var(--text-muted); }
+    .summary-item strong { color: var(--text); }
+
+    .total-price {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 1px;
+    }
+
+    .cta-btn {
+      background: var(--accent);
+      color: #0a0a0a;
+      border: none;
+      padding: 12px 28px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: background 0.2s;
+    }
+
+    .cta-btn:hover { background: var(--accent2); }
+
+    /* Notification */
+    .toast {
+      position: fixed;
+      top: 100px;
+      right: 24px;
+      background: var(--surface2);
+      border: 1px solid var(--accent);
+      color: var(--text);
+      padding: 14px 20px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      opacity: 0;
+      transform: translateX(20px);
+      transition: all 0.3s;
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    .toast.show { opacity: 1; transform: translateX(0); }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    @media (max-width: 900px) {
+      .main { grid-template-columns: 1fr; }
+      .summary-bar { width: 100%; }
+      .sidebar { max-height: 60vh; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <svg class="logo-star" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="22" cy="22" r="21" stroke="#c8a95b" stroke-width="1.5"/>
+      <circle cx="22" cy="22" r="17" stroke="#c8a95b" stroke-width="0.5" opacity="0.4"/>
+      <path d="M22 4 L22 22 L8 36" stroke="#c8a95b" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M22 4 L22 22 L36 36" stroke="#c8a95b" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M22 22 L22 40" stroke="#c8a95b" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <div class="logo-text">Mercedes-<span>AMG</span></div>
+      <div class="subtitle">Configurator</div>
+    </div>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <!-- Model Selection -->
+    <div>
+      <div class="section-title">Select Model</div>
+      <div class="select-group">
+        <label>Year</label>
+        <select id="yearSelect"></select>
+      </div>
+      <div class="select-group" style="margin-top:12px">
+        <label>Model</label>
+        <select id="modelSelect"></select>
+      </div>
+    </div>
+
+    <!-- Exterior Color -->
+    <div>
+      <div class="section-title">Exterior Color</div>
+      <div class="color-grid" id="colorGrid"></div>
+      <div style="margin-top:10px; font-size:0.78rem; color:var(--text-muted)" id="colorName"></div>
+    </div>
+
+    <!-- Wheel Design -->
+    <div>
+      <div class="section-title">Wheel Design</div>
+      <div class="option-grid" id="wheelGrid"></div>
+    </div>
+
+    <!-- Interior -->
+    <div>
+      <div class="section-title">Interior</div>
+      <div class="option-grid" id="interiorGrid"></div>
+    </div>
+
+    <!-- Performance -->
+    <div>
+      <div class="section-title">Performance Package</div>
+      <div class="option-grid" id="perfGrid"></div>
+    </div>
+
+    <!-- Extras / Toggles -->
+    <div>
+      <div class="section-title">Options &amp; Extras</div>
+      <div id="extrasGrid"></div>
+    </div>
+
+    <!-- Tint Slider -->
+    <div>
+      <div class="section-title">Window Tint</div>
+      <div class="range-group">
+        <div class="range-header">
+          <span>Tint Level</span>
+          <span class="range-val" id="tintVal">20%</span>
+        </div>
+        <input type="range" id="tintRange" min="0" max="90" value="20" />
+      </div>
+    </div>
+
+    <!-- Ride Height -->
+    <div>
+      <div class="section-title">Suspension</div>
+      <div class="range-group">
+        <div class="range-header">
+          <span>Ride Height</span>
+          <span class="range-val" id="rideVal">Stock</span>
+        </div>
+        <input type="range" id="rideRange" min="-40" max="20" value="0" />
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- DISPLAY -->
+  <main class="display">
+    <div class="car-stage">
+      <div class="car-canvas-wrap">
+        <canvas id="carCanvas" width="820" height="420"></canvas>
+      </div>
+      <div class="car-info">
+        <div class="car-name" id="carName">AMG <strong>GT 63 S</strong></div>
+        <div class="car-year-badge" id="carYear">2024 Model Year</div>
+        <div class="specs-bar" id="specsBar"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Summary Bar -->
+<div class="summary-bar">
+  <div class="summary-items" id="summaryItems"></div>
+  <div style="display:flex;align-items:center;gap:24px">
+    <div>
+      <div style="font-size:0.6rem;letter-spacing:3px;color:var(--text-muted);text-transform:uppercase">Total Price</div>
+      <div class="total-price" id="totalPrice">$0</div>
+    </div>
+    <button class="cta-btn" onclick="saveConfig()">Save Configuration</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─────────────────────────────────────────────
+//  DATA
+// ─────────────────────────────────────────────
+const AMG_MODELS = {
+  "C 32 AMG":      { years:[2001,2002,2003,2004], base:52000, hp:349,  torque:339, weight:3263, type:"sedan" },
+  "C 55 AMG":      { years:[2005,2006,2007],       base:56000, hp:362,  torque:376, weight:3417, type:"sedan" },
+  "C 63 AMG":      { years:[2008,2009,2010,2011,2012,2013,2014,2015], base:63000, hp:451, torque:443, weight:3461, type:"sedan" },
+  "C 63 S AMG":    { years:[2015,2016,2017,2018,2019], base:75000, hp:503, torque:516, weight:3527, type:"sedan" },
+  "C 63 AMG (W206)": { years:[2023,2024,2025], base:82000, hp:671, torque:752, weight:4255, type:"sedan" },
+  "E 55 AMG":      { years:[2000,2001,2002,2003,2004,2005,2006], base:68000, hp:469, torque:516, weight:3836, type:"sedan" },
+  "E 63 AMG":      { years:[2007,2008,2009,2010,2011,2012,2013], base:79000, hp:525, torque:516, weight:4211, type:"sedan" },
+  "E 63 S AMG":    { years:[2014,2015,2016,2017,2018,2019,2020,2021,2022,2023], base:108000, hp:603, torque:627, weight:4365, type:"sedan" },
+  "S 55 AMG":      { years:[2001,2002,2003,2004,2005,2006], base:112000, hp:493, torque:516, weight:4431, type:"coupe" },
+  "S 63 AMG":      { years:[2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025], base:169000, hp:603, torque:664, weight:4630, type:"coupe" },
+  "S 65 AMG":      { years:[2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019], base:220000, hp:621, torque:738, weight:4895, type:"coupe" },
+  "SL 55 AMG":     { years:[2003,2004,2005,2006,2007,2008,2009,2010,2011], base:128000, hp:493, torque:516, weight:4222, type:"roadster" },
+  "SL 63 AMG":     { years:[2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021], base:162000, hp:563, torque:516, weight:4145, type:"roadster" },
+  "SL 65 AMG":     { years:[2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019], base:215000, hp:621, torque:738, weight:4631, type:"roadster" },
+  "GT AMG":        { years:[2015,2016,2017,2018,2019], base:111000, hp:456, torque:443, weight:3395, type:"sportscar" },
+  "GT S AMG":      { years:[2016,2017,2018,2019,2020], base:131000, hp:503, torque:479, weight:3417, type:"sportscar" },
+  "GT R AMG":      { years:[2017,2018,2019,2020,2021,2022,2023], base:157000, hp:577, torque:516, weight:3373, type:"sportscar" },
+  "GT 63 S AMG":   { years:[2019,2020,2021,2022,2023,2024,2025], base:162000, hp:630, torque:664, weight:4410, type:"coupe" },
+  "GT Black Series": { years:[2021,2022], base:325000, hp:720, torque:590, weight:3307, type:"sportscar" },
+  "GLC 43 AMG":    { years:[2017,2018,2019,2020,2021,2022,2023,2024,2025], base:59000, hp:385, torque:384, weight:3891, type:"suv" },
+  "GLC 63 AMG":    { years:[2018,2019,2020,2021,2022], base:79000, hp:503, torque:516, weight:4178, type:"suv" },
+  "GLE 53 AMG":    { years:[2020,2021,2022,2023,2024,2025], base:76000, hp:429, torque:384, weight:4938, type:"suv" },
+  "GLE 63 S AMG":  { years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025], base:105000, hp:603, torque:627, weight:5203, type:"suv" },
+  "G 63 AMG":      { years:[2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025], base:156000, hp:577, torque:627, weight:5639, type:"suv" },
+  "G 65 AMG":      { years:[2013,2014,2015,2016,2017], base:218000, hp:621, torque:738, weight:5754, type:"suv" },
+  "CLA 45 AMG":    { years:[2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024], base:53000, hp:415, torque:369, weight:3373, type:"sedan" },
+  "A 45 AMG":      { years:[2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025], base:55000, hp:421, torque:369, weight:3263, type:"hatchback" },
+  "AMG ONE":       { years:[2022,2023,2024], base:2700000, hp:1063, torque:664, weight:3263, type:"hypercar" },
+  "SLS AMG":       { years:[2010,2011,2012,2013,2014], base:185000, hp:563, torque:479, weight:3571, type:"sportscar" },
+  "SLS Black Series": { years:[2013,2014], base:275000, hp:622, torque:479, weight:3263, type:"sportscar" },
+};
+
+const COLORS = [
+  { name: "Obsidian Black",   hex: "#0d0d0d",  metallic: true,  price: 0 },
+  { name: "Polar White",      hex: "#f5f5f2",  metallic: false, price: 0 },
+  { name: "Selenite Grey",    hex: "#7a7d80",  metallic: true,  price: 1500 },
+  { name: "Iridium Silver",   hex: "#c0c2c5",  metallic: true,  price: 1500 },
+  { name: "Graphite Grey",    hex: "#4a4a4a",  metallic: true,  price: 1500 },
+  { name: "Designo Midnight", hex: "#1a1a2e",  metallic: true,  price: 3000 },
+  { name: "Night Black",      hex: "#111118",  metallic: true,  price: 2000 },
+  { name: "Brilliant Blue",   hex: "#1a3a6a",  metallic: true,  price: 2500 },
+  { name: "Patagonia Red",    hex: "#7a1515",  metallic: true,  price: 2500 },
+  { name: "AMG Green Hell",   hex: "#1a3a1a",  metallic: true,  price: 3000 },
+  { name: "Magno Cashmere",   hex: "#c8b89a",  metallic: false, price: 5000 },
+  { name: "Designo Hyacinth", hex: "#6a3a6a",  metallic: true,  price: 5000 },
+  { name: "AMG Solarbeam",    hex: "#e8b800",  metallic: false, price: 6000 },
+  { name: "Manufaktur Orange", hex: "#c84a00", metallic: true,  price: 7500 },
+  { name: "Manufaktur Matte Black", hex: "#2a2a2a", metallic: false, price: 8000 },
+];
+
+const WHEELS = [
+  { name: "AMG 5-Spoke",        style: "5spoke",     price: 0 },
+  { name: "AMG Cross-Spoke",    style: "cross",      price: 2500 },
+  { name: "AMG Forged 10-Spoke",style: "10spoke",    price: 4500 },
+  { name: "AMG Twin-Spoke",     style: "twin",       price: 3500 },
+  { name: "AMG Monoblock",      style: "mono",       price: 6000 },
+  { name: "HRE Carbon Fiber",   style: "hre",        price: 14000 },
+];
+
+const INTERIORS = [
+  { name: "Classic Black Nappa",   trim: "#111",  accent: "#222",  price: 0 },
+  { name: "Silver Pearl Nappa",    trim: "#d0cfc8", accent: "#bbb", price: 3500 },
+  { name: "AMG Red Leather",       trim: "#5a1010", accent: "#8b1a1a", price: 4500 },
+  { name: "Cognac Brown Nappa",    trim: "#6b3a1f", accent: "#8b5a2b", price: 4500 },
+  { name: "Designo Porcelain",     trim: "#ede8df", accent: "#c8b89a", price: 7000 },
+  { name: "AMG Carbon Package",    trim: "#0a0a0a", accent: "#c8a95b", price: 9500 },
+];
+
+const PERFORMANCE = [
+  { name: "Standard",            boost: 0,   price: 0 },
+  { name: "AMG Performance Package", boost: 10, price: 8500 },
+  { name: "AMG Performance+ Pack",   boost: 20, price: 14500 },
+  { name: "AMG Track Pack",      boost: 35,  price: 22000 },
+  { name: "AMG Aerodynamics Pack", boost: 5,  price: 11000 },
+];
+
+const EXTRAS = [
+  { name: "AMG Carbon Ceramic Brakes",  sub: "Brembo 6-piston",    price: 14500 },
+  { name: "AMG Night Package",          sub: "Gloss black trim",   price: 3500 },
+  { name: "AMG Carbon Fibre Package",   sub: "Exterior carbon",    price: 9500 },
+  { name: "AMG Exhaust System",         sub: "Active sport exhaust", price: 4500 },
+  { name: "Panoramic Sunroof",          sub: "Glass roof",         price: 2500 },
+  { name: "Burmester Sound System",     sub: "3D surround sound",  price: 6500 },
+  { name: "AMG Driving Assistance",     sub: "Pro package",        price: 4000 },
+  { name: "AMG Driver's Package",       sub: "300 km/h top speed", price: 3500 },
+];
+
+// ─────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────
+let state = {
+  year: 2024,
+  model: "GT 63 S AMG",
+  colorIdx: 0,
+  wheelIdx: 0,
+  interiorIdx: 0,
+  perfIdx: 0,
+  extras: new Set(),
+  tint: 20,
+  ride: 0,
+};
+
+// ─────────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────────
+function init() {
+  buildYearSelect();
+  buildModelSelect();
+  buildColorGrid();
+  buildWheelGrid();
+  buildInteriorGrid();
+  buildPerfGrid();
+  buildExtrasGrid();
+  bindSliders();
+  render();
+}
+
+function buildYearSelect() {
+  const sel = document.getElementById('yearSelect');
+  const years = [];
+  for (let y = 2025; y >= 2000; y--) years.push(y);
+  sel.innerHTML = years.map(y => `<option value="${y}" ${y===state.year?'selected':''}>${y}</option>`).join('');
+  sel.addEventListener('change', () => {
+    state.year = parseInt(sel.value);
+    buildModelSelect();
+    render();
+  });
+}
+
+function buildModelSelect() {
+  const sel = document.getElementById('modelSelect');
+  const available = Object.entries(AMG_MODELS)
+    .filter(([, d]) => d.years.includes(state.year))
+    .map(([name]) => name);
+  if (!available.includes(state.model)) state.model = available[0] || '';
+  sel.innerHTML = available.map(m => `<option value="${m}" ${m===state.model?'selected':''}>${m}</option>`).join('');
+  sel.addEventListener('change', () => { state.model = sel.value; render(); });
+}
+
+function buildColorGrid() {
+  const grid = document.getElementById('colorGrid');
+  grid.innerHTML = COLORS.map((c, i) => `
+    <div class="color-swatch ${i===state.colorIdx?'active':''}"
+         style="background:${c.hex}; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1);"
+         title="${c.name}"
+         onclick="selectColor(${i})"></div>
+  `).join('');
+  updateColorName();
+}
+
+function selectColor(i) {
+  state.colorIdx = i;
+  document.querySelectorAll('.color-swatch').forEach((el, idx) =>
+    el.classList.toggle('active', idx === i));
+  updateColorName();
+  render();
+}
+
+function updateColorName() {
+  const c = COLORS[state.colorIdx];
+  document.getElementById('colorName').textContent = c.name + (c.metallic ? ' · Metallic' : '') + (c.price > 0 ? ` · +$${c.price.toLocaleString()}` : ' · Included');
+}
+
+function buildWheelGrid() {
+  const grid = document.getElementById('wheelGrid');
+  grid.innerHTML = WHEELS.map((w, i) => `
+    <button class="opt-btn ${i===state.wheelIdx?'active':''}" onclick="selectWheel(${i})">
+      <span>${w.name}</span>
+      <span class="price-tag">${w.price>0?'+$'+w.price.toLocaleString():'Included'}</span>
+    </button>
+  `).join('');
+}
+
+function selectWheel(i) {
+  state.wheelIdx = i;
+  document.querySelectorAll('#wheelGrid .opt-btn').forEach((el, idx) => el.classList.toggle('active', idx===i));
+  render();
+}
+
+function buildInteriorGrid() {
+  const grid = document.getElementById('interiorGrid');
+  grid.innerHTML = INTERIORS.map((it, i) => `
+    <button class="opt-btn ${i===state.interiorIdx?'active':''}" onclick="selectInterior(${i})">
+      <span>${it.name}</span>
+      <span class="price-tag">${it.price>0?'+$'+it.price.toLocaleString():'Included'}</span>
+    </button>
+  `).join('');
+}
+
+function selectInterior(i) {
+  state.interiorIdx = i;
+  document.querySelectorAll('#interiorGrid .opt-btn').forEach((el, idx) => el.classList.toggle('active', idx===i));
+  render();
+}
+
+function buildPerfGrid() {
+  const grid = document.getElementById('perfGrid');
+  grid.innerHTML = PERFORMANCE.map((p, i) => `
+    <button class="opt-btn ${i===state.perfIdx?'active':''}" onclick="selectPerf(${i})">
+      <span>${p.name}</span>
+      <span class="price-tag">${p.price>0?'+$'+p.price.toLocaleString():'Included'}</span>
+    </button>
+  `).join('');
+}
+
+function selectPerf(i) {
+  state.perfIdx = i;
+  document.querySelectorAll('#perfGrid .opt-btn').forEach((el, idx) => el.classList.toggle('active', idx===i));
+  render();
+}
+
+function buildExtrasGrid() {
+  const grid = document.getElementById('extrasGrid');
+  grid.innerHTML = EXTRAS.map((e, i) => `
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label">${e.name}</div>
+        <div class="toggle-sub">${e.sub} · +$${e.price.toLocaleString()}</div>
+      </div>
+      <div class="toggle ${state.extras.has(i)?'on':''}" onclick="toggleExtra(${i})"></div>
+    </div>
+  `).join('');
+}
+
+function toggleExtra(i) {
+  state.extras.has(i) ? state.extras.delete(i) : state.extras.add(i);
+  buildExtrasGrid();
+  render();
+}
+
+function bindSliders() {
+  const tintR = document.getElementById('tintRange');
+  const rideR = document.getElementById('rideRange');
+
+  tintR.addEventListener('input', () => {
+    state.tint = parseInt(tintR.value);
+    document.getElementById('tintVal').textContent = state.tint + '%';
+    render();
+  });
+
+  rideR.addEventListener('input', () => {
+    state.ride = parseInt(rideR.value);
+    const labels = {'-40':'Slammed','-30':'Low','-20':'Sport','-10':'Mild Drop','0':'Stock','10':'Lifted','20':'Off-Road'};
+    const closest = Object.keys(labels).reduce((a, b) => Math.abs(b - state.ride) < Math.abs(a - state.ride) ? b : a);
+    document.getElementById('rideVal').textContent = labels[closest] || state.ride + 'mm';
+    render();
+  });
+}
+
+// ─────────────────────────────────────────────
+//  CANVAS RENDERER
+// ─────────────────────────────────────────────
+function render() {
+  const canvas = document.getElementById('carCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const model = AMG_MODELS[state.model] || AMG_MODELS["GT 63 S AMG"];
+  const color = COLORS[state.colorIdx];
+  const wheel = WHEELS[state.wheelIdx];
+  const interior = INTERIORS[state.interiorIdx];
+  const type = model.type;
+
+  const rideOffset = state.ride * 0.3;
+  const cy = H * 0.62 + rideOffset;
+
+  drawCar(ctx, W, H, cy, color, wheel, interior, type);
+  drawReflection(ctx, W, H, cy, color, type);
+  drawGround(ctx, W, H, cy);
+  updateInfo(model);
+}
+
+function drawGround(ctx, W, H, cy) {
+  const g = ctx.createLinearGradient(0, cy + 40, 0, H);
+  g.addColorStop(0, 'rgba(200,169,91,0.08)');
+  g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, cy + 40, W, H - cy - 40);
+
+  ctx.beginPath();
+  ctx.ellipse(W/2, cy + 44, 340, 12, 0, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fill();
+}
+
+function carBodyPath(ctx, W, H, cy, type) {
+  const cx = W / 2;
+  ctx.beginPath();
+  if (type === 'suv') {
+    ctx.moveTo(cx - 280, cy + 40);
+    ctx.lineTo(cx - 300, cy - 10);
+    ctx.lineTo(cx - 240, cy - 90);
+    ctx.lineTo(cx - 140, cy - 115);
+    ctx.lineTo(cx + 100, cy - 115);
+    ctx.lineTo(cx + 220, cy - 85);
+    ctx.lineTo(cx + 280, cy - 20);
+    ctx.lineTo(cx + 290, cy + 40);
+  } else if (type === 'roadster') {
+    ctx.moveTo(cx - 280, cy + 40);
+    ctx.lineTo(cx - 290, cy + 5);
+    ctx.lineTo(cx - 180, cy - 55);
+    ctx.lineTo(cx - 50, cy - 75);
+    ctx.lineTo(cx + 80, cy - 75);
+    ctx.lineTo(cx + 230, cy - 40);
+    ctx.lineTo(cx + 280, cy + 10);
+    ctx.lineTo(cx + 285, cy + 40);
+  } else if (type === 'hatchback') {
+    ctx.moveTo(cx - 250, cy + 40);
+    ctx.lineTo(cx - 265, cy);
+    ctx.lineTo(cx - 190, cy - 95);
+    ctx.lineTo(cx - 60, cy - 110);
+    ctx.lineTo(cx + 120, cy - 108);
+    ctx.lineTo(cx + 220, cy - 80);
+    ctx.lineTo(cx + 260, cy + 10);
+    ctx.lineTo(cx + 265, cy + 40);
+  } else if (type === 'sportscar' || type === 'hypercar') {
+    ctx.moveTo(cx - 290, cy + 40);
+    ctx.lineTo(cx - 300, cy + 10);
+    ctx.lineTo(cx - 200, cy - 50);
+    ctx.lineTo(cx - 60, cy - 75);
+    ctx.lineTo(cx + 100, cy - 72);
+    ctx.lineTo(cx + 240, cy - 30);
+    ctx.lineTo(cx + 295, cy + 15);
+    ctx.lineTo(cx + 295, cy + 40);
+  } else { // sedan / coupe
+    ctx.moveTo(cx - 280, cy + 40);
+    ctx.lineTo(cx - 295, cy + 5);
+    ctx.lineTo(cx - 220, cy - 60);
+    ctx.lineTo(cx - 80, cy - 100);
+    ctx.lineTo(cx + 80, cy - 100);
+    ctx.lineTo(cx + 210, cy - 60);
+    ctx.lineTo(cx + 285, cy + 5);
+    ctx.lineTo(cx + 285, cy + 40);
+  }
+  ctx.closePath();
+}
+
+function drawCar(ctx, W, H, cy, color, wheel, interior, type) {
+  const cx = W / 2;
+
+  // Body shadow
+  ctx.save();
+  ctx.shadowColor = 'rgba(0,0,0,0.6)';
+  ctx.shadowBlur = 30;
+  ctx.shadowOffsetY = 15;
+  carBodyPath(ctx, W, H, cy, type);
+  ctx.fillStyle = color.hex;
+  ctx.fill();
+  ctx.restore();
+
+  // Body fill with metallic gradient
+  carBodyPath(ctx, W, H, cy, type);
+  const bodyG = ctx.createLinearGradient(cx - 300, cy - 120, cx + 300, cy + 50);
+  if (color.metallic) {
+    const base = hexToRgb(color.hex);
+    bodyG.addColorStop(0, lightenColor(color.hex, 35));
+    bodyG.addColorStop(0.35, lightenColor(color.hex, 18));
+    bodyG.addColorStop(0.6, color.hex);
+    bodyG.addColorStop(0.85, darkenColor(color.hex, 15));
+    bodyG.addColorStop(1, darkenColor(color.hex, 30));
+  } else {
+    bodyG.addColorStop(0, lightenColor(color.hex, 20));
+    bodyG.addColorStop(0.5, color.hex);
+    bodyG.addColorStop(1, darkenColor(color.hex, 25));
+  }
+  ctx.fillStyle = bodyG;
+  ctx.fill();
+
+  // Body stroke
+  carBodyPath(ctx, W, H, cy, type);
+  ctx.strokeStyle = darkenColor(color.hex, 40);
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Highlight stripe
+  ctx.save();
+  carBodyPath(ctx, W, H, cy, type);
+  ctx.clip();
+  const hlG = ctx.createLinearGradient(cx - 200, cy - 100, cx + 200, cy + 20);
+  hlG.addColorStop(0, 'rgba(255,255,255,0.0)');
+  hlG.addColorStop(0.3, 'rgba(255,255,255,0.12)');
+  hlG.addColorStop(0.5, 'rgba(255,255,255,0.08)');
+  hlG.addColorStop(1, 'rgba(255,255,255,0.0)');
+  ctx.fillStyle = hlG;
+  ctx.fillRect(0, 0, W, H);
+  ctx.restore();
+
+  // Windows
+  drawWindows(ctx, W, H, cy, type, interior);
+
+  // Wheels
+  const wheelY = cy + 40;
+  const wheelR = type === 'suv' ? 50 : 44;
+  const wX1 = type === 'suv' ? cx - 180 : cx - 175;
+  const wX2 = type === 'suv' ? cx + 170 : cx + 165;
+  drawWheel(ctx, wX1, wheelY, wheelR, wheel.style);
+  drawWheel(ctx, wX2, wheelY, wheelR, wheel.style);
+
+  // Headlights
+  drawHeadlights(ctx, cx, cy, type, color);
+
+  // Taillights
+  drawTaillights(ctx, cx, cy, type);
+
+  // Grille
+  drawGrille(ctx, cx, cy, type, color);
+
+  // AMG badge
+  ctx.font = 'bold 11px "Segoe UI", sans-serif';
+  ctx.fillStyle = '#c8a95b';
+  ctx.letterSpacing = '2px';
+  ctx.fillText('AMG', cx + 200, cy + 20);
+
+  // Night package - black trim
+  if (state.extras.has(1)) {
+    drawNightPackage(ctx, cx, cy, type);
+  }
+
+  // Carbon fibre accents
+  if (state.extras.has(2)) {
+    drawCarbonAccents(ctx, cx, cy, type);
+  }
+}
+
+function drawWindows(ctx, W, H, cy, type, interior) {
+  const cx = W / 2;
+  const tintAlpha = 0.3 + (state.tint / 100) * 0.6;
+
+  ctx.save();
+  carBodyPath(ctx, W, H, cy, type);
+  ctx.clip();
+
+  // Main windshield
+  ctx.beginPath();
+  if (type === 'suv') {
+    ctx.moveTo(cx - 130, cy - 112);
+    ctx.lineTo(cx - 230, cy - 82);
+    ctx.lineTo(cx - 230, cy - 30);
+    ctx.lineTo(cx - 140, cy - 30);
+  } else if (type === 'roadster') {
+    ctx.moveTo(cx - 40, cy - 73);
+    ctx.lineTo(cx - 140, cy - 50);
+    ctx.lineTo(cx - 110, cy - 20);
+    ctx.lineTo(cx + 40, cy - 22);
+  } else if (type === 'sportscar' || type === 'hypercar') {
+    ctx.moveTo(cx - 50, cy - 73);
+    ctx.lineTo(cx - 165, cy - 45);
+    ctx.lineTo(cx - 120, cy - 12);
+    ctx.lineTo(cx + 55, cy - 14);
+  } else {
+    ctx.moveTo(cx - 70, cy - 98);
+    ctx.lineTo(cx - 190, cy - 55);
+    ctx.lineTo(cx - 150, cy - 18);
+    ctx.lineTo(cx + 60, cy - 20);
+  }
+  ctx.closePath();
+
+  const winG = ctx.createLinearGradient(cx - 200, cy - 100, cx, cy);
+  winG.addColorStop(0, `rgba(100,140,180,${tintAlpha})`);
+  winG.addColorStop(1, `rgba(60,100,140,${tintAlpha + 0.1})`);
+  ctx.fillStyle = winG;
+  ctx.fill();
+
+  // Rear window
+  ctx.beginPath();
+  if (type === 'suv') {
+    ctx.moveTo(cx + 105, cy - 112);
+    ctx.lineTo(cx + 205, cy - 80);
+    ctx.lineTo(cx + 200, cy - 30);
+    ctx.lineTo(cx + 110, cy - 30);
+  } else if (type === 'sportscar' || type === 'hypercar') {
+    ctx.moveTo(cx + 60, cy - 70);
+    ctx.lineTo(cx + 200, cy - 25);
+    ctx.lineTo(cx + 180, cy - 10);
+    ctx.lineTo(cx + 65, cy - 12);
+  } else if (type !== 'roadster') {
+    ctx.moveTo(cx + 65, cy - 97);
+    ctx.lineTo(cx + 175, cy - 55);
+    ctx.lineTo(cx + 145, cy - 20);
+    ctx.lineTo(cx + 55, cy - 20);
+  }
+  ctx.closePath();
+  ctx.fillStyle = winG;
+  ctx.fill();
+
+  ctx.restore();
+}
+
+function drawWheel(ctx, x, y, r, style) {
+  // Tire
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fillStyle = '#111';
+  ctx.fill();
+  ctx.strokeStyle = '#222';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Rim base
+  ctx.beginPath();
+  ctx.arc(x, y, r * 0.75, 0, Math.PI * 2);
+  const rimG = ctx.createRadialGradient(x - r*0.2, y - r*0.2, 0, x, y, r * 0.75);
+  rimG.addColorStop(0, '#888');
+  rimG.addColorStop(0.5, '#555');
+  rimG.addColorStop(1, '#333');
+  ctx.fillStyle = rimG;
+  ctx.fill();
+
+  const spokes = { '5spoke': 5, 'cross': 10, '10spoke': 10, 'twin': 8, 'mono': 1, 'hre': 5 };
+  const spokeCount = spokes[style] || 5;
+  const innerR = r * 0.2;
+  const outerR = r * 0.72;
+
+  if (style === 'mono') {
+    // Monoblock - solid with cutouts
+    for (let i = 0; i < 6; i++) {
+      const a = (i / 6) * Math.PI * 2;
+      const bx = x + Math.cos(a) * r * 0.5;
+      const by = y + Math.sin(a) * r * 0.5;
+      ctx.beginPath();
+      ctx.arc(bx, by, r * 0.12, 0, Math.PI * 2);
+      ctx.fillStyle = '#1a1a1a';
+      ctx.fill();
+    }
+  } else if (style === 'hre') {
+    // HRE Carbon - dark spokes with bright edges
+    for (let i = 0; i < 5; i++) {
+      const a = (i / 5) * Math.PI * 2 - Math.PI / 2;
+      ctx.beginPath();
+      ctx.moveTo(x + Math.cos(a - 0.12) * innerR, y + Math.sin(a - 0.12) * innerR);
+      ctx.lineTo(x + Math.cos(a - 0.07) * outerR, y + Math.sin(a - 0.07) * outerR);
+      ctx.lineTo(x + Math.cos(a + 0.07) * outerR, y + Math.sin(a + 0.07) * outerR);
+      ctx.lineTo(x + Math.cos(a + 0.12) * innerR, y + Math.sin(a + 0.12) * innerR);
+      ctx.fillStyle = '#1a1a1a';
+      ctx.fill();
+      ctx.strokeStyle = '#c8a95b';
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    }
+  } else {
+    // Standard spoke designs
+    for (let i = 0; i < spokeCount; i++) {
+      const a = (i / spokeCount) * Math.PI * 2 - Math.PI / 2;
+      const w = style === 'twin' ? 0.08 : 0.06;
+      ctx.beginPath();
+      ctx.moveTo(x + Math.cos(a - w) * innerR, y + Math.sin(a - w) * innerR);
+      ctx.lineTo(x + Math.cos(a - w*0.5) * outerR, y + Math.sin(a - w*0.5) * outerR);
+      ctx.lineTo(x + Math.cos(a + w*0.5) * outerR, y + Math.sin(a + w*0.5) * outerR);
+      ctx.lineTo(x + Math.cos(a + w) * innerR, y + Math.sin(a + w) * innerR);
+      ctx.closePath();
+      const sg = ctx.createLinearGradient(
+        x + Math.cos(a) * innerR, y + Math.sin(a) * innerR,
+        x + Math.cos(a) * outerR, y + Math.sin(a) * outerR
+      );
+      sg.addColorStop(0, '#bbb');
+      sg.addColorStop(1, '#555');
+      ctx.fillStyle = sg;
+      ctx.fill();
+    }
+  }
+
+  // Center cap
+  ctx.beginPath();
+  ctx.arc(x, y, r * 0.12, 0, Math.PI * 2);
+  ctx.fillStyle = '#222';
+  ctx.fill();
+  // Mercedes star on cap
+  for (let i = 0; i < 3; i++) {
+    const a = (i / 3) * Math.PI * 2 - Math.PI / 2;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + Math.cos(a) * r * 0.1, y + Math.sin(a) * r * 0.1);
+    ctx.strokeStyle = '#c8a95b';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // Brake disc/caliper peek
+  ctx.beginPath();
+  ctx.arc(x, y, r * 0.52, 0, Math.PI * 2);
+  ctx.strokeStyle = '#444';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  if (state.extras.has(0)) {
+    // Carbon ceramic brakes - orange calipers
+    ctx.beginPath();
+    ctx.arc(x, y + r * 0.35, r * 0.15, 0, Math.PI * 2);
+    ctx.fillStyle = '#e8620a';
+    ctx.fill();
+    ctx.font = `bold ${r * 0.12}px sans-serif`;
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'center';
+    ctx.fillText('AMG', x, y + r * 0.39);
+  }
+}
+
+function drawHeadlights(ctx, cx, cy, type, color) {
+  const xOff = type === 'suv' ? 270 : type === 'sportscar' || type === 'hypercar' ? 275 : 265;
+  const yOff = type === 'suv' ? -15 : type === 'sportscar' ? -10 : -22;
+
+  // DRL
+  ctx.beginPath();
+  ctx.moveTo(cx + xOff - 20, cy + yOff - 8);
+  ctx.lineTo(cx + xOff + 5, cy + yOff - 5);
+  ctx.lineTo(cx + xOff + 5, cy + yOff + 5);
+  ctx.lineTo(cx + xOff - 18, cy + yOff + 8);
+  ctx.closePath();
+  const hlG = ctx.createLinearGradient(cx + xOff - 20, 0, cx + xOff + 5, 0);
+  hlG.addColorStop(0, 'rgba(255,255,220,0.9)');
+  hlG.addColorStop(1, 'rgba(255,220,100,0.6)');
+  ctx.fillStyle = hlG;
+  ctx.fill();
+
+  // Glow
+  ctx.beginPath();
+  ctx.arc(cx + xOff - 5, cy + yOff, 12, 0, Math.PI * 2);
+  const glow = ctx.createRadialGradient(cx + xOff - 5, cy + yOff, 0, cx + xOff - 5, cy + yOff, 12);
+  glow.addColorStop(0, 'rgba(255,255,200,0.3)');
+  glow.addColorStop(1, 'rgba(255,255,200,0)');
+  ctx.fillStyle = glow;
+  ctx.fill();
+}
+
+function drawTaillights(ctx, cx, cy, type) {
+  const xOff = type === 'suv' ? -265 : type === 'sportscar' || type === 'hypercar' ? -270 : -260;
+  const yOff = type === 'suv' ? -12 : -18;
+
+  ctx.beginPath();
+  ctx.moveTo(cx + xOff, cy + yOff - 8);
+  ctx.lineTo(cx + xOff + 20, cy + yOff - 5);
+  ctx.lineTo(cx + xOff + 18, cy + yOff + 7);
+  ctx.lineTo(cx + xOff - 2, cy + yOff + 9);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(200,20,20,0.9)';
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.arc(cx + xOff + 10, cy + yOff, 10, 0, Math.PI * 2);
+  const tglow = ctx.createRadialGradient(cx + xOff + 10, cy + yOff, 0, cx + xOff + 10, cy + yOff, 10);
+  tglow.addColorStop(0, 'rgba(220,0,0,0.3)');
+  tglow.addColorStop(1, 'rgba(220,0,0,0)');
+  ctx.fillStyle = tglow;
+  ctx.fill();
+}
+
+function drawGrille(ctx, cx, cy, type, color) {
+  const gx = cx + 250;
+  const gy = cy + 5;
+  const w = 30, h = 22;
+
+  if (type === 'suv' || type === 'sedan' || type === 'coupe') {
+    // Panamericana-style grille slats
+    for (let i = 0; i < 5; i++) {
+      ctx.beginPath();
+      ctx.roundRect(gx - 3, gy - h/2 + i*(h/5), w, h/5 - 1, 1);
+      ctx.fillStyle = state.extras.has(1) ? '#111' : darkenColor(color.hex, 60);
+      ctx.fill();
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    }
+  }
+}
+
+function drawNightPackage(ctx, cx, cy, type) {
+  // Dark trim overlay on window surrounds
+  ctx.save();
+  ctx.globalAlpha = 0.7;
+  ctx.strokeStyle = '#111';
+  ctx.lineWidth = 4;
+  if (type !== 'roadster') {
+    ctx.beginPath();
+    ctx.moveTo(cx - 190, cy - 60);
+    ctx.lineTo(cx - 150, cy - 18);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx + 175, cy - 58);
+    ctx.lineTo(cx + 145, cy - 22);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawCarbonAccents(ctx, cx, cy, type) {
+  // Carbon fibre hood stripe
+  ctx.save();
+  ctx.globalAlpha = 0.85;
+  const stripeW = type === 'sportscar' || type === 'hypercar' ? 28 : 22;
+  const cg = ctx.createLinearGradient(cx - stripeW, 0, cx + stripeW, 0);
+  cg.addColorStop(0, 'transparent');
+  cg.addColorStop(0.2, 'rgba(30,30,30,0.9)');
+  cg.addColorStop(0.5, 'rgba(20,20,20,0.95)');
+  cg.addColorStop(0.8, 'rgba(30,30,30,0.9)');
+  cg.addColorStop(1, 'transparent');
+  ctx.fillStyle = cg;
+
+  const top = type === 'suv' ? cy - 115 : type === 'sportscar' ? cy - 75 : cy - 102;
+  ctx.fillRect(cx - stripeW, top, stripeW * 2, 60);
+
+  // Carbon weave texture
+  ctx.globalAlpha = 0.15;
+  for (let y = top; y < top + 60; y += 4) {
+    for (let x = cx - stripeW; x < cx + stripeW; x += 4) {
+      ctx.beginPath();
+      ctx.rect(x, y, 2, 2);
+      ctx.fillStyle = (Math.floor(x/4) + Math.floor(y/4)) % 2 === 0 ? '#555' : '#111';
+      ctx.fill();
+    }
+  }
+  ctx.restore();
+}
+
+function drawReflection(ctx, W, H, cy, color, type) {
+  ctx.save();
+  ctx.globalAlpha = 0.12;
+  ctx.scale(1, -0.25);
+  ctx.translate(0, -(cy + 85) * 4);
+  carBodyPath(ctx, W, H, cy, type);
+  ctx.fillStyle = color.hex;
+  ctx.fill();
+  ctx.restore();
+}
+
+// ─────────────────────────────────────────────
+//  INFO & PRICE
+// ─────────────────────────────────────────────
+function updateInfo(model) {
+  const perf = PERFORMANCE[state.perfIdx];
+  const hp = model.hp + Math.round(model.hp * perf.boost / 100);
+  const torq = model.torque + Math.round(model.torque * perf.boost / 100);
+  const zeroSixty = (4.8 - (hp / 1200) * 3.5 - state.perfIdx * 0.15).toFixed(1);
+
+  const nameParts = state.model.replace(' AMG', '').split(' ');
+  const lastName = nameParts.pop();
+  document.getElementById('carName').innerHTML = `${nameParts.join(' ')} <strong>${lastName}</strong>`;
+  document.getElementById('carYear').textContent = `${state.year} Model Year`;
+
+  document.getElementById('specsBar').innerHTML = `
+    <div class="spec-item"><div class="spec-value">${hp}</div><div class="spec-label">Horsepower</div></div>
+    <div class="spec-item"><div class="spec-value">${torq}</div><div class="spec-label">lb-ft Torque</div></div>
+    <div class="spec-item"><div class="spec-value">${Math.max(2.0, zeroSixty)}s</div><div class="spec-label">0-60 mph</div></div>
+    <div class="spec-item"><div class="spec-value">${model.weight.toLocaleString()}</div><div class="spec-label">lbs Weight</div></div>
+  `;
+
+  // Price
+  let total = model.base;
+  total += COLORS[state.colorIdx].price;
+  total += WHEELS[state.wheelIdx].price;
+  total += INTERIORS[state.interiorIdx].price;
+  total += PERFORMANCE[state.perfIdx].price;
+  state.extras.forEach(i => { total += EXTRAS[i].price; });
+
+  document.getElementById('totalPrice').textContent = '$' + total.toLocaleString();
+  document.getElementById('summaryItems').innerHTML = `
+    <div class="summary-item">Color: <strong>${COLORS[state.colorIdx].name}</strong></div>
+    <div class="summary-item">Wheels: <strong>${WHEELS[state.wheelIdx].name}</strong></div>
+    <div class="summary-item">Interior: <strong>${INTERIORS[state.interiorIdx].name}</strong></div>
+    <div class="summary-item">Performance: <strong>${PERFORMANCE[state.perfIdx].name}</strong></div>
+    <div class="summary-item">Options: <strong>${state.extras.size} selected</strong></div>
+  `;
+}
+
+// ─────────────────────────────────────────────
+//  SAVE
+// ─────────────────────────────────────────────
+function saveConfig() {
+  const cfg = {
+    year: state.year,
+    model: state.model,
+    color: COLORS[state.colorIdx].name,
+    wheels: WHEELS[state.wheelIdx].name,
+    interior: INTERIORS[state.interiorIdx].name,
+    performance: PERFORMANCE[state.perfIdx].name,
+    extras: [...state.extras].map(i => EXTRAS[i].name),
+    tint: state.tint + '%',
+    ride: state.ride + 'mm',
+  };
+
+  const blob = new Blob([JSON.stringify(cfg, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `AMG_${state.year}_${state.model.replace(/\s+/g,'-')}.json`;
+  a.click();
+  showToast('Configuration saved!');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ─────────────────────────────────────────────
+//  COLOR UTILS
+// ─────────────────────────────────────────────
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return { r, g, b };
+}
+
+function lightenColor(hex, amt) {
+  const { r, g, b } = hexToRgb(hex);
+  return `rgb(${Math.min(255,r+amt)},${Math.min(255,g+amt)},${Math.min(255,b+amt)})`;
+}
+
+function darkenColor(hex, amt) {
+  const { r, g, b } = hexToRgb(hex);
+  return `rgb(${Math.max(0,r-amt)},${Math.max(0,g-amt)},${Math.max(0,b-amt)})`;
+}
+
+// ─────────────────────────────────────────────
+//  START
+// ─────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
