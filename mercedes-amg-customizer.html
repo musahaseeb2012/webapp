@@ -290,9 +290,23 @@
       position: absolute;
       inset: 0;
       mix-blend-mode: multiply;
-      opacity: 0.52;
+      opacity: 0.88;
       pointer-events: none;
       transition: background 0.3s;
+    }
+
+    .type-badge {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      font-size: 0.6rem;
+      letter-spacing: 3px;
+      color: var(--accent);
+      text-transform: uppercase;
+      border: 1px solid var(--accent);
+      padding: 4px 10px;
+      background: rgba(10,10,10,0.75);
+      pointer-events: none;
     }
 
     .car-info {
@@ -504,6 +518,7 @@
       <div class="car-canvas-wrap">
         <img id="carImg" class="car-img" src="./images/sportscar.svg" alt="Mercedes-AMG" />
         <div id="colorOverlay" class="color-overlay"></div>
+        <div id="typeBadge" class="type-badge">COUPE</div>
       </div>
       <div class="car-info">
         <div class="car-name" id="carName">AMG <strong>GT 63 S</strong></div>
@@ -529,6 +544,23 @@
 <div class="toast" id="toast"></div>
 
 <script>
+// ─────────────────────────────────────────────
+//  POLYFILLS
+// ─────────────────────────────────────────────
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+    r = Math.min(r, w / 2, h / 2);
+    this.beginPath();
+    this.moveTo(x + r, y);
+    this.arcTo(x + w, y, x + w, y + h, r);
+    this.arcTo(x + w, y + h, x, y + h, r);
+    this.arcTo(x, y + h, x, y, r);
+    this.arcTo(x, y, x + w, y, r);
+    this.closePath();
+    return this;
+  };
+}
+
 // ─────────────────────────────────────────────
 //  DATA
 // ─────────────────────────────────────────────
@@ -813,6 +845,10 @@ function render() {
 
   // Color overlay
   document.getElementById('colorOverlay').style.background = color.hex;
+
+  // Type badge
+  const typeLabels = { sedan:'Sedan', coupe:'Coupe', suv:'SUV', gwagon:'G-Wagon', sportscar:'Sports Car', hypercar:'Hypercar', roadster:'Roadster', hatchback:'Hatchback' };
+  document.getElementById('typeBadge').textContent = typeLabels[type] || type;
 
   updateInfo(model);
 }
