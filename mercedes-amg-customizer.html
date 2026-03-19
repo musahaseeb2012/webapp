@@ -586,10 +586,10 @@
           <div id="typeBadge" class="type-badge">COUPE</div>
         </div>
         <div class="photo-mode-wrap" id="photoWrap">
-          <img id="carPhoto" class="car-photo" src="" alt="" onerror="photoError()" onload="photoLoaded()"/>
+          <img id="carPhoto" class="car-photo" src="data:," alt="" onerror="photoError()" onload="photoLoaded()"/>
           <div class="photo-error" id="photoError" style="display:none">Photo unavailable · <span style="color:var(--accent);margin-left:6px">switching to render</span></div>
           <div id="typeBadgePhoto" class="type-badge">COUPE</div>
-          <div class="photo-attribution">
+          <div class="photo-attribution" id="photoAttrib">
             Photo: <a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a> · CC BY-SA
           </div>
         </div>
@@ -737,16 +737,15 @@ const TYPE_IMAGES = {
   hatchback: './images/hatchback.svg',
 };
 
-// Real car photos from Wikimedia Commons (CC BY-SA)
+// Real car photos from Wikimedia Commons (CC BY-SA) — confirmed filenames
 const PHOTO_URLS = {
   sedan:     'https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Mercedes-Benz_C63_AMG.JPG/900px-Mercedes-Benz_C63_AMG.JPG',
-  coupe:     'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Mercedes-Benz_S_Class_S63_AMG.jpg/900px-Mercedes-Benz_S_Class_S63_AMG.jpg',
-  suv:       'https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Mercedes-Benz_GLE_63_AMG_S_%28X166%29_front.jpg/900px-Mercedes-Benz_GLE_63_AMG_S_%28X166%29_front.jpg',
-  gwagon:    'https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Mercedes-Benz_G_63_AMG.jpg/900px-Mercedes-Benz_G_63_AMG.jpg',
-  sportscar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Mercedes-AMG_GT_R_IAA_2017.jpg/900px-Mercedes-AMG_GT_R_IAA_2017.jpg',
+  coupe:     'https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Mercedes-Benz_S63_AMG_Coupe_%2822341188253%29.jpg/900px-Mercedes-Benz_S63_AMG_Coupe_%2822341188253%29.jpg',
+  gwagon:    'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Mercedes_Benz_G63_AMG_Long_front.JPG/900px-Mercedes_Benz_G63_AMG_Long_front.JPG',
+  sportscar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Mercedes-Benz_SLS_AMG_IAA_2009.JPG/900px-Mercedes-Benz_SLS_AMG_IAA_2009.JPG',
   hypercar:  'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/2022_Mercedes_AMG_One_%2810165%29.jpg/900px-2022_Mercedes_AMG_One_%2810165%29.jpg',
-  roadster:  'https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Mercedes-Benz_SL_63_AMG_%28R231%29_front_20130906.jpg/900px-Mercedes-Benz_SL_63_AMG_%28R231%29_front_20130906.jpg',
   hatchback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Mercedes-Benz_W176_A45_AMG_4MATIC_04.JPG/900px-Mercedes-Benz_W176_A45_AMG_4MATIC_04.JPG',
+  // suv + roadster fall back to local SVG illustrations (no confirmed Wikimedia file)
 };
 
 // ─────────────────────────────────────────────
@@ -766,6 +765,7 @@ let state = {
 };
 
 function setViewMode(mode) {
+  clearTimeout(_photoRevertTimer);
   state.viewMode = mode;
   const canvasWrap = document.getElementById('canvasWrap');
   const photoWrap = document.getElementById('photoWrap');
@@ -782,27 +782,41 @@ function setViewMode(mode) {
   }
 }
 
+let _photoRevertTimer = null;
+
 function loadPhoto() {
   const model = AMG_MODELS[state.model] || AMG_MODELS["GT 63 S AMG"];
-  const photoUrl = PHOTO_URLS[model.type];
+  const photoUrl = PHOTO_URLS[model.type] || TYPE_IMAGES[model.type];
   const img = document.getElementById('carPhoto');
   const errDiv = document.getElementById('photoError');
+  const attr = document.getElementById('photoAttrib');
+  clearTimeout(_photoRevertTimer);
   errDiv.style.display = 'none';
   img.style.display = 'block';
-  img.src = photoUrl || '';
-  if (!photoUrl) { photoError(); }
+  if (photoUrl) {
+    img.src = photoUrl;
+    // Only show Wikimedia attribution for remote photos, not local SVGs
+    if (attr) attr.style.display = PHOTO_URLS[model.type] ? '' : 'none';
+  } else {
+    photoError();
+  }
 }
 
 function photoError() {
+  // Only act if the user is currently in photo mode
+  if (state.viewMode !== 'photo') return;
   const img = document.getElementById('carPhoto');
   const errDiv = document.getElementById('photoError');
   img.style.display = 'none';
   errDiv.style.display = 'flex';
-  // Auto-revert to render after 2 seconds
-  setTimeout(() => setViewMode('render'), 2000);
+  clearTimeout(_photoRevertTimer);
+  _photoRevertTimer = setTimeout(() => setViewMode('render'), 2500);
 }
 
 function photoLoaded() {
+  // Only update if still in photo mode (not switching back mid-load)
+  if (state.viewMode !== 'photo') return;
+  clearTimeout(_photoRevertTimer);
   document.getElementById('photoError').style.display = 'none';
   document.getElementById('carPhoto').style.display = 'block';
 }
