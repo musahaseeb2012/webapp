@@ -269,20 +269,6 @@
       position: relative;
     }
 
-    .car-canvas-wrap {
-      position: relative;
-      width: 100%;
-      border-radius: 6px;
-      overflow: hidden;
-      background: #0e0e0e;
-    }
-
-    .car-canvas {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
     .type-badge {
       position: absolute;
       top: 16px;
@@ -395,19 +381,15 @@
 
     .toast.show { opacity: 1; transform: translateX(0); }
 
-    /* Photo mode */
+    /* Car photo display */
     .photo-mode-wrap {
       width: 100%;
       position: relative;
       border-radius: 6px;
       overflow: hidden;
       background: #0e0e0e;
-      display: none;
       aspect-ratio: 16/9;
     }
-
-    .photo-mode-wrap.active { display: block; }
-    .car-canvas-wrap.hidden { display: none; }
 
     .car-photo {
       width: 100%;
@@ -439,33 +421,34 @@
       text-transform: uppercase;
     }
 
-    .view-toggle {
+    /* Color preview strip under photo */
+    .color-preview-bar {
       display: flex;
-      gap: 1px;
-      background: var(--border);
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
       border-radius: 4px;
-      overflow: hidden;
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      z-index: 5;
     }
 
-    .view-btn {
-      background: var(--surface2);
-      border: none;
+    .color-preview-swatch {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 2px solid rgba(255,255,255,0.15);
+    }
+
+    .color-preview-label {
+      font-size: 0.78rem;
       color: var(--text-muted);
-      padding: 6px 12px;
-      font-size: 0.65rem;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: background 0.15s, color 0.15s;
     }
 
-    .view-btn.active {
-      background: var(--accent);
-      color: #0a0a0a;
+    .color-preview-label strong {
+      color: var(--text);
+      display: block;
     }
 
     /* Scrollbar */
@@ -577,20 +560,19 @@
   <main class="display">
     <div class="car-stage">
       <div style="position:relative">
-        <div class="view-toggle">
-          <button class="view-btn active" id="btnRender" onclick="setViewMode('render')">3D Render</button>
-          <button class="view-btn" id="btnPhoto" onclick="setViewMode('photo')">Photo</button>
-        </div>
-        <div class="car-canvas-wrap" id="canvasWrap">
-          <canvas id="carCanvas" class="car-canvas" width="900" height="420"></canvas>
-          <div id="typeBadge" class="type-badge">COUPE</div>
-        </div>
         <div class="photo-mode-wrap" id="photoWrap">
           <img id="carPhoto" class="car-photo" src="data:," alt="" onerror="photoError()" onload="photoLoaded()"/>
-          <div class="photo-error" id="photoError" style="display:none">Photo unavailable · <span style="color:var(--accent);margin-left:6px">switching to render</span></div>
-          <div id="typeBadgePhoto" class="type-badge">COUPE</div>
+          <div class="photo-error" id="photoError" style="display:none">Photo unavailable</div>
+          <div id="typeBadge" class="type-badge">COUPE</div>
           <div class="photo-attribution" id="photoAttrib">
             Photo: <a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a> · CC BY-SA
+          </div>
+        </div>
+        <div class="color-preview-bar" id="colorPreviewBar">
+          <div class="color-preview-swatch" id="colorPreviewSwatch"></div>
+          <div class="color-preview-label">
+            <strong id="colorPreviewName">Obsidian Black</strong>
+            Selected exterior color
           </div>
         </div>
       </div>
@@ -618,23 +600,6 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ─────────────────────────────────────────────
-//  POLYFILLS
-// ─────────────────────────────────────────────
-if (!CanvasRenderingContext2D.prototype.roundRect) {
-  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
-    r = Math.min(r, w / 2, h / 2);
-    this.beginPath();
-    this.moveTo(x + r, y);
-    this.arcTo(x + w, y, x + w, y + h, r);
-    this.arcTo(x + w, y + h, x, y + h, r);
-    this.arcTo(x, y + h, x, y, r);
-    this.arcTo(x, y, x + w, y, r);
-    this.closePath();
-    return this;
-  };
-}
-
 // ─────────────────────────────────────────────
 //  DATA
 // ─────────────────────────────────────────────
@@ -726,17 +691,6 @@ const EXTRAS = [
   { name: "AMG Driver's Package",       sub: "300 km/h top speed", price: 3500 },
 ];
 
-const TYPE_IMAGES = {
-  sedan:     './images/sedan.svg',
-  coupe:     './images/coupe.svg',
-  suv:       './images/suv.svg',
-  gwagon:    './images/gwagon.svg',
-  sportscar: './images/sportscar.svg',
-  hypercar:  './images/hypercar.svg',
-  roadster:  './images/roadster.svg',
-  hatchback: './images/hatchback.svg',
-};
-
 // Real car photos from Wikimedia Commons (CC BY-SA) — confirmed filenames
 const PHOTO_URLS = {
   sedan:     'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Mercedes-Benz_C63_AMG_Edition_507_%28W204%29_front.JPG/900px-Mercedes-Benz_C63_AMG_Edition_507_%28W204%29_front.JPG',
@@ -762,62 +716,32 @@ let state = {
   extras: new Set(),
   tint: 20,
   ride: 0,
-  viewMode: 'photo', // 'render' | 'photo'
 };
-
-function setViewMode(mode) {
-  clearTimeout(_photoRevertTimer);
-  state.viewMode = mode;
-  const canvasWrap = document.getElementById('canvasWrap');
-  const photoWrap = document.getElementById('photoWrap');
-  document.getElementById('btnRender').classList.toggle('active', mode === 'render');
-  document.getElementById('btnPhoto').classList.toggle('active', mode === 'photo');
-
-  if (mode === 'render') {
-    canvasWrap.classList.remove('hidden');
-    photoWrap.classList.remove('active');
-  } else {
-    canvasWrap.classList.add('hidden');
-    photoWrap.classList.add('active');
-    loadPhoto();
-  }
-}
-
-let _photoRevertTimer = null;
 
 function loadPhoto() {
   const model = AMG_MODELS[state.model] || AMG_MODELS["GT 63 S AMG"];
-  const photoUrl = PHOTO_URLS[model.type] || TYPE_IMAGES[model.type];
+  const photoUrl = PHOTO_URLS[model.type];
   const img = document.getElementById('carPhoto');
   const errDiv = document.getElementById('photoError');
   const attr = document.getElementById('photoAttrib');
-  clearTimeout(_photoRevertTimer);
   errDiv.style.display = 'none';
   img.style.display = 'block';
   if (photoUrl) {
     img.src = photoUrl;
-    // Only show Wikimedia attribution for remote photos, not local SVGs
-    if (attr) attr.style.display = PHOTO_URLS[model.type] ? '' : 'none';
+    if (attr) attr.style.display = '';
   } else {
     photoError();
   }
 }
 
 function photoError() {
-  // Only act if the user is currently in photo mode
-  if (state.viewMode !== 'photo') return;
   const img = document.getElementById('carPhoto');
   const errDiv = document.getElementById('photoError');
   img.style.display = 'none';
   errDiv.style.display = 'flex';
-  clearTimeout(_photoRevertTimer);
-  _photoRevertTimer = setTimeout(() => setViewMode('render'), 2500);
 }
 
 function photoLoaded() {
-  // Only update if still in photo mode (not switching back mid-load)
-  if (state.viewMode !== 'photo') return;
-  clearTimeout(_photoRevertTimer);
   document.getElementById('photoError').style.display = 'none';
   document.getElementById('carPhoto').style.display = 'block';
 }
@@ -835,8 +759,6 @@ function init() {
   buildExtrasGrid();
   bindSliders();
   render();
-  // Start in photo mode so real car photos are shown immediately
-  setViewMode('photo');
 }
 
 function buildYearSelect() {
@@ -977,564 +899,20 @@ function bindSliders() {
 function render() {
   const model = AMG_MODELS[state.model] || AMG_MODELS["GT 63 S AMG"];
   const color = COLORS[state.colorIdx];
-  const wheel = WHEELS[state.wheelIdx];
-  const interior = INTERIORS[state.interiorIdx];
   const type = model.type;
-
-  const canvas = document.getElementById('carCanvas');
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width;
-  const H = canvas.height;
-  const cy = H / 2 + 20 - state.ride * 0.5;
-
-  // Studio background
-  const bg = ctx.createRadialGradient(W/2, H * 0.4, 0, W/2, H * 0.4, W * 0.7);
-  bg.addColorStop(0, '#1a1a1a');
-  bg.addColorStop(0.5, '#111');
-  bg.addColorStop(1, '#060606');
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, W, H);
-
-  // Floor plane
-  const floorY = cy + 42;
-  const floor = ctx.createLinearGradient(0, floorY, 0, H);
-  floor.addColorStop(0, 'rgba(200,169,91,0.06)');
-  floor.addColorStop(0.4, 'rgba(30,30,30,0.8)');
-  floor.addColorStop(1, '#050505');
-  ctx.fillStyle = floor;
-  ctx.fillRect(0, floorY, W, H - floorY);
-
-  // Floor horizon line
-  ctx.beginPath();
-  ctx.moveTo(0, floorY);
-  ctx.lineTo(W, floorY);
-  ctx.strokeStyle = 'rgba(200,169,91,0.15)';
-  ctx.lineWidth = 1;
-  ctx.stroke();
-
-  // Studio spotlight from above-right
-  const spotlight = ctx.createRadialGradient(W * 0.65, 0, 0, W * 0.65, H * 0.5, H * 0.9);
-  spotlight.addColorStop(0, 'rgba(255,255,240,0.07)');
-  spotlight.addColorStop(0.5, 'rgba(255,255,240,0.03)');
-  spotlight.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = spotlight;
-  ctx.fillRect(0, 0, W, H);
-
-  drawGround(ctx, W, H, cy);
-  drawReflection(ctx, W, H, cy, color, type);
-  drawCar(ctx, W, H, cy, color, wheel, interior, type);
 
   // Type badge
   const typeLabels = { sedan:'Sedan', coupe:'Coupe', suv:'SUV', gwagon:'G-Wagon', sportscar:'Sports Car', hypercar:'Hypercar', roadster:'Roadster', hatchback:'Hatchback' };
-  const label = typeLabels[type] || type;
-  document.getElementById('typeBadge').textContent = label;
-  document.getElementById('typeBadgePhoto').textContent = label;
+  document.getElementById('typeBadge').textContent = typeLabels[type] || type;
 
-  // Refresh photo if in photo mode (model type may have changed)
-  if (state.viewMode === 'photo') { loadPhoto(); }
+  // Color preview bar
+  document.getElementById('colorPreviewSwatch').style.background = color.hex;
+  document.getElementById('colorPreviewName').textContent = color.name + (color.metallic ? ' · Metallic' : '');
+
+  // Load real photo
+  loadPhoto();
 
   updateInfo(model);
-}
-
-function drawGround(ctx, W, H, cy) {
-  const g = ctx.createLinearGradient(0, cy + 40, 0, H);
-  g.addColorStop(0, 'rgba(200,169,91,0.08)');
-  g.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, cy + 40, W, H - cy - 40);
-
-  ctx.beginPath();
-  ctx.ellipse(W/2, cy + 44, 340, 12, 0, 0, Math.PI * 2);
-  ctx.fillStyle = 'rgba(0,0,0,0.5)';
-  ctx.fill();
-}
-
-function carBodyPath(ctx, W, H, cy, type) {
-  const cx = W / 2;
-  ctx.beginPath();
-  if (type === 'gwagon') {
-    // G-Wagon: tall, very boxy, flat roof, vertical windshield
-    ctx.moveTo(cx - 270, cy + 40);
-    ctx.lineTo(cx - 275, cy - 20);
-    ctx.lineTo(cx - 265, cy - 115); // near-vertical A-pillar
-    ctx.lineTo(cx - 200, cy - 128); // flat roof start
-    ctx.lineTo(cx + 170, cy - 128); // flat roof end
-    ctx.lineTo(cx + 240, cy - 110); // C-pillar nearly vertical
-    ctx.lineTo(cx + 260, cy - 20);
-    ctx.lineTo(cx + 268, cy + 40);
-  } else if (type === 'suv') {
-    // GLE/GLC AMG: rounded SUV, sloped roof
-    ctx.moveTo(cx - 265, cy + 40);
-    ctx.bezierCurveTo(cx - 290, cy + 40, cx - 305, cy + 10, cx - 298, cy - 20);
-    ctx.bezierCurveTo(cx - 290, cy - 55, cx - 255, cy - 95, cx - 160, cy - 118);
-    ctx.lineTo(cx + 80, cy - 120);
-    ctx.bezierCurveTo(cx + 175, cy - 118, cx + 240, cy - 90, cx + 270, cy - 28);
-    ctx.lineTo(cx + 278, cy + 40);
-  } else if (type === 'roadster') {
-    // SL AMG: low open-top roadster
-    ctx.moveTo(cx - 275, cy + 40);
-    ctx.bezierCurveTo(cx - 295, cy + 30, cx - 300, cy + 10, cx - 285, cy - 10);
-    ctx.bezierCurveTo(cx - 265, cy - 30, cx - 200, cy - 55, cx - 60, cy - 72);
-    ctx.lineTo(cx + 70, cy - 72);
-    ctx.bezierCurveTo(cx + 140, cy - 68, cx + 220, cy - 45, cx + 265, cy - 15);
-    ctx.lineTo(cx + 278, cy + 40);
-  } else if (type === 'hatchback') {
-    // A45 AMG: compact hot hatch
-    ctx.moveTo(cx - 240, cy + 40);
-    ctx.bezierCurveTo(cx - 260, cy + 30, cx - 270, cy + 5, cx - 260, cy - 20);
-    ctx.bezierCurveTo(cx - 240, cy - 60, cx - 180, cy - 98, cx - 70, cy - 108);
-    ctx.lineTo(cx + 115, cy - 110);
-    ctx.bezierCurveTo(cx + 175, cy - 108, cx + 225, cy - 80, cx + 250, cy - 30);
-    ctx.lineTo(cx + 258, cy + 40);
-  } else if (type === 'hypercar') {
-    // AMG ONE: F1-derived, extremely low, huge rear wing stub
-    ctx.moveTo(cx - 295, cy + 40);
-    ctx.bezierCurveTo(cx - 310, cy + 30, cx - 305, cy + 10, cx - 280, cy - 15);
-    ctx.bezierCurveTo(cx - 245, cy - 45, cx - 160, cy - 68, cx - 40, cy - 78);
-    ctx.lineTo(cx + 90, cy - 78);
-    ctx.bezierCurveTo(cx + 160, cy - 72, cx + 240, cy - 45, cx + 280, cy - 5);
-    // rear wing
-    ctx.lineTo(cx + 300, cy + 5);
-    ctx.lineTo(cx + 300, cy + 40);
-  } else if (type === 'sportscar') {
-    // AMG GT / SLS: long hood, very low, fastback
-    ctx.moveTo(cx - 295, cy + 40);
-    ctx.bezierCurveTo(cx - 310, cy + 25, cx - 305, cy + 8, cx - 285, cy - 8);
-    ctx.bezierCurveTo(cx - 250, cy - 32, cx - 185, cy - 52, cx - 55, cy - 72);
-    ctx.lineTo(cx + 95, cy - 70);
-    ctx.bezierCurveTo(cx + 175, cy - 62, cx + 250, cy - 35, cx + 288, cy + 8);
-    ctx.lineTo(cx + 295, cy + 40);
-  } else { // sedan / coupe (C63, E63, S63)
-    ctx.moveTo(cx - 278, cy + 40);
-    ctx.bezierCurveTo(cx - 298, cy + 28, cx - 302, cy + 5, cx - 288, cy - 18);
-    ctx.bezierCurveTo(cx - 260, cy - 50, cx - 200, cy - 82, cx - 85, cy - 100);
-    ctx.lineTo(cx + 78, cy - 100);
-    ctx.bezierCurveTo(cx + 175, cy - 90, cx + 240, cy - 62, cx + 275, cy - 20);
-    ctx.lineTo(cx + 282, cy + 40);
-  }
-  ctx.closePath();
-}
-
-function drawCar(ctx, W, H, cy, color, wheel, interior, type) {
-  const cx = W / 2;
-
-  // Body shadow
-  ctx.save();
-  ctx.shadowColor = 'rgba(0,0,0,0.6)';
-  ctx.shadowBlur = 30;
-  ctx.shadowOffsetY = 15;
-  carBodyPath(ctx, W, H, cy, type);
-  ctx.fillStyle = color.hex;
-  ctx.fill();
-  ctx.restore();
-
-  // Body fill with metallic gradient
-  carBodyPath(ctx, W, H, cy, type);
-  const bodyG = ctx.createLinearGradient(cx - 300, cy - 120, cx + 300, cy + 50);
-  if (color.metallic) {
-    const base = hexToRgb(color.hex);
-    bodyG.addColorStop(0, lightenColor(color.hex, 35));
-    bodyG.addColorStop(0.35, lightenColor(color.hex, 18));
-    bodyG.addColorStop(0.6, color.hex);
-    bodyG.addColorStop(0.85, darkenColor(color.hex, 15));
-    bodyG.addColorStop(1, darkenColor(color.hex, 30));
-  } else {
-    bodyG.addColorStop(0, lightenColor(color.hex, 20));
-    bodyG.addColorStop(0.5, color.hex);
-    bodyG.addColorStop(1, darkenColor(color.hex, 25));
-  }
-  ctx.fillStyle = bodyG;
-  ctx.fill();
-
-  // Body stroke
-  carBodyPath(ctx, W, H, cy, type);
-  ctx.strokeStyle = darkenColor(color.hex, 40);
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
-
-  // Highlight stripe
-  ctx.save();
-  carBodyPath(ctx, W, H, cy, type);
-  ctx.clip();
-  const hlG = ctx.createLinearGradient(cx - 200, cy - 100, cx + 200, cy + 20);
-  hlG.addColorStop(0, 'rgba(255,255,255,0.0)');
-  hlG.addColorStop(0.3, 'rgba(255,255,255,0.12)');
-  hlG.addColorStop(0.5, 'rgba(255,255,255,0.08)');
-  hlG.addColorStop(1, 'rgba(255,255,255,0.0)');
-  ctx.fillStyle = hlG;
-  ctx.fillRect(0, 0, W, H);
-  ctx.restore();
-
-  // Windows
-  drawWindows(ctx, W, H, cy, type, interior);
-
-  // Wheels
-  const wheelY = cy + 40;
-  const isLarge = type === 'suv' || type === 'gwagon';
-  const wheelR = isLarge ? 52 : type === 'sportscar' || type === 'hypercar' ? 42 : 44;
-  const wX1 = type === 'gwagon' ? cx - 168 : isLarge ? cx - 175 : cx - 178;
-  const wX2 = type === 'gwagon' ? cx + 158 : isLarge ? cx + 165 : cx + 168;
-  drawWheel(ctx, wX1, wheelY, wheelR, wheel.style);
-  drawWheel(ctx, wX2, wheelY, wheelR, wheel.style);
-
-  // Headlights
-  drawHeadlights(ctx, cx, cy, type, color);
-
-  // Taillights
-  drawTaillights(ctx, cx, cy, type);
-
-  // Grille
-  drawGrille(ctx, cx, cy, type, color);
-
-  // AMG badge
-  ctx.font = 'bold 11px "Segoe UI", sans-serif';
-  ctx.fillStyle = '#c8a95b';
-  ctx.letterSpacing = '2px';
-  ctx.fillText('AMG', cx + 200, cy + 20);
-
-  // Night package - black trim
-  if (state.extras.has(1)) {
-    drawNightPackage(ctx, cx, cy, type);
-  }
-
-  // Carbon fibre accents
-  if (state.extras.has(2)) {
-    drawCarbonAccents(ctx, cx, cy, type);
-  }
-}
-
-function drawWindows(ctx, W, H, cy, type, interior) {
-  const cx = W / 2;
-  const tintAlpha = 0.3 + (state.tint / 100) * 0.6;
-
-  ctx.save();
-  carBodyPath(ctx, W, H, cy, type);
-  ctx.clip();
-
-  const winG = ctx.createLinearGradient(cx - 200, cy - 100, cx, cy);
-  winG.addColorStop(0, `rgba(100,140,180,${tintAlpha})`);
-  winG.addColorStop(1, `rgba(60,100,140,${tintAlpha + 0.1})`);
-
-  // Main windshield
-  ctx.beginPath();
-  if (type === 'gwagon') {
-    // G-Wagon: nearly vertical windshield
-    ctx.moveTo(cx - 195, cy - 125);
-    ctx.lineTo(cx - 258, cy - 112);
-    ctx.lineTo(cx - 255, cy - 35);
-    ctx.lineTo(cx - 195, cy - 35);
-  } else if (type === 'suv') {
-    ctx.moveTo(cx - 130, cy - 116);
-    ctx.lineTo(cx - 230, cy - 82);
-    ctx.lineTo(cx - 228, cy - 32);
-    ctx.lineTo(cx - 138, cy - 32);
-  } else if (type === 'roadster') {
-    ctx.moveTo(cx - 40, cy - 70);
-    ctx.lineTo(cx - 135, cy - 50);
-    ctx.lineTo(cx - 108, cy - 22);
-    ctx.lineTo(cx + 38, cy - 24);
-  } else if (type === 'sportscar' || type === 'hypercar') {
-    ctx.moveTo(cx - 50, cy - 70);
-    ctx.lineTo(cx - 162, cy - 44);
-    ctx.lineTo(cx - 118, cy - 14);
-    ctx.lineTo(cx + 52, cy - 16);
-  } else if (type === 'hatchback') {
-    ctx.moveTo(cx - 65, cy - 104);
-    ctx.lineTo(cx - 192, cy - 62);
-    ctx.lineTo(cx - 158, cy - 22);
-    ctx.lineTo(cx + 48, cy - 24);
-  } else {
-    ctx.moveTo(cx - 70, cy - 96);
-    ctx.lineTo(cx - 188, cy - 54);
-    ctx.lineTo(cx - 148, cy - 20);
-    ctx.lineTo(cx + 58, cy - 22);
-  }
-  ctx.closePath();
-  ctx.fillStyle = winG;
-  ctx.fill();
-
-  // Rear window
-  ctx.beginPath();
-  if (type === 'gwagon') {
-    ctx.moveTo(cx + 185, cy - 125);
-    ctx.lineTo(cx + 252, cy - 108);
-    ctx.lineTo(cx + 250, cy - 35);
-    ctx.lineTo(cx + 185, cy - 35);
-  } else if (type === 'suv') {
-    ctx.moveTo(cx + 105, cy - 116);
-    ctx.lineTo(cx + 205, cy - 80);
-    ctx.lineTo(cx + 202, cy - 32);
-    ctx.lineTo(cx + 112, cy - 32);
-  } else if (type === 'sportscar' || type === 'hypercar') {
-    ctx.moveTo(cx + 60, cy - 68);
-    ctx.lineTo(cx + 198, cy - 24);
-    ctx.lineTo(cx + 178, cy - 12);
-    ctx.lineTo(cx + 63, cy - 14);
-  } else if (type === 'hatchback') {
-    ctx.moveTo(cx + 112, cy - 106);
-    ctx.lineTo(cx + 205, cy - 74);
-    ctx.lineTo(cx + 188, cy - 26);
-    ctx.lineTo(cx + 102, cy - 26);
-  } else if (type !== 'roadster') {
-    ctx.moveTo(cx + 65, cy - 95);
-    ctx.lineTo(cx + 172, cy - 54);
-    ctx.lineTo(cx + 143, cy - 22);
-    ctx.lineTo(cx + 55, cy - 22);
-  }
-  ctx.closePath();
-  ctx.fillStyle = winG;
-  ctx.fill();
-
-  ctx.restore();
-}
-
-function drawWheel(ctx, x, y, r, style) {
-  // Tire
-  ctx.beginPath();
-  ctx.arc(x, y, r, 0, Math.PI * 2);
-  ctx.fillStyle = '#111';
-  ctx.fill();
-  ctx.strokeStyle = '#222';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  // Rim base
-  ctx.beginPath();
-  ctx.arc(x, y, r * 0.75, 0, Math.PI * 2);
-  const rimG = ctx.createRadialGradient(x - r*0.2, y - r*0.2, 0, x, y, r * 0.75);
-  rimG.addColorStop(0, '#888');
-  rimG.addColorStop(0.5, '#555');
-  rimG.addColorStop(1, '#333');
-  ctx.fillStyle = rimG;
-  ctx.fill();
-
-  const spokes = { '5spoke': 5, 'cross': 10, '10spoke': 10, 'twin': 8, 'mono': 1, 'hre': 5 };
-  const spokeCount = spokes[style] || 5;
-  const innerR = r * 0.2;
-  const outerR = r * 0.72;
-
-  if (style === 'mono') {
-    // Monoblock - solid with cutouts
-    for (let i = 0; i < 6; i++) {
-      const a = (i / 6) * Math.PI * 2;
-      const bx = x + Math.cos(a) * r * 0.5;
-      const by = y + Math.sin(a) * r * 0.5;
-      ctx.beginPath();
-      ctx.arc(bx, by, r * 0.12, 0, Math.PI * 2);
-      ctx.fillStyle = '#1a1a1a';
-      ctx.fill();
-    }
-  } else if (style === 'hre') {
-    // HRE Carbon - dark spokes with bright edges
-    for (let i = 0; i < 5; i++) {
-      const a = (i / 5) * Math.PI * 2 - Math.PI / 2;
-      ctx.beginPath();
-      ctx.moveTo(x + Math.cos(a - 0.12) * innerR, y + Math.sin(a - 0.12) * innerR);
-      ctx.lineTo(x + Math.cos(a - 0.07) * outerR, y + Math.sin(a - 0.07) * outerR);
-      ctx.lineTo(x + Math.cos(a + 0.07) * outerR, y + Math.sin(a + 0.07) * outerR);
-      ctx.lineTo(x + Math.cos(a + 0.12) * innerR, y + Math.sin(a + 0.12) * innerR);
-      ctx.fillStyle = '#1a1a1a';
-      ctx.fill();
-      ctx.strokeStyle = '#c8a95b';
-      ctx.lineWidth = 0.5;
-      ctx.stroke();
-    }
-  } else {
-    // Standard spoke designs
-    for (let i = 0; i < spokeCount; i++) {
-      const a = (i / spokeCount) * Math.PI * 2 - Math.PI / 2;
-      const w = style === 'twin' ? 0.08 : 0.06;
-      ctx.beginPath();
-      ctx.moveTo(x + Math.cos(a - w) * innerR, y + Math.sin(a - w) * innerR);
-      ctx.lineTo(x + Math.cos(a - w*0.5) * outerR, y + Math.sin(a - w*0.5) * outerR);
-      ctx.lineTo(x + Math.cos(a + w*0.5) * outerR, y + Math.sin(a + w*0.5) * outerR);
-      ctx.lineTo(x + Math.cos(a + w) * innerR, y + Math.sin(a + w) * innerR);
-      ctx.closePath();
-      const sg = ctx.createLinearGradient(
-        x + Math.cos(a) * innerR, y + Math.sin(a) * innerR,
-        x + Math.cos(a) * outerR, y + Math.sin(a) * outerR
-      );
-      sg.addColorStop(0, '#bbb');
-      sg.addColorStop(1, '#555');
-      ctx.fillStyle = sg;
-      ctx.fill();
-    }
-  }
-
-  // Center cap
-  ctx.beginPath();
-  ctx.arc(x, y, r * 0.12, 0, Math.PI * 2);
-  ctx.fillStyle = '#222';
-  ctx.fill();
-  // Mercedes star on cap
-  for (let i = 0; i < 3; i++) {
-    const a = (i / 3) * Math.PI * 2 - Math.PI / 2;
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.lineTo(x + Math.cos(a) * r * 0.1, y + Math.sin(a) * r * 0.1);
-    ctx.strokeStyle = '#c8a95b';
-    ctx.lineWidth = 1;
-    ctx.stroke();
-  }
-
-  // Brake disc/caliper peek
-  ctx.beginPath();
-  ctx.arc(x, y, r * 0.52, 0, Math.PI * 2);
-  ctx.strokeStyle = '#444';
-  ctx.lineWidth = 1;
-  ctx.stroke();
-
-  if (state.extras.has(0)) {
-    // Carbon ceramic brakes - orange calipers
-    ctx.beginPath();
-    ctx.arc(x, y + r * 0.35, r * 0.15, 0, Math.PI * 2);
-    ctx.fillStyle = '#e8620a';
-    ctx.fill();
-    ctx.font = `bold ${r * 0.12}px sans-serif`;
-    ctx.fillStyle = 'white';
-    ctx.textAlign = 'center';
-    ctx.fillText('AMG', x, y + r * 0.39);
-  }
-}
-
-function drawHeadlights(ctx, cx, cy, type, color) {
-  const xOff = type === 'gwagon' ? 255 : type === 'suv' ? 268 : type === 'sportscar' || type === 'hypercar' ? 278 : 265;
-  const yOff = type === 'gwagon' ? -18 : type === 'suv' ? -15 : type === 'sportscar' ? -10 : -22;
-
-  // DRL
-  ctx.beginPath();
-  ctx.moveTo(cx + xOff - 20, cy + yOff - 8);
-  ctx.lineTo(cx + xOff + 5, cy + yOff - 5);
-  ctx.lineTo(cx + xOff + 5, cy + yOff + 5);
-  ctx.lineTo(cx + xOff - 18, cy + yOff + 8);
-  ctx.closePath();
-  const hlG = ctx.createLinearGradient(cx + xOff - 20, 0, cx + xOff + 5, 0);
-  hlG.addColorStop(0, 'rgba(255,255,220,0.9)');
-  hlG.addColorStop(1, 'rgba(255,220,100,0.6)');
-  ctx.fillStyle = hlG;
-  ctx.fill();
-
-  // Glow
-  ctx.beginPath();
-  ctx.arc(cx + xOff - 5, cy + yOff, 12, 0, Math.PI * 2);
-  const glow = ctx.createRadialGradient(cx + xOff - 5, cy + yOff, 0, cx + xOff - 5, cy + yOff, 12);
-  glow.addColorStop(0, 'rgba(255,255,200,0.3)');
-  glow.addColorStop(1, 'rgba(255,255,200,0)');
-  ctx.fillStyle = glow;
-  ctx.fill();
-}
-
-function drawTaillights(ctx, cx, cy, type) {
-  const xOff = type === 'gwagon' ? -248 : type === 'suv' ? -262 : type === 'sportscar' || type === 'hypercar' ? -272 : -260;
-  const yOff = type === 'gwagon' ? -15 : type === 'suv' ? -12 : -18;
-
-  ctx.beginPath();
-  ctx.moveTo(cx + xOff, cy + yOff - 8);
-  ctx.lineTo(cx + xOff + 20, cy + yOff - 5);
-  ctx.lineTo(cx + xOff + 18, cy + yOff + 7);
-  ctx.lineTo(cx + xOff - 2, cy + yOff + 9);
-  ctx.closePath();
-  ctx.fillStyle = 'rgba(200,20,20,0.9)';
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.arc(cx + xOff + 10, cy + yOff, 10, 0, Math.PI * 2);
-  const tglow = ctx.createRadialGradient(cx + xOff + 10, cy + yOff, 0, cx + xOff + 10, cy + yOff, 10);
-  tglow.addColorStop(0, 'rgba(220,0,0,0.3)');
-  tglow.addColorStop(1, 'rgba(220,0,0,0)');
-  ctx.fillStyle = tglow;
-  ctx.fill();
-}
-
-function drawGrille(ctx, cx, cy, type, color) {
-  const grillColor = state.extras.has(1) ? '#111' : darkenColor(color.hex, 55);
-
-  if (type === 'gwagon') {
-    // G-Wagon: large flat front grille with big Mercedes star
-    const gx = cx + 248, gy = cy + 8, gw = 38, gh = 35;
-    for (let i = 0; i < 6; i++) {
-      ctx.beginPath();
-      ctx.roundRect(gx - 4, gy - gh/2 + i*(gh/6), gw, gh/6 - 1, 1);
-      ctx.fillStyle = grillColor;
-      ctx.fill();
-      ctx.strokeStyle = '#333'; ctx.lineWidth = 0.5; ctx.stroke();
-    }
-    // Round headlight on G-Wagon
-    ctx.beginPath();
-    ctx.arc(cx + 246, cy - 15, 14, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(255,255,200,0.85)';
-    ctx.fill();
-    ctx.strokeStyle = '#888'; ctx.lineWidth = 1; ctx.stroke();
-  } else {
-    const gx = cx + 252, gy = cy + 5, w = 30, h = 22;
-    // Panamericana-style grille slats for all other models
-    for (let i = 0; i < 5; i++) {
-      ctx.beginPath();
-      ctx.roundRect(gx - 3, gy - h/2 + i*(h/5), w, h/5 - 1, 1);
-      ctx.fillStyle = grillColor;
-      ctx.fill();
-      ctx.strokeStyle = '#333'; ctx.lineWidth = 0.5; ctx.stroke();
-    }
-  }
-}
-
-function drawNightPackage(ctx, cx, cy, type) {
-  // Dark trim overlay on window surrounds
-  ctx.save();
-  ctx.globalAlpha = 0.7;
-  ctx.strokeStyle = '#111';
-  ctx.lineWidth = 4;
-  if (type !== 'roadster') {
-    ctx.beginPath();
-    ctx.moveTo(cx - 190, cy - 60);
-    ctx.lineTo(cx - 150, cy - 18);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(cx + 175, cy - 58);
-    ctx.lineTo(cx + 145, cy - 22);
-    ctx.stroke();
-  }
-  ctx.restore();
-}
-
-function drawCarbonAccents(ctx, cx, cy, type) {
-  // Carbon fibre hood stripe
-  ctx.save();
-  ctx.globalAlpha = 0.85;
-  const stripeW = type === 'sportscar' || type === 'hypercar' ? 28 : 22;
-  const cg = ctx.createLinearGradient(cx - stripeW, 0, cx + stripeW, 0);
-  cg.addColorStop(0, 'transparent');
-  cg.addColorStop(0.2, 'rgba(30,30,30,0.9)');
-  cg.addColorStop(0.5, 'rgba(20,20,20,0.95)');
-  cg.addColorStop(0.8, 'rgba(30,30,30,0.9)');
-  cg.addColorStop(1, 'transparent');
-  ctx.fillStyle = cg;
-
-  const top = type === 'suv' ? cy - 115 : type === 'sportscar' ? cy - 75 : cy - 102;
-  ctx.fillRect(cx - stripeW, top, stripeW * 2, 60);
-
-  // Carbon weave texture
-  ctx.globalAlpha = 0.15;
-  for (let y = top; y < top + 60; y += 4) {
-    for (let x = cx - stripeW; x < cx + stripeW; x += 4) {
-      ctx.beginPath();
-      ctx.rect(x, y, 2, 2);
-      ctx.fillStyle = (Math.floor(x/4) + Math.floor(y/4)) % 2 === 0 ? '#555' : '#111';
-      ctx.fill();
-    }
-  }
-  ctx.restore();
-}
-
-function drawReflection(ctx, W, H, cy, color, type) {
-  ctx.save();
-  ctx.globalAlpha = 0.12;
-  ctx.scale(1, -0.25);
-  ctx.translate(0, -(cy + 85) * 4);
-  carBodyPath(ctx, W, H, cy, type);
-  ctx.fillStyle = color.hex;
-  ctx.fill();
-  ctx.restore();
 }
 
 // ─────────────────────────────────────────────
@@ -1607,25 +985,6 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-// ─────────────────────────────────────────────
-//  COLOR UTILS
-// ─────────────────────────────────────────────
-function hexToRgb(hex) {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return { r, g, b };
-}
-
-function lightenColor(hex, amt) {
-  const { r, g, b } = hexToRgb(hex);
-  return `rgb(${Math.min(255,r+amt)},${Math.min(255,g+amt)},${Math.min(255,b+amt)})`;
-}
-
-function darkenColor(hex, amt) {
-  const { r, g, b } = hexToRgb(hex);
-  return `rgb(${Math.max(0,r-amt)},${Math.max(0,g-amt)},${Math.max(0,b-amt)})`;
-}
 
 // ─────────────────────────────────────────────
 //  START
