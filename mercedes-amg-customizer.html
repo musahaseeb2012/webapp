@@ -739,13 +739,14 @@ const TYPE_IMAGES = {
 
 // Real car photos from Wikimedia Commons (CC BY-SA) — confirmed filenames
 const PHOTO_URLS = {
-  sedan:     'https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Mercedes-Benz_C63_AMG.JPG/900px-Mercedes-Benz_C63_AMG.JPG',
-  coupe:     'https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Mercedes-Benz_S63_AMG_Coupe_%2822341188253%29.jpg/900px-Mercedes-Benz_S63_AMG_Coupe_%2822341188253%29.jpg',
+  sedan:     'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Mercedes-Benz_C63_AMG_Edition_507_%28W204%29_front.JPG/900px-Mercedes-Benz_C63_AMG_Edition_507_%28W204%29_front.JPG',
+  coupe:     'https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Mercedes-Benz_S63_AMG_4MATIC_Coup%C3%A9_%28C217%29_front.JPG/900px-Mercedes-Benz_S63_AMG_4MATIC_Coup%C3%A9_%28C217%29_front.JPG',
+  suv:       'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Mercedes-Benz_ML63_AMG_%28W166%29_front.JPG/900px-Mercedes-Benz_ML63_AMG_%28W166%29_front.JPG',
   gwagon:    'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Mercedes_Benz_G63_AMG_Long_front.JPG/900px-Mercedes_Benz_G63_AMG_Long_front.JPG',
   sportscar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Mercedes-Benz_SLS_AMG_IAA_2009.JPG/900px-Mercedes-Benz_SLS_AMG_IAA_2009.JPG',
   hypercar:  'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/2022_Mercedes_AMG_One_%2810165%29.jpg/900px-2022_Mercedes_AMG_One_%2810165%29.jpg',
+  roadster:  'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Mercedes-Benz_SL63_AMG_%28R230%29_front.JPG/900px-Mercedes-Benz_SL63_AMG_%28R230%29_front.JPG',
   hatchback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Mercedes-Benz_W176_A45_AMG_4MATIC_04.JPG/900px-Mercedes-Benz_W176_A45_AMG_4MATIC_04.JPG',
-  // suv + roadster fall back to local SVG illustrations (no confirmed Wikimedia file)
 };
 
 // ─────────────────────────────────────────────
@@ -761,7 +762,7 @@ let state = {
   extras: new Set(),
   tint: 20,
   ride: 0,
-  viewMode: 'render', // 'render' | 'photo'
+  viewMode: 'photo', // 'render' | 'photo'
 };
 
 function setViewMode(mode) {
@@ -834,6 +835,8 @@ function init() {
   buildExtrasGrid();
   bindSliders();
   render();
+  // Start in photo mode so real car photos are shown immediately
+  setViewMode('photo');
 }
 
 function buildYearSelect() {
