@@ -395,6 +395,79 @@
 
     .toast.show { opacity: 1; transform: translateX(0); }
 
+    /* Photo mode */
+    .photo-mode-wrap {
+      width: 100%;
+      position: relative;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #0e0e0e;
+      display: none;
+      aspect-ratio: 16/9;
+    }
+
+    .photo-mode-wrap.active { display: block; }
+    .car-canvas-wrap.hidden { display: none; }
+
+    .car-photo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .photo-attribution {
+      position: absolute;
+      bottom: 8px;
+      right: 10px;
+      font-size: 0.6rem;
+      color: rgba(200,200,200,0.6);
+      letter-spacing: 1px;
+    }
+
+    .photo-attribution a { color: rgba(200,169,91,0.7); text-decoration: none; }
+
+    .photo-error {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .view-toggle {
+      display: flex;
+      gap: 1px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      z-index: 5;
+    }
+
+    .view-btn {
+      background: var(--surface2);
+      border: none;
+      color: var(--text-muted);
+      padding: 6px 12px;
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .view-btn.active {
+      background: var(--accent);
+      color: #0a0a0a;
+    }
+
     /* Scrollbar */
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
@@ -503,9 +576,23 @@
   <!-- DISPLAY -->
   <main class="display">
     <div class="car-stage">
-      <div class="car-canvas-wrap">
-        <canvas id="carCanvas" class="car-canvas" width="900" height="420"></canvas>
-        <div id="typeBadge" class="type-badge">COUPE</div>
+      <div style="position:relative">
+        <div class="view-toggle">
+          <button class="view-btn active" id="btnRender" onclick="setViewMode('render')">3D Render</button>
+          <button class="view-btn" id="btnPhoto" onclick="setViewMode('photo')">Photo</button>
+        </div>
+        <div class="car-canvas-wrap" id="canvasWrap">
+          <canvas id="carCanvas" class="car-canvas" width="900" height="420"></canvas>
+          <div id="typeBadge" class="type-badge">COUPE</div>
+        </div>
+        <div class="photo-mode-wrap" id="photoWrap">
+          <img id="carPhoto" class="car-photo" src="" alt="" onerror="photoError()" onload="photoLoaded()"/>
+          <div class="photo-error" id="photoError" style="display:none">Photo unavailable · <span style="color:var(--accent);margin-left:6px">switching to render</span></div>
+          <div id="typeBadgePhoto" class="type-badge">COUPE</div>
+          <div class="photo-attribution">
+            Photo: <a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a> · CC BY-SA
+          </div>
+        </div>
       </div>
       <div class="car-info">
         <div class="car-name" id="carName">AMG <strong>GT 63 S</strong></div>
@@ -650,6 +737,18 @@ const TYPE_IMAGES = {
   hatchback: './images/hatchback.svg',
 };
 
+// Real car photos from Wikimedia Commons (CC BY-SA)
+const PHOTO_URLS = {
+  sedan:     'https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Mercedes-Benz_C63_AMG.JPG/900px-Mercedes-Benz_C63_AMG.JPG',
+  coupe:     'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Mercedes-Benz_S_Class_S63_AMG.jpg/900px-Mercedes-Benz_S_Class_S63_AMG.jpg',
+  suv:       'https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Mercedes-Benz_GLE_63_AMG_S_%28X166%29_front.jpg/900px-Mercedes-Benz_GLE_63_AMG_S_%28X166%29_front.jpg',
+  gwagon:    'https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Mercedes-Benz_G_63_AMG.jpg/900px-Mercedes-Benz_G_63_AMG.jpg',
+  sportscar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Mercedes-AMG_GT_R_IAA_2017.jpg/900px-Mercedes-AMG_GT_R_IAA_2017.jpg',
+  hypercar:  'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/2022_Mercedes_AMG_One_%2810165%29.jpg/900px-2022_Mercedes_AMG_One_%2810165%29.jpg',
+  roadster:  'https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Mercedes-Benz_SL_63_AMG_%28R231%29_front_20130906.jpg/900px-Mercedes-Benz_SL_63_AMG_%28R231%29_front_20130906.jpg',
+  hatchback: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Mercedes-Benz_W176_A45_AMG_4MATIC_04.JPG/900px-Mercedes-Benz_W176_A45_AMG_4MATIC_04.JPG',
+};
+
 // ─────────────────────────────────────────────
 //  STATE
 // ─────────────────────────────────────────────
@@ -663,7 +762,50 @@ let state = {
   extras: new Set(),
   tint: 20,
   ride: 0,
+  viewMode: 'render', // 'render' | 'photo'
 };
+
+function setViewMode(mode) {
+  state.viewMode = mode;
+  const canvasWrap = document.getElementById('canvasWrap');
+  const photoWrap = document.getElementById('photoWrap');
+  document.getElementById('btnRender').classList.toggle('active', mode === 'render');
+  document.getElementById('btnPhoto').classList.toggle('active', mode === 'photo');
+
+  if (mode === 'render') {
+    canvasWrap.classList.remove('hidden');
+    photoWrap.classList.remove('active');
+  } else {
+    canvasWrap.classList.add('hidden');
+    photoWrap.classList.add('active');
+    loadPhoto();
+  }
+}
+
+function loadPhoto() {
+  const model = AMG_MODELS[state.model] || AMG_MODELS["GT 63 S AMG"];
+  const photoUrl = PHOTO_URLS[model.type];
+  const img = document.getElementById('carPhoto');
+  const errDiv = document.getElementById('photoError');
+  errDiv.style.display = 'none';
+  img.style.display = 'block';
+  img.src = photoUrl || '';
+  if (!photoUrl) { photoError(); }
+}
+
+function photoError() {
+  const img = document.getElementById('carPhoto');
+  const errDiv = document.getElementById('photoError');
+  img.style.display = 'none';
+  errDiv.style.display = 'flex';
+  // Auto-revert to render after 2 seconds
+  setTimeout(() => setViewMode('render'), 2000);
+}
+
+function photoLoaded() {
+  document.getElementById('photoError').style.display = 'none';
+  document.getElementById('carPhoto').style.display = 'block';
+}
 
 // ─────────────────────────────────────────────
 //  INIT
@@ -867,7 +1009,12 @@ function render() {
 
   // Type badge
   const typeLabels = { sedan:'Sedan', coupe:'Coupe', suv:'SUV', gwagon:'G-Wagon', sportscar:'Sports Car', hypercar:'Hypercar', roadster:'Roadster', hatchback:'Hatchback' };
-  document.getElementById('typeBadge').textContent = typeLabels[type] || type;
+  const label = typeLabels[type] || type;
+  document.getElementById('typeBadge').textContent = label;
+  document.getElementById('typeBadgePhoto').textContent = label;
+
+  // Refresh photo if in photo mode (model type may have changed)
+  if (state.viewMode === 'photo') { loadPhoto(); }
 
   updateInfo(model);
 }
