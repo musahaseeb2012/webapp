@@ -1,243 +1,238 @@
-// Get DOM elements
-const todoInput = document.getElementById('todoInput');
-const addBtn = document.getElementById('addBtn');
-const todoList = document.getElementById('todoList');
-const taskCount = document.getElementById('taskCount');
-const clearCompletedBtn = document.getElementById('clearCompleted');
-const filterBtns = document.querySelectorAll('.filter-btn');
+/* =====================================================
+   PIN Lookup — app.js
+   ===================================================== */
 
-// State
-let todos = [];
-let currentFilter = 'all';
-let totalCompletedCount = 0;
+// ── Data ─────────────────────────────────────────────
 
-// Load todos from localStorage on page load
-function loadTodos() {
-    const savedTodos = localStorage.getItem('todos');
-    if (savedTodos) {
-        todos = JSON.parse(savedTodos);
-        renderTodos();
-    }
+const COMMON_4 = [
+  { pin: "1234", pattern: "Sequential" },
+  { pin: "1111", pattern: "Repeating" },
+  { pin: "0000", pattern: "Repeating" },
+  { pin: "1212", pattern: "Alternating" },
+  { pin: "7777", pattern: "Repeating" },
+  { pin: "1004", pattern: "Year-like" },
+  { pin: "2000", pattern: "Year-like" },
+  { pin: "4444", pattern: "Repeating" },
+  { pin: "2222", pattern: "Repeating" },
+  { pin: "6969", pattern: "Keyboard pattern" },
+  { pin: "9999", pattern: "Repeating" },
+  { pin: "3333", pattern: "Repeating" },
+  { pin: "5555", pattern: "Repeating" },
+  { pin: "6666", pattern: "Repeating" },
+  { pin: "1122", pattern: "Pair repeat" },
+  { pin: "1313", pattern: "Alternating" },
+  { pin: "8888", pattern: "Repeating" },
+  { pin: "4321", pattern: "Reverse seq." },
+  { pin: "2001", pattern: "Year-like" },
+  { pin: "1010", pattern: "Alternating" },
+];
 
-    // Load total completed count
-    const savedTotal = localStorage.getItem('totalCompleted');
-    if (savedTotal) {
-        totalCompletedCount = parseInt(savedTotal);
-        updateTotalCompleted();
-    }
+const COMMON_6 = [
+  { pin: "123456", pattern: "Sequential" },
+  { pin: "111111", pattern: "Repeating" },
+  { pin: "000000", pattern: "Repeating" },
+  { pin: "123123", pattern: "Double seq." },
+  { pin: "121212", pattern: "Alternating" },
+  { pin: "112233", pattern: "Pair seq." },
+  { pin: "654321", pattern: "Reverse seq." },
+  { pin: "666666", pattern: "Repeating" },
+  { pin: "222222", pattern: "Repeating" },
+  { pin: "333333", pattern: "Repeating" },
+  { pin: "999999", pattern: "Repeating" },
+  { pin: "444444", pattern: "Repeating" },
+  { pin: "555555", pattern: "Repeating" },
+  { pin: "777777", pattern: "Repeating" },
+  { pin: "888888", pattern: "Repeating" },
+  { pin: "123321", pattern: "Palindrome" },
+  { pin: "101010", pattern: "Alternating" },
+  { pin: "102030", pattern: "Arithmetic" },
+  { pin: "131313", pattern: "Alternating" },
+  { pin: "159753", pattern: "Keypad diagonal" },
+];
+
+// Build fast lookup sets
+const COMMON_4_SET = new Set(COMMON_4.map(d => d.pin));
+const COMMON_6_SET = new Set(COMMON_6.map(d => d.pin));
+
+// ── DOM refs ──────────────────────────────────────────
+
+const form       = document.getElementById("lookup-form");
+const pinInput   = document.getElementById("pin-input");
+const errEl      = document.getElementById("form-error");
+const resultEl   = document.getElementById("result-panel");
+const tab4       = document.getElementById("tab-4");
+const tab6       = document.getElementById("tab-6");
+const panel4     = document.getElementById("panel-4");
+const panel6     = document.getElementById("panel-6");
+const genBtn     = document.getElementById("gen-btn");
+const genResult  = document.getElementById("gen-result");
+
+// ── Table rendering ───────────────────────────────────
+
+function riskBadge(rank) {
+  if (rank <= 5)  return '<span class="badge badge--high" aria-label="Very high risk">Very High</span>';
+  if (rank <= 12) return '<span class="badge badge--high" aria-label="High risk">High</span>';
+  return '<span class="badge badge--medium" aria-label="Medium risk">Medium</span>';
 }
 
-// Save todos to localStorage
-function saveTodos() {
-    localStorage.setItem('todos', JSON.stringify(todos));
+function buildTable(bodyId, data) {
+  const tbody = document.getElementById(bodyId);
+  tbody.innerHTML = data.map((d, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td class="pin-cell">${d.pin}</td>
+      <td>${d.pattern}</td>
+      <td>${riskBadge(i + 1)}</td>
+    </tr>
+  `).join("");
 }
 
-// Save and update total completed count
-function updateTotalCompleted() {
-    localStorage.setItem('totalCompleted', totalCompletedCount);
-    document.getElementById('totalCompleted').textContent = totalCompletedCount;
+buildTable("table-4-body", COMMON_4);
+buildTable("table-6-body", COMMON_6);
+
+// ── Tabs ──────────────────────────────────────────────
+
+function activateTab(tabEl, panelEl, otherTabEl, otherPanelEl) {
+  tabEl.setAttribute("aria-selected", "true");
+  tabEl.classList.add("tab--active");
+  tabEl.removeAttribute("tabindex");
+  panelEl.hidden = false;
+
+  otherTabEl.setAttribute("aria-selected", "false");
+  otherTabEl.classList.remove("tab--active");
+  otherTabEl.setAttribute("tabindex", "-1");
+  otherPanelEl.hidden = true;
 }
 
-// Add a new todo
-function addTodo() {
-    const text = todoInput.value.trim();
+tab4.addEventListener("click", () => activateTab(tab4, panel4, tab6, panel6));
+tab6.addEventListener("click", () => activateTab(tab6, panel6, tab4, panel4));
 
-    if (text === '') {
-        alert('Please enter a task!');
-        return;
-    }
-
-    const todo = {
-        id: Date.now(),
-        text: text,
-        completed: false
-    };
-
-    todos.push(todo);
-    todoInput.value = '';
-    saveTodos();
-    renderTodos();
-}
-
-// Delete a todo
-function deleteTodo(id) {
-    todos = todos.filter(todo => todo.id !== id);
-    saveTodos();
-    renderTodos();
-}
-
-// Show achievement badge with celebration
-function showAchievementBadge() {
-    const badge = document.getElementById('achievementBadge');
-    const messages = [
-        { icon: '⭐', text: 'Amazing!', sub: 'Task Completed' },
-        { icon: '🎉', text: 'Well Done!', sub: 'Keep It Up!' },
-        { icon: '✨', text: 'Fantastic!', sub: 'You\'re Crushing It!' },
-        { icon: '💖', text: 'Awesome!', sub: 'Task Complete!' },
-        { icon: '🌟', text: 'Brilliant!', sub: 'You Did It!' }
-    ];
-
-    const msg = messages[Math.floor(Math.random() * messages.length)];
-    badge.querySelector('.badge-icon').textContent = msg.icon;
-    badge.querySelector('.badge-text').textContent = msg.text;
-    badge.querySelector('.badge-subtext').textContent = msg.sub;
-
-    badge.classList.add('show');
-
-    // Create confetti
-    createConfetti();
-
-    // Hide after 2 seconds
-    setTimeout(() => {
-        badge.classList.remove('show');
-    }, 2000);
-}
-
-// Show milestone badge for every 5 tasks
-function showMilestoneBadge() {
-    const badge = document.getElementById('milestoneBadge');
-    badge.querySelector('.milestone-subtext').textContent = `${totalCompletedCount} Tasks Milestone!`;
-
-    badge.classList.add('show');
-
-    // Create extra special confetti with gold
-    createConfetti(true);
-
-    // Hide after 3 seconds (longer than regular)
-    setTimeout(() => {
-        badge.classList.remove('show');
-    }, 3000);
-}
-
-// Create confetti effect
-function createConfetti(isMilestone = false) {
-    const colors = isMilestone
-        ? ['#ff1493', '#ff69b4', '#ffd700', '#fff', '#ffc0cb', '#ffdf00']  // Add gold for milestones
-        : ['#ff1493', '#ff69b4', '#fff', '#ffc0cb'];
-
-    const count = isMilestone ? 100 : 50;  // Double confetti for milestones
-
-    for (let i = 0; i < count; i++) {
-        setTimeout(() => {
-            const confetti = document.createElement('div');
-            confetti.className = 'confetti';
-            confetti.style.left = Math.random() * 100 + '%';
-            confetti.style.top = '-10px';
-            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-            confetti.style.width = Math.random() * 10 + 5 + 'px';
-            confetti.style.height = Math.random() * 10 + 5 + 'px';
-            confetti.style.animationDuration = Math.random() * 2 + 2 + 's';
-            confetti.style.animationDelay = Math.random() * 0.5 + 's';
-            document.body.appendChild(confetti);
-
-            setTimeout(() => confetti.remove(), 5000);
-        }, i * (isMilestone ? 20 : 30));  // Faster for milestones
-    }
-}
-
-// Toggle todo completion
-function toggleTodo(id) {
-    const todo = todos.find(todo => todo.id === id);
-    if (todo) {
-        const wasCompleted = todo.completed;
-        todo.completed = !todo.completed;
-
-        // Show celebration only when marking as complete (not when unchecking)
-        if (!wasCompleted && todo.completed) {
-            // Increment total completed count
-            totalCompletedCount++;
-            updateTotalCompleted();
-
-            // Check if this is a milestone (every 5 tasks)
-            if (totalCompletedCount % 5 === 0) {
-                // Show special milestone celebration
-                showMilestoneBadge();
-            } else {
-                // Show regular achievement badge
-                showAchievementBadge();
-            }
-        }
-
-        saveTodos();
-        renderTodos();
-    }
-}
-
-// Clear completed todos
-function clearCompleted() {
-    todos = todos.filter(todo => !todo.completed);
-    saveTodos();
-    renderTodos();
-}
-
-// Filter todos
-function filterTodos() {
-    switch (currentFilter) {
-        case 'active':
-            return todos.filter(todo => !todo.completed);
-        case 'completed':
-            return todos.filter(todo => todo.completed);
-        default:
-            return todos;
-    }
-}
-
-// Render todos
-function renderTodos() {
-    const filteredTodos = filterTodos();
-
-    // Clear the list
-    todoList.innerHTML = '';
-
-    // Show empty state if no todos
-    if (filteredTodos.length === 0) {
-        todoList.innerHTML = '<div class="empty-state">No tasks to display</div>';
-    } else {
-        filteredTodos.forEach(todo => {
-            const li = document.createElement('li');
-            li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
-
-            li.innerHTML = `
-                <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''} onchange="toggleTodo(${todo.id})">
-                <span class="todo-text">${todo.text}</span>
-                <button class="delete-btn" onclick="deleteTodo(${todo.id})">Delete</button>
-            `;
-
-            todoList.appendChild(li);
-        });
-    }
-
-    // Update task count
-    const activeTasks = todos.filter(todo => !todo.completed).length;
-    taskCount.textContent = `${activeTasks} task${activeTasks !== 1 ? 's' : ''} remaining`;
-}
-
-// Event listeners
-addBtn.addEventListener('click', addTodo);
-
-todoInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        addTodo();
-    }
+// Arrow-key keyboard navigation for tabs (ARIA pattern)
+[tab4, tab6].forEach((tab, idx, arr) => {
+  tab.addEventListener("keydown", (e) => {
+    let next = null;
+    if (e.key === "ArrowRight") next = arr[(idx + 1) % arr.length];
+    if (e.key === "ArrowLeft")  next = arr[(idx - 1 + arr.length) % arr.length];
+    if (next) { next.focus(); next.click(); }
+  });
 });
 
-clearCompletedBtn.addEventListener('click', clearCompleted);
+// ── Validation & lookup ───────────────────────────────
 
-filterBtns.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        // Remove active class from all buttons
-        filterBtns.forEach(b => b.classList.remove('active'));
+function clearError() {
+  errEl.hidden = true;
+  errEl.textContent = "";
+  pinInput.removeAttribute("aria-invalid");
+}
 
-        // Add active class to clicked button
-        e.target.classList.add('active');
+function showError(msg) {
+  errEl.textContent = msg;
+  errEl.hidden = false;
+  pinInput.setAttribute("aria-invalid", "true");
+  pinInput.focus();
+}
 
-        // Update current filter
-        currentFilter = e.target.dataset.filter;
+function getRankLabel(pin, dataset) {
+  const idx = dataset.findIndex(d => d.pin === pin);
+  return idx === -1 ? null : idx + 1;
+}
 
-        // Re-render todos
-        renderTodos();
-    });
+function showResult(pin) {
+  const is4 = pin.length === 4;
+  const dataset   = is4 ? COMMON_4 : COMMON_6;
+  const commonSet = is4 ? COMMON_4_SET : COMMON_6_SET;
+  const isCommon  = commonSet.has(pin);
+  const rank      = isCommon ? getRankLabel(pin, dataset) : null;
+
+  let cls, icon, title, body;
+
+  if (isCommon) {
+    const severity = rank <= 5 ? "Very high" : rank <= 12 ? "High" : "Medium";
+    cls   = rank <= 12 ? "result--danger" : "result--warn";
+    icon  = rank <= 12 ? "&#x26A0;" : "&#x26A0;";
+    title = `${severity} risk — ranked #${rank} most common`;
+    body  = `This PIN appears in the top ${COMMON_4.length} most commonly used ${pin.length}-digit PINs. ` +
+            `It is highly vulnerable to guessing attacks. Choose a different PIN.`;
+  } else {
+    cls   = "result--ok";
+    icon  = "&#x2713;";
+    title = "Not in our common PIN list";
+    body  = `This PIN was not found in our list of the top ${dataset.length} most common ` +
+            `${pin.length}-digit PINs. That said, always avoid patterns like birth years, ` +
+            `repeating digits, or simple sequences.`;
+  }
+
+  resultEl.className = `result-panel ${cls}`;
+  resultEl.innerHTML = `
+    <div class="result-title">
+      <span class="result-icon" aria-hidden="true">${icon}</span>
+      ${escHtml(title)}
+    </div>
+    <span class="result-pin" aria-label="PIN: ${pin.split("").join(" ")}">${escHtml(pin)}</span>
+    <p class="result-body">${escHtml(body)}</p>
+  `;
+  resultEl.hidden = false;
+}
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  clearError();
+  resultEl.hidden = true;
+
+  const val = pinInput.value.trim();
+
+  if (!/^\d+$/.test(val) || (val.length !== 4 && val.length !== 6)) {
+    showError("Please enter exactly 4 or 6 digits (numbers only).");
+    return;
+  }
+
+  showResult(val);
 });
 
-// Initialize the app
-loadTodos();
+// Only allow numeric input
+pinInput.addEventListener("input", () => {
+  pinInput.value = pinInput.value.replace(/\D/g, "").slice(0, 6);
+});
+
+// ── Generator ─────────────────────────────────────────
+
+function cryptoRandInt(max) {
+  // Unbiased random integer in [0, max) using crypto
+  const buf = new Uint32Array(1);
+  const limit = Math.floor(0x100000000 / max) * max;
+  let val;
+  do { crypto.getRandomValues(buf); val = buf[0]; } while (val >= limit);
+  return val % max;
+}
+
+function generatePin(length) {
+  let pin;
+  const commonSet = length === 4 ? COMMON_4_SET : COMMON_6_SET;
+  const max = Math.pow(10, length);
+  do {
+    let n = cryptoRandInt(max);
+    pin = String(n).padStart(length, "0");
+  } while (commonSet.has(pin));
+  return pin;
+}
+
+genBtn.addEventListener("click", () => {
+  const length = parseInt(
+    document.querySelector('input[name="gen-length"]:checked').value,
+    10
+  );
+  const pin = generatePin(length);
+  // Space digits for readability
+  genResult.textContent = pin.split("").join(" ");
+  genResult.setAttribute("aria-label", `Generated PIN: ${pin.split("").join(", ")}`);
+});
+
+// ── Helpers ───────────────────────────────────────────
+
+function escHtml(str) {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}

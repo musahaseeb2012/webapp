@@ -1,56 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do List App</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PIN Lookup — Check 4 &amp; 6 Digit Passwords</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>My To-Do List</h1>
+  <a href="#main" class="skip-link">Skip to main content</a>
 
-        <div class="input-section">
-            <input type="text" id="todoInput" placeholder="Add a new task..." />
-            <button id="addBtn">Add Task</button>
-        </div>
-
-        <div class="filters">
-            <button class="filter-btn active" data-filter="all">All</button>
-            <button class="filter-btn" data-filter="active">Active</button>
-            <button class="filter-btn" data-filter="completed">Completed</button>
-        </div>
-
-        <ul id="todoList" class="todo-list"></ul>
-
-        <div class="stats">
-            <span id="taskCount">0 tasks remaining</span>
-            <button id="clearCompleted">Clear Completed</button>
-        </div>
-
-        <div class="achievement-stats">
-            <div class="total-completed">
-                <span class="completed-icon">✓</span>
-                <span id="totalCompleted">0</span>
-                <span class="completed-label">Tasks Completed</span>
-            </div>
-        </div>
+  <header role="banner">
+    <div class="header-inner">
+      <h1>PIN Lookup</h1>
+      <p class="tagline">Check whether a 4 or 6 digit PIN is commonly used</p>
     </div>
+  </header>
 
-    <!-- Achievement Badge -->
-    <div id="achievementBadge" class="achievement-badge">
-        <div class="badge-icon">⭐</div>
-        <div class="badge-text">Well Done!</div>
-        <div class="badge-subtext">Task Completed</div>
-    </div>
+  <main id="main" tabindex="-1">
 
-    <!-- Milestone Badge -->
-    <div id="milestoneBadge" class="milestone-badge">
-        <div class="milestone-icon">🏆</div>
-        <div class="milestone-text">You're Crushing It!</div>
-        <div class="milestone-subtext">5 Tasks Milestone!</div>
-    </div>
+    <!-- Search section -->
+    <section class="card search-card" aria-labelledby="search-heading">
+      <h2 id="search-heading">Look up a PIN</h2>
+      <p class="hint-text">Enter a 4 or 6 digit numeric PIN to see how common it is.</p>
 
-    <script src="app.js"></script>
+      <form id="lookup-form" novalidate aria-describedby="form-error">
+        <div class="field-group">
+          <label for="pin-input">PIN</label>
+          <div class="input-row">
+            <input
+              id="pin-input"
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9]{4}|[0-9]{6}"
+              maxlength="6"
+              placeholder="e.g. 1234 or 123456"
+              autocomplete="off"
+              spellcheck="false"
+              aria-required="true"
+              aria-describedby="pin-hint form-error"
+            />
+            <button type="submit" id="lookup-btn">Check PIN</button>
+          </div>
+          <p id="pin-hint" class="field-hint">Must be exactly 4 or 6 digits (numbers only)</p>
+          <p id="form-error" class="error-msg" role="alert" aria-live="assertive" hidden></p>
+        </div>
+      </form>
+
+      <!-- Result panel -->
+      <div
+        id="result-panel"
+        class="result-panel"
+        role="region"
+        aria-label="Lookup result"
+        aria-live="polite"
+        hidden
+      ></div>
+    </section>
+
+    <!-- Common PINs section -->
+    <section class="card" aria-labelledby="common-heading">
+      <h2 id="common-heading">Most Common PINs</h2>
+      <p>These PINs appear most frequently in breach data and should be avoided.</p>
+
+      <div class="tabs" role="tablist" aria-label="PIN length">
+        <button
+          id="tab-4"
+          class="tab tab--active"
+          role="tab"
+          aria-selected="true"
+          aria-controls="panel-4"
+        >4-digit PINs</button>
+        <button
+          id="tab-6"
+          class="tab"
+          role="tab"
+          aria-selected="false"
+          aria-controls="panel-6"
+          tabindex="-1"
+        >6-digit PINs</button>
+      </div>
+
+      <div id="panel-4" role="tabpanel" aria-labelledby="tab-4">
+        <table class="pin-table" aria-label="Top 20 most common 4-digit PINs">
+          <thead>
+            <tr>
+              <th scope="col">Rank</th>
+              <th scope="col">PIN</th>
+              <th scope="col">Pattern</th>
+              <th scope="col">Risk</th>
+            </tr>
+          </thead>
+          <tbody id="table-4-body"></tbody>
+        </table>
+      </div>
+
+      <div id="panel-6" role="tabpanel" aria-labelledby="tab-6" hidden>
+        <table class="pin-table" aria-label="Top 20 most common 6-digit PINs">
+          <thead>
+            <tr>
+              <th scope="col">Rank</th>
+              <th scope="col">PIN</th>
+              <th scope="col">Pattern</th>
+              <th scope="col">Risk</th>
+            </tr>
+          </thead>
+          <tbody id="table-6-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Generator section -->
+    <section class="card" aria-labelledby="gen-heading">
+      <h2 id="gen-heading">Generate a Strong PIN</h2>
+      <p>Generate a cryptographically random PIN that avoids common patterns.</p>
+      <div class="gen-controls">
+        <fieldset>
+          <legend>PIN length</legend>
+          <label class="radio-label">
+            <input type="radio" name="gen-length" value="4" checked> 4 digits
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="gen-length" value="6"> 6 digits
+          </label>
+        </fieldset>
+        <button id="gen-btn" type="button">Generate PIN</button>
+      </div>
+      <div id="gen-result" class="gen-result" aria-live="polite" aria-atomic="true"></div>
+    </section>
+
+    <!-- Info section -->
+    <section class="card info-card" aria-labelledby="info-heading">
+      <h2 id="info-heading">Why PIN strength matters</h2>
+      <ul class="info-list">
+        <li>A 4-digit PIN has only <strong>10,000</strong> possible combinations. Attackers can try them all in seconds if no lockout is enforced.</li>
+        <li>A 6-digit PIN has <strong>1,000,000</strong> combinations — still small, but far harder to guess.</li>
+        <li>Avoid PINs based on birth years, repeating digits (1111), or sequential runs (1234, 123456).</li>
+        <li>Never reuse the same PIN across multiple services.</li>
+        <li>Data on common PINs is sourced from publicly disclosed credential breach research.</li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer role="contentinfo">
+    <p>PIN Lookup &mdash; educational security awareness tool</p>
+  </footer>
+
+  <script src="app.js"></script>
 </body>
 </html>
