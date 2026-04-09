@@ -351,7 +351,78 @@ footer {
   border-top: 1px solid var(--color-border);
 }
 
-/* ===== Responsive ===== */
+/* ===== Touch targets (Apple HIG: min 44×44 pt) ===== */
+button, input[type="radio"], .tab {
+  min-height: 44px;
+}
+#lookup-btn, #gen-btn {
+  min-width: 120px;
+}
+input[type="text"] {
+  min-height: 48px;
+}
+
+/* ===== iPad Pro & large tablets (≥ 768px) ===== */
+@media (min-width: 768px) {
+  main {
+    padding: 2.5rem 2rem 4rem;
+  }
+
+  /* Two-column layout for the bottom two cards */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.75rem;
+  }
+
+  .gen-controls {
+    flex-wrap: nowrap;
+  }
+
+  .pin-table th, .pin-table td {
+    padding: 0.75rem 1rem;
+  }
+
+  .gen-result {
+    font-size: 2.5rem;
+  }
+}
+
+/* ===== iPad Pro landscape / large viewport (≥ 1024px) ===== */
+@media (min-width: 1024px) {
+  main {
+    max-width: 1000px;
+  }
+
+  .card {
+    padding: 2rem;
+  }
+
+  .card h2 {
+    font-size: 1.4rem;
+  }
+
+  header h1 {
+    font-size: 2.75rem;
+  }
+
+  .header-inner {
+    max-width: 1000px;
+  }
+}
+
+/* ===== Safe area insets (notch / home-bar) ===== */
+@supports (padding: env(safe-area-inset-bottom)) {
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  footer {
+    padding-bottom: calc(1.25rem + env(safe-area-inset-bottom));
+  }
+}
+
+/* ===== Mobile (≤ 540px) ===== */
 @media (max-width: 540px) {
   .card { padding: 1.25rem; }
   .input-row { flex-direction: column; }
