@@ -1,11 +1,18 @@
 // Main menu functionality
 const mainMenu = document.getElementById('mainMenu');
 const todoListBtn = document.getElementById('todoListBtn');
+const notesBtn = document.getElementById('notesBtn');
+const tipsBtn = document.getElementById('tipsBtn');
 const backToMenuBtn = document.getElementById('backToMenuBtn');
 const appContainer = document.querySelector('.container');
+const notesContainer = document.getElementById('notesContainer');
+const backToMenuFromNotes = document.getElementById('backToMenuFromNotes');
+const tipsModal = document.getElementById('tipsModal');
+const closeTips = document.getElementById('closeTips');
 
-// Start with menu visible, app hidden
+// Start with menu visible, apps hidden
 appContainer.style.display = 'none';
+notesContainer.style.display = 'none';
 
 // Open To-Do List
 todoListBtn.addEventListener('click', () => {
@@ -13,9 +20,41 @@ todoListBtn.addEventListener('click', () => {
     appContainer.style.display = 'block';
 });
 
-// Back to menu
+// Open Notes (if unlocked)
+notesBtn.addEventListener('click', () => {
+    if (!notesBtn.classList.contains('locked')) {
+        mainMenu.classList.add('hidden');
+        notesContainer.style.display = 'block';
+    }
+});
+
+// Open Tips Modal
+tipsBtn.addEventListener('click', () => {
+    tipsModal.style.display = 'flex';
+    updateTipsProgress();
+});
+
+// Close Tips Modal
+closeTips.addEventListener('click', () => {
+    tipsModal.style.display = 'none';
+});
+
+// Close Tips Modal when clicking outside
+tipsModal.addEventListener('click', (e) => {
+    if (e.target === tipsModal) {
+        tipsModal.style.display = 'none';
+    }
+});
+
+// Back to menu from To-Do List
 backToMenuBtn.addEventListener('click', () => {
     appContainer.style.display = 'none';
+    mainMenu.classList.remove('hidden');
+});
+
+// Back to menu from Notes
+backToMenuFromNotes.addEventListener('click', () => {
+    notesContainer.style.display = 'none';
     mainMenu.classList.remove('hidden');
 });
 
@@ -31,6 +70,8 @@ const filterBtns = document.querySelectorAll('.filter-btn');
 let todos = [];
 let currentFilter = 'all';
 let totalCompletedCount = 0;
+let notes = [];
+let editingNoteId = null;
 
 // Load todos from localStorage on page load
 function loadTodos() {
@@ -46,6 +87,18 @@ function loadTodos() {
         totalCompletedCount = parseInt(savedTotal);
         updateTotalCompleted();
     }
+
+    // Check unlock status
+    checkUnlockStatus();
+}
+
+// Load notes from localStorage
+function loadNotes() {
+    const savedNotes = localStorage.getItem('notes');
+    if (savedNotes) {
+        notes = JSON.parse(savedNotes);
+        renderNotes();
+    }
 }
 
 // Save todos to localStorage
@@ -57,6 +110,37 @@ function saveTodos() {
 function updateTotalCompleted() {
     localStorage.setItem('totalCompleted', totalCompletedCount);
     document.getElementById('totalCompleted').textContent = totalCompletedCount;
+    checkUnlockStatus();
+}
+
+// Check and update unlock status for features
+function checkUnlockStatus() {
+    // Notes unlock at 10 completed tasks
+    if (totalCompletedCount >= 10) {
+        notesBtn.classList.remove('locked');
+        notesBtn.querySelector('.lock-icon').style.display = 'none';
+        notesBtn.querySelector('.option-description').textContent = 'Organize your thoughts';
+    } else {
+        notesBtn.classList.add('locked');
+        notesBtn.querySelector('.lock-icon').style.display = 'block';
+        notesBtn.querySelector('.option-description').textContent = `Complete ${10 - totalCompletedCount} more task${10 - totalCompletedCount !== 1 ? 's' : ''} to unlock`;
+    }
+}
+
+// Update tips progress display
+function updateTipsProgress() {
+    const notesProgress = document.getElementById('notesProgress');
+    notesProgress.textContent = `${Math.min(totalCompletedCount, 10)}/10`;
+
+    if (totalCompletedCount >= 10) {
+        notesProgress.style.color = '#00ff00';
+        notesProgress.textContent += ' ✓';
+    }
+}
+
+// Save notes to localStorage
+function saveNotes() {
+    localStorage.setItem('notes', JSON.stringify(notes));
 }
 
 // Add a new todo
@@ -250,9 +334,12 @@ resetBtn.addEventListener('click', () => {
     if (confirm('Are you sure you want to reset all tasks and data? This cannot be undone.')) {
         localStorage.removeItem('todos');
         localStorage.removeItem('totalCompleted');
+        localStorage.removeItem('notes');
         todos = [];
         totalCompletedCount = 0;
         currentFilter = 'all';
+        notes = [];
+        editingNoteId = null;
 
         // Reset filter buttons
         filterBtns.forEach(b => b.classList.remove('active'));
@@ -260,6 +347,8 @@ resetBtn.addEventListener('click', () => {
 
         updateTotalCompleted();
         renderTodos();
+        renderNotes();
+        clearNoteForm();
     }
 });
 
@@ -279,5 +368,141 @@ filterBtns.forEach(btn => {
     });
 });
 
+// Notes functionality
+const noteTitle = document.getElementById('noteTitle');
+const noteContent = document.getElementById('noteContent');
+const saveNoteBtn = document.getElementById('saveNoteBtn');
+const clearNoteBtn = document.getElementById('clearNoteBtn');
+const notesList = document.getElementById('notesList');
+
+// Add a new note or update existing
+function saveNote() {
+    const title = noteTitle.value.trim();
+    const content = noteContent.value.trim();
+
+    if (!title && !content) {
+        alert('Please enter a title or content for your note!');
+        return;
+    }
+
+    if (editingNoteId !== null) {
+        // Update existing note
+        const note = notes.find(n => n.id === editingNoteId);
+        if (note) {
+            note.title = title || 'Untitled';
+            note.content = content;
+            note.updatedAt = Date.now();
+        }
+        editingNoteId = null;
+        saveNoteBtn.textContent = 'Save Note';
+    } else {
+        // Create new note
+        const note = {
+            id: Date.now(),
+            title: title || 'Untitled',
+            content: content,
+            createdAt: Date.now(),
+            updatedAt: Date.now()
+        };
+        notes.unshift(note);
+    }
+
+    noteTitle.value = '';
+    noteContent.value = '';
+    saveNotes();
+    renderNotes();
+}
+
+// Delete a note
+function deleteNote(id) {
+    if (confirm('Are you sure you want to delete this note?')) {
+        notes = notes.filter(note => note.id !== id);
+        saveNotes();
+        renderNotes();
+
+        // Clear form if we were editing this note
+        if (editingNoteId === id) {
+            clearNoteForm();
+        }
+    }
+}
+
+// Edit a note
+function editNote(id) {
+    const note = notes.find(n => n.id === id);
+    if (note) {
+        noteTitle.value = note.title === 'Untitled' ? '' : note.title;
+        noteContent.value = note.content;
+        editingNoteId = id;
+        saveNoteBtn.textContent = 'Update Note';
+        noteTitle.focus();
+    }
+}
+
+// Clear note form
+function clearNoteForm() {
+    noteTitle.value = '';
+    noteContent.value = '';
+    editingNoteId = null;
+    saveNoteBtn.textContent = 'Save Note';
+}
+
+// Format date for display
+function formatDate(timestamp) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+
+    return date.toLocaleDateString();
+}
+
+// Render notes list
+function renderNotes() {
+    notesList.innerHTML = '';
+
+    if (notes.length === 0) {
+        notesList.innerHTML = '<div class="empty-state">No notes yet. Start writing!</div>';
+        return;
+    }
+
+    notes.forEach(note => {
+        const noteCard = document.createElement('div');
+        noteCard.className = 'note-card';
+
+        noteCard.innerHTML = `
+            <div class="note-card-header">
+                <h3 class="note-card-title">${note.title}</h3>
+                <span class="note-card-date">${formatDate(note.updatedAt)}</span>
+            </div>
+            <p class="note-card-content">${note.content}</p>
+            <div class="note-card-actions">
+                <button class="note-edit-btn" onclick="editNote(${note.id})">Edit</button>
+                <button class="note-delete-btn" onclick="deleteNote(${note.id})">Delete</button>
+            </div>
+        `;
+
+        notesList.appendChild(noteCard);
+    });
+}
+
+// Event listeners for notes
+saveNoteBtn.addEventListener('click', saveNote);
+clearNoteBtn.addEventListener('click', clearNoteForm);
+
+noteTitle.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        noteContent.focus();
+    }
+});
+
 // Initialize the app
 loadTodos();
+loadNotes();

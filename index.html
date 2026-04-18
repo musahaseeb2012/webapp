@@ -23,16 +23,23 @@
                     <div class="option-description">Manage your daily tasks</div>
                 </button>
 
-                <button class="menu-option disabled">
+                <button id="notesBtn" class="menu-option locked">
+                    <div class="lock-icon">🔒</div>
                     <div class="option-icon">📝</div>
                     <div class="option-title">Notes</div>
-                    <div class="option-description">Coming Soon</div>
+                    <div class="option-description unlock-progress">Complete 10 tasks to unlock</div>
                 </button>
 
                 <button class="menu-option disabled">
                     <div class="option-icon">📅</div>
                     <div class="option-title">Calendar</div>
                     <div class="option-description">Coming Soon</div>
+                </button>
+
+                <button id="tipsBtn" class="menu-option tips-button">
+                    <div class="option-icon">💡</div>
+                    <div class="option-title">Tips</div>
+                    <div class="option-description">How to unlock features</div>
                 </button>
             </div>
         </div>
@@ -86,6 +93,57 @@
         <div class="milestone-icon">🏆</div>
         <div class="milestone-text">You're Crushing It!</div>
         <div class="milestone-subtext">5 Tasks Milestone!</div>
+    </div>
+
+    <!-- Notes Container -->
+    <div id="notesContainer" class="notes-container">
+        <div class="app-header">
+            <button id="backToMenuFromNotes" class="back-btn">← Back to Menu</button>
+            <h1>My Notes</h1>
+        </div>
+
+        <div class="notes-section">
+            <div class="notes-input-area">
+                <input type="text" id="noteTitle" placeholder="Note title..." class="note-title-input" />
+                <textarea id="noteContent" placeholder="Start writing your note here..." class="note-content-input"></textarea>
+                <div class="note-actions">
+                    <button id="saveNoteBtn" class="save-note-btn">Save Note</button>
+                    <button id="clearNoteBtn" class="clear-note-btn">Clear</button>
+                </div>
+            </div>
+
+            <div class="notes-list-section">
+                <h2>Saved Notes</h2>
+                <div id="notesList" class="notes-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tips Modal -->
+    <div id="tipsModal" class="tips-modal">
+        <div class="tips-content">
+            <button id="closeTips" class="close-tips">✕</button>
+            <h2>🎯 How to Unlock Features</h2>
+            <div class="tips-list">
+                <div class="tip-item">
+                    <div class="tip-icon">📝</div>
+                    <div class="tip-info">
+                        <h3>Notes</h3>
+                        <p>Complete <strong>10 tasks</strong> in the To-Do List</p>
+                        <div class="tip-progress">
+                            <span id="notesProgress">0/10</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon">📅</div>
+                    <div class="tip-info">
+                        <h3>Calendar</h3>
+                        <p><strong>Coming Soon!</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="app.js"></script>
