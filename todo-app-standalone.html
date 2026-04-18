@@ -297,6 +297,28 @@
             color: #aaa;
         }
 
+        .stats-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .reset-btn {
+            background: transparent;
+            color: #666;
+            border: 1px solid #666;
+            padding: 6px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 12px;
+        }
+
+        .reset-btn:hover {
+            background: #666;
+            color: white;
+        }
+
         #clearCompleted {
             background: transparent;
             color: #dc143c;
@@ -834,7 +856,10 @@
         <ul id="todoList" class="todo-list"></ul>
 
         <div class="stats">
-            <span id="taskCount">0 tasks remaining</span>
+            <div class="stats-left">
+                <span id="taskCount">0 tasks remaining</span>
+                <button id="resetApp" class="reset-btn" title="Reset all data">🔄 Reset</button>
+            </div>
             <button id="clearCompleted">Clear Completed</button>
         </div>
 
@@ -1119,6 +1144,25 @@
         });
 
         clearCompletedBtn.addEventListener('click', clearCompleted);
+
+        // Reset app functionality
+        const resetBtn = document.getElementById('resetApp');
+        resetBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to reset all tasks and data? This cannot be undone.')) {
+                localStorage.removeItem('todos');
+                localStorage.removeItem('totalCompleted');
+                todos = [];
+                totalCompletedCount = 0;
+                currentFilter = 'all';
+
+                // Reset filter buttons
+                filterBtns.forEach(b => b.classList.remove('active'));
+                document.querySelector('[data-filter="all"]').classList.add('active');
+
+                updateTotalCompleted();
+                renderTodos();
+            }
+        });
 
         filterBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
