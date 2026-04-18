@@ -1,3 +1,18 @@
+// Welcome screen functionality
+const welcomeScreen = document.getElementById('welcomeScreen');
+const startBtn = document.getElementById('startBtn');
+
+// Check if user has visited before
+const hasVisited = localStorage.getItem('hasVisited');
+if (hasVisited) {
+    welcomeScreen.classList.add('hidden');
+}
+
+startBtn.addEventListener('click', () => {
+    welcomeScreen.classList.add('hidden');
+    localStorage.setItem('hasVisited', 'true');
+});
+
 // Get DOM elements
 const todoInput = document.getElementById('todoInput');
 const addBtn = document.getElementById('addBtn');

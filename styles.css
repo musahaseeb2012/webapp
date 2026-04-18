@@ -512,3 +512,161 @@ h1 {
         opacity: 0;
     }
 }
+
+/* Welcome Screen Styles */
+.welcome-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #000000 0%, #1a0a0a 50%, #000000 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.5s ease-out;
+}
+
+.welcome-screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.welcome-content {
+    text-align: center;
+    padding: 60px 40px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 3px solid #dc143c;
+    border-radius: 30px;
+    box-shadow:
+        0 0 60px rgba(220, 20, 60, 0.6),
+        0 0 120px rgba(30, 144, 255, 0.4),
+        inset 0 0 80px rgba(220, 20, 60, 0.1);
+    backdrop-filter: blur(20px);
+    max-width: 600px;
+    animation: welcomeSlideIn 0.8s ease-out;
+}
+
+@keyframes welcomeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.welcome-icon {
+    font-size: 100px;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #dc143c 0%, #1e90ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: iconPulse 2s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.welcome-title {
+    font-size: 3rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #dc143c 0%, #1e90ff 50%, #dc143c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    line-height: 1.2;
+}
+
+.welcome-subtitle {
+    font-size: 1.2rem;
+    color: #aaa;
+    margin-bottom: 40px;
+    font-weight: 400;
+    letter-spacing: 1px;
+}
+
+.start-btn {
+    padding: 20px 50px;
+    background: linear-gradient(135deg, #dc143c 0%, #1e90ff 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow:
+        0 0 30px rgba(220, 20, 60, 0.6),
+        0 5px 20px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+.start-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.start-btn:hover::before {
+    left: 100%;
+}
+
+.start-btn:hover {
+    background: linear-gradient(135deg, #1e90ff 0%, #dc143c 100%);
+    box-shadow:
+        0 0 40px rgba(30, 144, 255, 0.8),
+        0 5px 25px rgba(0, 0, 0, 0.6);
+    transform: translateY(-3px) scale(1.05);
+}
+
+.start-btn:active {
+    transform: translateY(-1px) scale(1.02);
+}
+
+@media (max-width: 600px) {
+    .welcome-content {
+        padding: 40px 30px;
+        margin: 20px;
+    }
+
+    .welcome-icon {
+        font-size: 80px;
+    }
+
+    .welcome-title {
+        font-size: 2rem;
+    }
+
+    .welcome-subtitle {
+        font-size: 1rem;
+    }
+
+    .start-btn {
+        padding: 18px 40px;
+        font-size: 16px;
+    }
+}
