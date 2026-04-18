@@ -244,6 +244,25 @@ todoInput.addEventListener('keypress', (e) => {
 
 clearCompletedBtn.addEventListener('click', clearCompleted);
 
+// Reset app functionality
+const resetBtn = document.getElementById('resetApp');
+resetBtn.addEventListener('click', () => {
+    if (confirm('Are you sure you want to reset all tasks and data? This cannot be undone.')) {
+        localStorage.removeItem('todos');
+        localStorage.removeItem('totalCompleted');
+        todos = [];
+        totalCompletedCount = 0;
+        currentFilter = 'all';
+
+        // Reset filter buttons
+        filterBtns.forEach(b => b.classList.remove('active'));
+        document.querySelector('[data-filter="all"]').classList.add('active');
+
+        updateTotalCompleted();
+        renderTodos();
+    }
+});
+
 filterBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
         // Remove active class from all buttons

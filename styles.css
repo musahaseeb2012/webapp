@@ -262,6 +262,28 @@ h1 {
     color: #aaa;
 }
 
+.stats-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.reset-btn {
+    background: transparent;
+    color: #666;
+    border: 1px solid #666;
+    padding: 6px 12px;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 12px;
+}
+
+.reset-btn:hover {
+    background: #666;
+    color: white;
+}
+
 #clearCompleted {
     background: transparent;
     color: #dc143c;
