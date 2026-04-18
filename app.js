@@ -1,16 +1,22 @@
-// Welcome screen functionality
-const welcomeScreen = document.getElementById('welcomeScreen');
-const startBtn = document.getElementById('startBtn');
+// Main menu functionality
+const mainMenu = document.getElementById('mainMenu');
+const todoListBtn = document.getElementById('todoListBtn');
+const backToMenuBtn = document.getElementById('backToMenuBtn');
+const appContainer = document.querySelector('.container');
 
-// Check if user has visited before
-const hasVisited = localStorage.getItem('hasVisited');
-if (hasVisited) {
-    welcomeScreen.classList.add('hidden');
-}
+// Start with menu visible, app hidden
+appContainer.style.display = 'none';
 
-startBtn.addEventListener('click', () => {
-    welcomeScreen.classList.add('hidden');
-    localStorage.setItem('hasVisited', 'true');
+// Open To-Do List
+todoListBtn.addEventListener('click', () => {
+    mainMenu.classList.add('hidden');
+    appContainer.style.display = 'block';
+});
+
+// Back to menu
+backToMenuBtn.addEventListener('click', () => {
+    appContainer.style.display = 'none';
+    mainMenu.classList.remove('hidden');
 });
 
 // Get DOM elements

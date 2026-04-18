@@ -7,18 +7,42 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Welcome Screen -->
-    <div id="welcomeScreen" class="welcome-screen">
-        <div class="welcome-content">
-            <div class="welcome-icon">✓</div>
-            <h1 class="welcome-title">Welcome to Your<br>Productivity Space</h1>
-            <p class="welcome-subtitle">Organize your tasks, achieve your goals, celebrate your wins</p>
-            <button id="startBtn" class="start-btn">Get Started</button>
+    <!-- Main Menu Screen -->
+    <div id="mainMenu" class="main-menu">
+        <div class="menu-content">
+            <div class="menu-header">
+                <div class="menu-icon">⚡</div>
+                <h1 class="menu-title">Productivity Hub</h1>
+                <p class="menu-subtitle">Choose your tool to get things done</p>
+            </div>
+
+            <div class="menu-options">
+                <button id="todoListBtn" class="menu-option">
+                    <div class="option-icon">✓</div>
+                    <div class="option-title">To-Do List</div>
+                    <div class="option-description">Manage your daily tasks</div>
+                </button>
+
+                <button class="menu-option disabled">
+                    <div class="option-icon">📝</div>
+                    <div class="option-title">Notes</div>
+                    <div class="option-description">Coming Soon</div>
+                </button>
+
+                <button class="menu-option disabled">
+                    <div class="option-icon">📅</div>
+                    <div class="option-title">Calendar</div>
+                    <div class="option-description">Coming Soon</div>
+                </button>
+            </div>
         </div>
     </div>
 
     <div class="container">
-        <h1>My To-Do List</h1>
+        <div class="app-header">
+            <button id="backToMenuBtn" class="back-btn">← Back to Menu</button>
+            <h1>My To-Do List</h1>
+        </div>
 
         <div class="input-section">
             <input type="text" id="todoInput" placeholder="Add a new task..." />
