@@ -14,18 +14,18 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
             background: #000000;
-            /* BLACKPINK-inspired abstract gradient background */
+            /* Red and blue gradient background */
             background-image:
                 linear-gradient(135deg,
                     rgba(0, 0, 0, 0.8) 0%,
-                    rgba(20, 0, 20, 0.9) 25%,
-                    rgba(40, 0, 40, 0.85) 50%,
-                    rgba(20, 0, 20, 0.9) 75%,
+                    rgba(20, 0, 10, 0.9) 25%,
+                    rgba(10, 0, 30, 0.85) 50%,
+                    rgba(20, 0, 10, 0.9) 75%,
                     rgba(0, 0, 0, 0.8) 100%
                 ),
-                radial-gradient(ellipse at 10% 20%, rgba(255, 20, 147, 0.3) 0%, transparent 50%),
-                radial-gradient(ellipse at 90% 80%, rgba(255, 105, 180, 0.25) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 50%, rgba(139, 0, 139, 0.2) 0%, transparent 70%),
+                radial-gradient(ellipse at 10% 20%, rgba(220, 20, 60, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 90% 80%, rgba(30, 144, 255, 0.25) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(138, 43, 226, 0.2) 0%, transparent 70%),
                 linear-gradient(180deg, #000000 0%, #0a0a0a 100%);
             /*
             FREE UNSPLASH ALTERNATIVES - Replace above with any of these:
@@ -56,19 +56,19 @@
             background: rgba(0, 0, 0, 0.9);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 3px solid #ff1493;
+            border: 3px solid #dc143c;
             border-radius: 20px;
             box-shadow:
-                0 0 40px rgba(255, 20, 147, 0.5),
-                0 0 80px rgba(255, 20, 147, 0.3),
-                inset 0 0 60px rgba(255, 20, 147, 0.05);
+                0 0 40px rgba(220, 20, 60, 0.5),
+                0 0 80px rgba(30, 144, 255, 0.3),
+                inset 0 0 60px rgba(220, 20, 60, 0.05);
             padding: 40px;
             width: 100%;
             max-width: 600px;
         }
 
         h1 {
-            color: #ff1493;
+            color: #dc143c;
             text-align: center;
             margin-bottom: 30px;
             font-size: 2.8rem;
@@ -76,44 +76,14 @@
             letter-spacing: 2px;
             text-transform: uppercase;
             text-shadow:
-                0 0 10px rgba(255, 20, 147, 0.8),
-                0 0 20px rgba(255, 20, 147, 0.6),
-                0 0 30px rgba(255, 20, 147, 0.4),
-                0 0 40px rgba(255, 20, 147, 0.2);
-            background: linear-gradient(135deg, #ff1493 0%, #ff69b4 50%, #ff1493 100%);
+                0 0 10px rgba(220, 20, 60, 0.8),
+                0 0 20px rgba(30, 144, 255, 0.6),
+                0 0 30px rgba(220, 20, 60, 0.4),
+                0 0 40px rgba(30, 144, 255, 0.2);
+            background: linear-gradient(135deg, #dc143c 0%, #1e90ff 50%, #dc143c 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            position: relative;
-        }
-
-        h1::before {
-            content: '♥';
-            position: absolute;
-            left: -40px;
-            color: #ff1493;
-            -webkit-text-fill-color: #ff1493;
-            animation: pulse 2s infinite;
-        }
-
-        h1::after {
-            content: '♥';
-            position: absolute;
-            right: -40px;
-            color: #ff1493;
-            -webkit-text-fill-color: #ff1493;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.6;
-                transform: scale(1.1);
-            }
         }
 
         .input-section {
@@ -125,7 +95,7 @@
         #todoInput {
             flex: 1;
             padding: 15px 20px;
-            border: 2px solid rgba(255, 20, 147, 0.3);
+            border: 2px solid rgba(220, 20, 60, 0.3);
             border-radius: 25px;
             font-size: 16px;
             transition: all 0.3s;
@@ -136,10 +106,10 @@
 
         #todoInput:focus {
             outline: none;
-            border-color: #ff1493;
+            border-color: #dc143c;
             box-shadow:
-                0 0 20px rgba(255, 20, 147, 0.4),
-                inset 0 0 10px rgba(255, 20, 147, 0.1);
+                0 0 20px rgba(220, 20, 60, 0.4),
+                inset 0 0 10px rgba(30, 144, 255, 0.1);
             background: rgba(26, 26, 26, 0.8);
         }
 
@@ -150,7 +120,7 @@
 
         #addBtn {
             padding: 15px 30px;
-            background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
+            background: linear-gradient(135deg, #dc143c 0%, #1e90ff 100%);
             color: white;
             border: none;
             border-radius: 25px;
@@ -161,7 +131,7 @@
             cursor: pointer;
             transition: all 0.3s;
             box-shadow:
-                0 0 20px rgba(255, 20, 147, 0.6),
+                0 0 20px rgba(220, 20, 60, 0.6),
                 0 4px 15px rgba(0, 0, 0, 0.4);
             position: relative;
             overflow: hidden;
@@ -183,9 +153,9 @@
         }
 
         #addBtn:hover {
-            background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
+            background: linear-gradient(135deg, #1e90ff 0%, #dc143c 100%);
             box-shadow:
-                0 0 30px rgba(255, 20, 147, 0.8),
+                0 0 30px rgba(30, 144, 255, 0.8),
                 0 4px 20px rgba(0, 0, 0, 0.5);
             transform: translateY(-2px);
         }
@@ -204,7 +174,7 @@
         .filter-btn {
             padding: 10px 24px;
             background: transparent;
-            border: 2px solid #ff1493;
+            border: 2px solid #dc143c;
             border-radius: 20px;
             cursor: pointer;
             transition: all 0.3s;
@@ -212,14 +182,14 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: #ff1493;
+            color: #dc143c;
         }
 
         .filter-btn:hover {
-            background: rgba(255, 20, 147, 0.1);
-            border-color: #ff69b4;
-            color: #ff69b4;
-            box-shadow: 0 0 15px rgba(255, 20, 147, 0.3);
+            background: rgba(220, 20, 60, 0.1);
+            border-color: #1e90ff;
+            color: #1e90ff;
+            box-shadow: 0 0 15px rgba(220, 20, 60, 0.3);
         }
 
         .filter-btn:active {
@@ -227,10 +197,10 @@
         }
 
         .filter-btn.active {
-            background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
+            background: linear-gradient(135deg, #dc143c 0%, #1e90ff 100%);
             color: white;
-            border-color: #ff1493;
-            box-shadow: 0 0 20px rgba(255, 20, 147, 0.6);
+            border-color: #dc143c;
+            box-shadow: 0 0 20px rgba(220, 20, 60, 0.6);
         }
 
         .todo-list {
@@ -245,7 +215,7 @@
             align-items: center;
             padding: 18px;
             background: linear-gradient(135deg, rgba(26, 26, 26, 0.8) 0%, rgba(42, 42, 42, 0.6) 100%);
-            border: 1px solid rgba(255, 20, 147, 0.2);
+            border: 1px solid rgba(220, 20, 60, 0.2);
             border-radius: 15px;
             margin-bottom: 12px;
             transition: all 0.3s;
@@ -266,8 +236,8 @@
 
         .todo-item:hover {
             background: linear-gradient(135deg, rgba(42, 42, 42, 0.9) 0%, rgba(51, 51, 51, 0.7) 100%);
-            border-color: #ff1493;
-            box-shadow: 0 0 20px rgba(255, 20, 147, 0.3);
+            border-color: #dc143c;
+            box-shadow: 0 0 20px rgba(220, 20, 60, 0.3);
             transform: translateX(8px);
         }
 
@@ -281,8 +251,8 @@
             height: 22px;
             margin-right: 15px;
             cursor: pointer;
-            accent-color: #ff1493;
-            filter: drop-shadow(0 0 3px rgba(255, 20, 147, 0.5));
+            accent-color: #dc143c;
+            filter: drop-shadow(0 0 3px rgba(220, 20, 60, 0.5));
         }
 
         .todo-text {
@@ -293,8 +263,8 @@
 
         .delete-btn {
             background: transparent;
-            color: #ff1493;
-            border: 2px solid #ff1493;
+            color: #dc143c;
+            border: 2px solid #dc143c;
             padding: 8px 18px;
             border-radius: 20px;
             cursor: pointer;
@@ -306,10 +276,10 @@
         }
 
         .delete-btn:hover {
-            background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
+            background: linear-gradient(135deg, #dc143c 0%, #1e90ff 100%);
             color: white;
-            border-color: #ff1493;
-            box-shadow: 0 0 15px rgba(255, 20, 147, 0.5);
+            border-color: #dc143c;
+            box-shadow: 0 0 15px rgba(220, 20, 60, 0.5);
             transform: scale(1.05);
         }
 
@@ -329,8 +299,8 @@
 
         #clearCompleted {
             background: transparent;
-            color: #ff1493;
-            border: 2px solid #ff1493;
+            color: #dc143c;
+            border: 2px solid #dc143c;
             padding: 8px 18px;
             border-radius: 20px;
             cursor: pointer;
@@ -342,10 +312,10 @@
         }
 
         #clearCompleted:hover {
-            background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
+            background: linear-gradient(135deg, #dc143c 0%, #1e90ff 100%);
             color: white;
-            border-color: #ff1493;
-            box-shadow: 0 0 20px rgba(255, 20, 147, 0.6);
+            border-color: #dc143c;
+            box-shadow: 0 0 20px rgba(220, 20, 60, 0.6);
             transform: scale(1.05);
         }
 
@@ -373,28 +343,28 @@
             justify-content: center;
             gap: 10px;
             padding: 15px;
-            background: linear-gradient(135deg, rgba(255, 20, 147, 0.1) 0%, rgba(255, 105, 180, 0.1) 100%);
-            border: 2px solid rgba(255, 20, 147, 0.3);
+            background: linear-gradient(135deg, rgba(220, 20, 60, 0.1) 0%, rgba(30, 144, 255, 0.1) 100%);
+            border: 2px solid rgba(220, 20, 60, 0.3);
             border-radius: 15px;
             transition: all 0.3s;
         }
 
         .total-completed:hover {
-            border-color: #ff1493;
-            box-shadow: 0 0 15px rgba(255, 20, 147, 0.3);
+            border-color: #dc143c;
+            box-shadow: 0 0 15px rgba(220, 20, 60, 0.3);
         }
 
         .completed-icon {
             font-size: 24px;
-            color: #ff1493;
+            color: #dc143c;
             font-weight: bold;
         }
 
         #totalCompleted {
             font-size: 32px;
             font-weight: 900;
-            color: #ff1493;
-            text-shadow: 0 0 10px rgba(255, 20, 147, 0.5);
+            color: #dc143c;
+            text-shadow: 0 0 10px rgba(220, 20, 60, 0.5);
             min-width: 40px;
             text-align: center;
         }
@@ -413,7 +383,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0);
-            background: linear-gradient(135deg, #ff1493 0%, #ffd700 50%, #ff1493 100%);
+            background: linear-gradient(135deg, #dc143c 0%, #ffd700 50%, #dc143c 100%);
             border: 5px solid #ffd700;
             border-radius: 50%;
             width: 250px;
@@ -424,7 +394,7 @@
             justify-content: center;
             box-shadow:
                 0 0 60px rgba(255, 215, 0, 0.8),
-                0 0 120px rgba(255, 20, 147, 0.6),
+                0 0 120px rgba(220, 20, 60, 0.6),
                 0 15px 40px rgba(0, 0, 0, 0.6);
             z-index: 1001;
             opacity: 0;
@@ -483,7 +453,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0);
-            background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
+            background: linear-gradient(135deg, #dc143c 0%, #1e90ff 100%);
             border: 4px solid #fff;
             border-radius: 50%;
             width: 200px;
@@ -493,8 +463,8 @@
             align-items: center;
             justify-content: center;
             box-shadow:
-                0 0 50px rgba(255, 20, 147, 0.8),
-                0 0 100px rgba(255, 20, 147, 0.5),
+                0 0 50px rgba(220, 20, 60, 0.8),
+                0 0 100px rgba(220, 20, 60, 0.5),
                 0 10px 30px rgba(0, 0, 0, 0.5);
             z-index: 1000;
             opacity: 0;
@@ -543,7 +513,7 @@
             position: fixed;
             width: 10px;
             height: 10px;
-            background: #ff1493;
+            background: #dc143c;
             position: absolute;
             animation: confettiFall 3s linear forwards;
             z-index: 999;
@@ -564,7 +534,7 @@
             position: absolute;
             width: 4px;
             height: 4px;
-            background: #ff1493;
+            background: #dc143c;
             border-radius: 50%;
             animation: sparkleFloat 1s ease-out forwards;
             pointer-events: none;
@@ -761,8 +731,8 @@
         // Create confetti effect
         function createConfetti(isMilestone = false) {
             const colors = isMilestone
-                ? ['#ff1493', '#ff69b4', '#ffd700', '#fff', '#ffc0cb', '#ffdf00']  // Add gold for milestones
-                : ['#ff1493', '#ff69b4', '#fff', '#ffc0cb'];
+                ? ['#dc143c', '#1e90ff', '#ffd700', '#fff', '#0066cc', '#ffdf00']  // Add gold for milestones
+                : ['#dc143c', '#1e90ff', '#fff', '#0066cc'];
 
             const count = isMilestone ? 100 : 50;  // Double confetti for milestones
 
