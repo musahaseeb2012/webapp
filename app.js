@@ -6,13 +6,17 @@ const tipsBtn = document.getElementById('tipsBtn');
 const backToMenuBtn = document.getElementById('backToMenuBtn');
 const appContainer = document.querySelector('.container');
 const notesContainer = document.getElementById('notesContainer');
+const noteEditor = document.getElementById('noteEditor');
 const backToMenuFromNotes = document.getElementById('backToMenuFromNotes');
+const backToNotesList = document.getElementById('backToNotesList');
+const addNewNoteBtn = document.getElementById('addNewNoteBtn');
 const tipsModal = document.getElementById('tipsModal');
 const closeTips = document.getElementById('closeTips');
 
 // Start with menu visible, apps hidden
 appContainer.style.display = 'none';
 notesContainer.style.display = 'none';
+noteEditor.style.display = 'none';
 
 // Open To-Do List
 todoListBtn.addEventListener('click', () => {
@@ -25,7 +29,13 @@ notesBtn.addEventListener('click', () => {
     if (!notesBtn.classList.contains('locked')) {
         mainMenu.classList.add('hidden');
         notesContainer.style.display = 'block';
+        renderNotes();
     }
+});
+
+// Open Note Editor for new note
+addNewNoteBtn.addEventListener('click', () => {
+    openNoteEditor();
 });
 
 // Open Tips Modal
@@ -56,6 +66,13 @@ backToMenuBtn.addEventListener('click', () => {
 backToMenuFromNotes.addEventListener('click', () => {
     notesContainer.style.display = 'none';
     mainMenu.classList.remove('hidden');
+});
+
+// Back to notes list from editor
+backToNotesList.addEventListener('click', () => {
+    noteEditor.style.display = 'none';
+    notesContainer.style.display = 'block';
+    clearNoteForm();
 });
 
 // Get DOM elements
@@ -349,6 +366,12 @@ resetBtn.addEventListener('click', () => {
         renderTodos();
         renderNotes();
         clearNoteForm();
+
+        // Return to menu
+        noteEditor.style.display = 'none';
+        notesContainer.style.display = 'none';
+        appContainer.style.display = 'none';
+        mainMenu.classList.remove('hidden');
     }
 });
 
@@ -372,10 +395,30 @@ filterBtns.forEach(btn => {
 const noteTitle = document.getElementById('noteTitle');
 const noteContent = document.getElementById('noteContent');
 const saveNoteBtn = document.getElementById('saveNoteBtn');
-const clearNoteBtn = document.getElementById('clearNoteBtn');
 const notesList = document.getElementById('notesList');
 
-// Add a new note or update existing
+// Open note editor (new or existing)
+function openNoteEditor(noteId = null) {
+    notesContainer.style.display = 'none';
+    noteEditor.style.display = 'block';
+
+    if (noteId !== null) {
+        // Edit existing note
+        const note = notes.find(n => n.id === noteId);
+        if (note) {
+            noteTitle.value = note.title === 'Untitled' ? '' : note.title;
+            noteContent.value = note.content;
+            editingNoteId = noteId;
+        }
+    } else {
+        // New note
+        clearNoteForm();
+    }
+
+    noteTitle.focus();
+}
+
+// Save note
 function saveNote() {
     const title = noteTitle.value.trim();
     const content = noteContent.value.trim();
@@ -393,8 +436,6 @@ function saveNote() {
             note.content = content;
             note.updatedAt = Date.now();
         }
-        editingNoteId = null;
-        saveNoteBtn.textContent = 'Save Note';
     } else {
         // Create new note
         const note = {
@@ -407,9 +448,12 @@ function saveNote() {
         notes.unshift(note);
     }
 
-    noteTitle.value = '';
-    noteContent.value = '';
     saveNotes();
+
+    // Go back to notes list
+    noteEditor.style.display = 'none';
+    notesContainer.style.display = 'block';
+    clearNoteForm();
     renderNotes();
 }
 
@@ -419,23 +463,6 @@ function deleteNote(id) {
         notes = notes.filter(note => note.id !== id);
         saveNotes();
         renderNotes();
-
-        // Clear form if we were editing this note
-        if (editingNoteId === id) {
-            clearNoteForm();
-        }
-    }
-}
-
-// Edit a note
-function editNote(id) {
-    const note = notes.find(n => n.id === id);
-    if (note) {
-        noteTitle.value = note.title === 'Untitled' ? '' : note.title;
-        noteContent.value = note.content;
-        editingNoteId = id;
-        saveNoteBtn.textContent = 'Update Note';
-        noteTitle.focus();
     }
 }
 
@@ -444,7 +471,6 @@ function clearNoteForm() {
     noteTitle.value = '';
     noteContent.value = '';
     editingNoteId = null;
-    saveNoteBtn.textContent = 'Save Note';
 }
 
 // Format date for display
@@ -469,7 +495,7 @@ function renderNotes() {
     notesList.innerHTML = '';
 
     if (notes.length === 0) {
-        notesList.innerHTML = '<div class="empty-state">No notes yet. Start writing!</div>';
+        notesList.innerHTML = '<div class="empty-state">No notes yet. Click "Add New Note" to get started!</div>';
         return;
     }
 
@@ -477,14 +503,16 @@ function renderNotes() {
         const noteCard = document.createElement('div');
         noteCard.className = 'note-card';
 
+        const preview = note.content.length > 100 ? note.content.substring(0, 100) + '...' : note.content;
+
         noteCard.innerHTML = `
             <div class="note-card-header">
                 <h3 class="note-card-title">${note.title}</h3>
                 <span class="note-card-date">${formatDate(note.updatedAt)}</span>
             </div>
-            <p class="note-card-content">${note.content}</p>
+            <p class="note-card-content">${preview}</p>
             <div class="note-card-actions">
-                <button class="note-edit-btn" onclick="editNote(${note.id})">Edit</button>
+                <button class="note-edit-btn" onclick="openNoteEditor(${note.id})">Edit</button>
                 <button class="note-delete-btn" onclick="deleteNote(${note.id})">Delete</button>
             </div>
         `;
@@ -495,7 +523,6 @@ function renderNotes() {
 
 // Event listeners for notes
 saveNoteBtn.addEventListener('click', saveNote);
-clearNoteBtn.addEventListener('click', clearNoteForm);
 
 noteTitle.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {

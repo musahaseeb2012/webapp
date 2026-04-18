@@ -95,27 +95,28 @@
         <div class="milestone-subtext">5 Tasks Milestone!</div>
     </div>
 
-    <!-- Notes Container -->
+    <!-- Notes List Container -->
     <div id="notesContainer" class="notes-container">
         <div class="app-header">
             <button id="backToMenuFromNotes" class="back-btn">← Back to Menu</button>
             <h1>My Notes</h1>
         </div>
 
-        <div class="notes-section">
-            <div class="notes-input-area">
-                <input type="text" id="noteTitle" placeholder="Note title..." class="note-title-input" />
-                <textarea id="noteContent" placeholder="Start writing your note here..." class="note-content-input"></textarea>
-                <div class="note-actions">
-                    <button id="saveNoteBtn" class="save-note-btn">Save Note</button>
-                    <button id="clearNoteBtn" class="clear-note-btn">Clear</button>
-                </div>
-            </div>
+        <div class="notes-list-page">
+            <button id="addNewNoteBtn" class="add-new-note-btn">+ Add New Note</button>
+            <div id="notesList" class="notes-list"></div>
+        </div>
+    </div>
 
-            <div class="notes-list-section">
-                <h2>Saved Notes</h2>
-                <div id="notesList" class="notes-list"></div>
-            </div>
+    <!-- Note Editor Container -->
+    <div id="noteEditor" class="note-editor">
+        <div class="editor-header">
+            <button id="backToNotesList" class="back-btn">← Back to Notes</button>
+            <button id="saveNoteBtn" class="save-note-btn-header">Save</button>
+        </div>
+        <div class="editor-content">
+            <input type="text" id="noteTitle" placeholder="Note title..." class="note-title-input" />
+            <textarea id="noteContent" placeholder="Start writing your note here..." class="note-content-input"></textarea>
         </div>
     </div>
 
