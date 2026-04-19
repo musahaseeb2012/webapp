@@ -66,6 +66,7 @@ shopBtn.addEventListener('click', () => {
     mainMenu.classList.add('hidden');
     shopContainer.style.display = 'block';
     renderShop();
+    setupShopTabs();
 });
 
 // Close Tips Modal
@@ -131,6 +132,8 @@ let selectedDateStr = null;
 let points = 0;
 let purchasedThemes = ['default'];
 let currentTheme = 'default';
+let purchasedBackgrounds = ['default'];
+let currentBackground = 'default';
 
 // Load todos from localStorage on page load
 function loadTodos() {
@@ -185,6 +188,17 @@ function loadPointsAndThemes() {
     if (savedTheme) {
         currentTheme = savedTheme;
         applyTheme(currentTheme);
+    }
+
+    const savedPurchasedBackgrounds = localStorage.getItem('purchasedBackgrounds');
+    if (savedPurchasedBackgrounds) {
+        purchasedBackgrounds = JSON.parse(savedPurchasedBackgrounds);
+    }
+
+    const savedBackground = localStorage.getItem('currentBackground');
+    if (savedBackground) {
+        currentBackground = savedBackground;
+        applyBackground(currentBackground);
     }
 }
 
@@ -265,6 +279,14 @@ function savePurchasedThemes() {
 
 function saveCurrentTheme() {
     localStorage.setItem('currentTheme', currentTheme);
+}
+
+function savePurchasedBackgrounds() {
+    localStorage.setItem('purchasedBackgrounds', JSON.stringify(purchasedBackgrounds));
+}
+
+function saveCurrentBackground() {
+    localStorage.setItem('currentBackground', currentBackground);
 }
 
 // Update points display
@@ -485,6 +507,8 @@ resetBtn.addEventListener('click', () => {
         localStorage.removeItem('points');
         localStorage.removeItem('purchasedThemes');
         localStorage.removeItem('currentTheme');
+        localStorage.removeItem('purchasedBackgrounds');
+        localStorage.removeItem('currentBackground');
         todos = [];
         totalCompletedCount = 0;
         currentFilter = 'all';
@@ -495,6 +519,8 @@ resetBtn.addEventListener('click', () => {
         points = 0;
         purchasedThemes = ['default'];
         currentTheme = 'default';
+        purchasedBackgrounds = ['default'];
+        currentBackground = 'default';
 
         // Reset filter buttons
         filterBtns.forEach(b => b.classList.remove('active'));
@@ -944,8 +970,83 @@ const themes = [
     }
 ];
 
+// Backgrounds data
+const backgrounds = [
+    {
+        id: 'default',
+        name: 'Dark Gradient',
+        preview: 'linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)',
+        style: `linear-gradient(135deg,rgba(0, 0, 0, 0.8) 0%,rgba(20, 0, 10, 0.9) 25%,rgba(10, 0, 30, 0.85) 50%,rgba(20, 0, 10, 0.9) 75%,rgba(0, 0, 0, 0.8) 100%),linear-gradient(180deg, #000000 0%, #0a0a0a 100%)`,
+        cost: 0,
+        icon: '🌑'
+    },
+    {
+        id: 'stars',
+        name: 'Starry Night',
+        preview: 'radial-gradient(circle, #000428 0%, #004e92 100%)',
+        style: `radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 1%),radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.15) 0%, transparent 1%),radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 1%),radial-gradient(circle at 90% 40%, rgba(255, 255, 255, 0.12) 0%, transparent 1%),radial-gradient(circle at 30% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 1%),linear-gradient(180deg, #000428 0%, #004e92 100%)`,
+        cost: 100,
+        icon: '⭐'
+    },
+    {
+        id: 'aurora',
+        name: 'Aurora Borealis',
+        preview: 'linear-gradient(135deg, #1a2a6c 0%, #b21f1f 50%, #fdbb2d 100%)',
+        style: `linear-gradient(135deg,rgba(26, 42, 108, 0.4) 0%,rgba(178, 31, 31, 0.4) 33%,rgba(253, 187, 45, 0.4) 66%,rgba(26, 42, 108, 0.4) 100%),radial-gradient(ellipse at 50% 30%, rgba(0, 255, 157, 0.2) 0%, transparent 50%),radial-gradient(ellipse at 80% 70%, rgba(138, 43, 226, 0.2) 0%, transparent 50%),linear-gradient(180deg, #0a0a1a 0%, #1a0a2e 100%)`,
+        cost: 150,
+        icon: '🌌'
+    },
+    {
+        id: 'matrix',
+        name: 'Digital Matrix',
+        preview: 'repeating-linear-gradient(0deg, #000 0px, #001a00 2px)',
+        style: `repeating-linear-gradient(0deg,rgba(0, 26, 0, 0.5) 0px,rgba(0, 0, 0, 0.8) 2px,rgba(0, 0, 0, 0.9) 4px),linear-gradient(90deg,rgba(0, 255, 0, 0.03) 0%,transparent 100%),linear-gradient(180deg, #000000 0%, #001a00 100%)`,
+        cost: 175,
+        icon: '💻'
+    },
+    {
+        id: 'neon',
+        name: 'Neon Grid',
+        preview: 'linear-gradient(90deg, #ff00ff 0%, #00ffff 100%)',
+        style: `repeating-linear-gradient(90deg,transparent 0px,transparent 48px,rgba(255, 0, 255, 0.1) 48px,rgba(255, 0, 255, 0.1) 50px),repeating-linear-gradient(0deg,transparent 0px,transparent 48px,rgba(0, 255, 255, 0.1) 48px,rgba(0, 255, 255, 0.1) 50px),linear-gradient(135deg, #0a0015 0%, #15001a 100%)`,
+        cost: 200,
+        icon: '🎮'
+    },
+    {
+        id: 'galaxy',
+        name: 'Deep Galaxy',
+        preview: 'radial-gradient(circle, #240b36 0%, #0d0221 100%)',
+        style: `radial-gradient(ellipse at 20% 30%, rgba(147, 51, 234, 0.3) 0%, transparent 50%),radial-gradient(ellipse at 80% 70%, rgba(59, 130, 246, 0.25) 0%, transparent 50%),radial-gradient(ellipse at 50% 50%, rgba(236, 72, 153, 0.2) 0%, transparent 60%),radial-gradient(circle at 10% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 2%),radial-gradient(circle at 90% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 2%),linear-gradient(180deg, #0d0221 0%, #240b36 100%)`,
+        cost: 250,
+        icon: '🌠'
+    }
+];
+
 // Render shop
 function renderShop() {
+    renderThemes();
+    renderBackgrounds();
+}
+
+// Setup shop tabs
+function setupShopTabs() {
+    const tabs = document.querySelectorAll('.shop-tab');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            const tabName = tab.dataset.tab;
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        });
+    });
+}
+
+function renderThemes() {
     const themeGrid = document.getElementById('themeGrid');
     themeGrid.innerHTML = '';
 
@@ -970,6 +1071,33 @@ function renderShop() {
         `;
 
         themeGrid.appendChild(themeCard);
+    });
+}
+
+function renderBackgrounds() {
+    const backgroundGrid = document.getElementById('backgroundGrid');
+    backgroundGrid.innerHTML = '';
+
+    backgrounds.forEach(bg => {
+        const isPurchased = purchasedBackgrounds.includes(bg.id);
+        const isActive = currentBackground === bg.id;
+
+        const bgCard = document.createElement('div');
+        bgCard.className = `theme-card ${isActive ? 'active' : ''}`;
+
+        bgCard.innerHTML = `
+            <div class="theme-icon">${bg.icon}</div>
+            <h3 class="theme-name">${bg.name}</h3>
+            <div class="theme-preview" style="background: ${bg.preview}; height: 100px;"></div>
+            ${isPurchased
+                ? (isActive
+                    ? '<button class="theme-btn active-btn">Active ✓</button>'
+                    : `<button class="theme-btn apply-btn" onclick="applyBackground('${bg.id}')">Apply</button>`)
+                : `<button class="theme-btn buy-btn" onclick="buyBackground('${bg.id}')">${bg.cost === 0 ? 'Free' : bg.cost + ' pts'}</button>`
+            }
+        `;
+
+        backgroundGrid.appendChild(bgCard);
     });
 }
 
@@ -1022,6 +1150,49 @@ function applyTheme(themeId) {
     `;
 
     renderShop();
+}
+
+// Buy background
+function buyBackground(bgId) {
+    const bg = backgrounds.find(b => b.id === bgId);
+
+    if (!bg) return;
+
+    if (points >= bg.cost) {
+        points -= bg.cost;
+        purchasedBackgrounds.push(bgId);
+        savePoints();
+        savePurchasedBackgrounds();
+        updatePointsDisplay();
+        renderBackgrounds();
+
+        // Auto-apply purchased background
+        applyBackground(bgId);
+    } else {
+        alert(`Not enough points! You need ${bg.cost - points} more points.`);
+    }
+}
+
+// Apply background
+function applyBackground(bgId) {
+    const bg = backgrounds.find(b => b.id === bgId);
+    if (!bg) return;
+
+    currentBackground = bgId;
+    saveCurrentBackground();
+
+    // Get current theme for overlay
+    const theme = themes.find(t => t.id === currentTheme);
+
+    // Apply background with theme overlay
+    document.body.style.backgroundImage = `
+        radial-gradient(ellipse at 10% 20%, ${theme.bg.color1} 0%, transparent 50%),
+        radial-gradient(ellipse at 90% 80%, ${theme.bg.color2} 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, ${theme.bg.accent} 0%, transparent 70%),
+        ${bg.style}
+    `;
+
+    renderBackgrounds();
 }
 
 // Initialize the app

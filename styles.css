@@ -1572,6 +1572,49 @@ h1 {
     position: relative;
 }
 
+.shop-tabs {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    justify-content: center;
+}
+
+.shop-tab {
+    padding: 15px 40px;
+    background: transparent;
+    border: 2px solid var(--primary-color);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--primary-color);
+}
+
+.shop-tab:hover {
+    background: rgba(220, 20, 60, 0.1);
+    border-color: var(--secondary-color);
+    color: var(--secondary-color);
+    box-shadow: 0 0 15px rgba(220, 20, 60, 0.3);
+}
+
+.shop-tab.active {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 20px rgba(220, 20, 60, 0.6);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
 .points-display {
     position: absolute;
     top: 10px;
