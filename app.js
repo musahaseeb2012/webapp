@@ -878,14 +878,70 @@ function clearEventForm() {
 
 // Themes data
 const themes = [
-    { id: 'default', name: 'Crimson Bolt', colors: { primary: '#dc143c', secondary: '#1e90ff' }, cost: 0, icon: '⚡' },
-    { id: 'ocean', name: 'Ocean Wave', colors: { primary: '#00CED1', secondary: '#1E90FF' }, cost: 50, icon: '🌊' },
-    { id: 'sunset', name: 'Sunset Glow', colors: { primary: '#FF6347', secondary: '#FFD700' }, cost: 75, icon: '🌅' },
-    { id: 'forest', name: 'Forest Green', colors: { primary: '#228B22', secondary: '#90EE90' }, cost: 100, icon: '🌲' },
-    { id: 'purple', name: 'Royal Purple', colors: { primary: '#9370DB', secondary: '#DA70D6' }, cost: 125, icon: '👑' },
-    { id: 'fire', name: 'Blazing Fire', colors: { primary: '#FF4500', secondary: '#FF8C00' }, cost: 150, icon: '🔥' },
-    { id: 'ice', name: 'Arctic Ice', colors: { primary: '#4682B4', secondary: '#87CEEB' }, cost: 150, icon: '❄️' },
-    { id: 'gold', name: 'Golden Luxury', colors: { primary: '#FFD700', secondary: '#FFA500' }, cost: 200, icon: '✨' }
+    {
+        id: 'default',
+        name: 'Crimson Bolt',
+        colors: { primary: '#dc143c', secondary: '#1e90ff' },
+        bg: { color1: 'rgba(220, 20, 60, 0.4)', color2: 'rgba(30, 144, 255, 0.3)', accent: 'rgba(138, 43, 226, 0.25)' },
+        cost: 0,
+        icon: '⚡'
+    },
+    {
+        id: 'ocean',
+        name: 'Ocean Wave',
+        colors: { primary: '#00CED1', secondary: '#1E90FF' },
+        bg: { color1: 'rgba(0, 206, 209, 0.4)', color2: 'rgba(30, 144, 255, 0.35)', accent: 'rgba(64, 224, 208, 0.25)' },
+        cost: 50,
+        icon: '🌊'
+    },
+    {
+        id: 'sunset',
+        name: 'Sunset Glow',
+        colors: { primary: '#FF6347', secondary: '#FFD700' },
+        bg: { color1: 'rgba(255, 99, 71, 0.4)', color2: 'rgba(255, 215, 0, 0.35)', accent: 'rgba(255, 140, 0, 0.3)' },
+        cost: 75,
+        icon: '🌅'
+    },
+    {
+        id: 'forest',
+        name: 'Forest Green',
+        colors: { primary: '#228B22', secondary: '#90EE90' },
+        bg: { color1: 'rgba(34, 139, 34, 0.4)', color2: 'rgba(144, 238, 144, 0.3)', accent: 'rgba(46, 139, 87, 0.3)' },
+        cost: 100,
+        icon: '🌲'
+    },
+    {
+        id: 'purple',
+        name: 'Royal Purple',
+        colors: { primary: '#9370DB', secondary: '#DA70D6' },
+        bg: { color1: 'rgba(147, 112, 219, 0.4)', color2: 'rgba(218, 112, 214, 0.35)', accent: 'rgba(186, 85, 211, 0.3)' },
+        cost: 125,
+        icon: '👑'
+    },
+    {
+        id: 'fire',
+        name: 'Blazing Fire',
+        colors: { primary: '#FF4500', secondary: '#FF8C00' },
+        bg: { color1: 'rgba(255, 69, 0, 0.45)', color2: 'rgba(255, 140, 0, 0.4)', accent: 'rgba(255, 99, 71, 0.35)' },
+        cost: 150,
+        icon: '🔥'
+    },
+    {
+        id: 'ice',
+        name: 'Arctic Ice',
+        colors: { primary: '#4682B4', secondary: '#87CEEB' },
+        bg: { color1: 'rgba(70, 130, 180, 0.4)', color2: 'rgba(135, 206, 235, 0.35)', accent: 'rgba(176, 224, 230, 0.3)' },
+        cost: 150,
+        icon: '❄️'
+    },
+    {
+        id: 'gold',
+        name: 'Golden Luxury',
+        colors: { primary: '#FFD700', secondary: '#FFA500' },
+        bg: { color1: 'rgba(255, 215, 0, 0.45)', color2: 'rgba(255, 165, 0, 0.4)', accent: 'rgba(218, 165, 32, 0.35)' },
+        cost: 200,
+        icon: '✨'
+    }
 ];
 
 // Render shop
@@ -949,6 +1005,21 @@ function applyTheme(themeId) {
     // Update CSS variables
     document.documentElement.style.setProperty('--primary-color', theme.colors.primary);
     document.documentElement.style.setProperty('--secondary-color', theme.colors.secondary);
+
+    // Update background
+    document.body.style.backgroundImage = `
+        linear-gradient(135deg,
+            rgba(0, 0, 0, 0.8) 0%,
+            rgba(20, 0, 10, 0.9) 25%,
+            rgba(10, 0, 30, 0.85) 50%,
+            rgba(20, 0, 10, 0.9) 75%,
+            rgba(0, 0, 0, 0.8) 100%
+        ),
+        radial-gradient(ellipse at 10% 20%, ${theme.bg.color1} 0%, transparent 50%),
+        radial-gradient(ellipse at 90% 80%, ${theme.bg.color2} 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, ${theme.bg.accent} 0%, transparent 70%),
+        linear-gradient(180deg, #000000 0%, #0a0a0a 100%)
+    `;
 
     renderShop();
 }
