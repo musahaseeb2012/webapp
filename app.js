@@ -2,13 +2,16 @@
 const mainMenu = document.getElementById('mainMenu');
 const todoListBtn = document.getElementById('todoListBtn');
 const notesBtn = document.getElementById('notesBtn');
+const calendarBtn = document.getElementById('calendarBtn');
 const tipsBtn = document.getElementById('tipsBtn');
 const backToMenuBtn = document.getElementById('backToMenuBtn');
 const appContainer = document.querySelector('.container');
 const notesContainer = document.getElementById('notesContainer');
 const noteEditor = document.getElementById('noteEditor');
+const calendarContainer = document.getElementById('calendarContainer');
 const backToMenuFromNotes = document.getElementById('backToMenuFromNotes');
 const backToNotesList = document.getElementById('backToNotesList');
+const backToMenuFromCalendar = document.getElementById('backToMenuFromCalendar');
 const addNewNoteBtn = document.getElementById('addNewNoteBtn');
 const tipsModal = document.getElementById('tipsModal');
 const closeTips = document.getElementById('closeTips');
@@ -17,6 +20,7 @@ const closeTips = document.getElementById('closeTips');
 appContainer.style.display = 'none';
 notesContainer.style.display = 'none';
 noteEditor.style.display = 'none';
+calendarContainer.style.display = 'none';
 
 // Open To-Do List
 todoListBtn.addEventListener('click', () => {
@@ -30,6 +34,15 @@ notesBtn.addEventListener('click', () => {
         mainMenu.classList.add('hidden');
         notesContainer.style.display = 'block';
         renderNotes();
+    }
+});
+
+// Open Calendar (if unlocked)
+calendarBtn.addEventListener('click', () => {
+    if (!calendarBtn.classList.contains('locked')) {
+        mainMenu.classList.add('hidden');
+        calendarContainer.style.display = 'block';
+        renderCalendar();
     }
 });
 
@@ -75,6 +88,12 @@ backToNotesList.addEventListener('click', () => {
     clearNoteForm();
 });
 
+// Back to menu from Calendar
+backToMenuFromCalendar.addEventListener('click', () => {
+    calendarContainer.style.display = 'none';
+    mainMenu.classList.remove('hidden');
+});
+
 // Get DOM elements
 const todoInput = document.getElementById('todoInput');
 const addBtn = document.getElementById('addBtn');
@@ -89,6 +108,9 @@ let currentFilter = 'all';
 let totalCompletedCount = 0;
 let notes = [];
 let editingNoteId = null;
+let events = {};
+let currentDate = new Date();
+let selectedDateStr = null;
 
 // Load todos from localStorage on page load
 function loadTodos() {
@@ -118,6 +140,14 @@ function loadNotes() {
     }
 }
 
+// Load events from localStorage
+function loadEvents() {
+    const savedEvents = localStorage.getItem('events');
+    if (savedEvents) {
+        events = JSON.parse(savedEvents);
+    }
+}
+
 // Save todos to localStorage
 function saveTodos() {
     localStorage.setItem('todos', JSON.stringify(todos));
@@ -142,6 +172,17 @@ function checkUnlockStatus() {
         notesBtn.querySelector('.lock-icon').style.display = 'block';
         notesBtn.querySelector('.option-description').textContent = `Complete ${10 - totalCompletedCount} more task${10 - totalCompletedCount !== 1 ? 's' : ''} to unlock`;
     }
+
+    // Calendar unlocks at 20 completed tasks
+    if (totalCompletedCount >= 20) {
+        calendarBtn.classList.remove('locked');
+        calendarBtn.querySelector('.lock-icon').style.display = 'none';
+        calendarBtn.querySelector('.option-description').textContent = 'Track your schedule';
+    } else {
+        calendarBtn.classList.add('locked');
+        calendarBtn.querySelector('.lock-icon').style.display = 'block';
+        calendarBtn.querySelector('.option-description').textContent = `Complete ${20 - totalCompletedCount} more task${20 - totalCompletedCount !== 1 ? 's' : ''} to unlock`;
+    }
 }
 
 // Update tips progress display
@@ -153,11 +194,24 @@ function updateTipsProgress() {
         notesProgress.style.color = '#00ff00';
         notesProgress.textContent += ' ✓';
     }
+
+    const calendarProgress = document.getElementById('calendarProgress');
+    calendarProgress.textContent = `${Math.min(totalCompletedCount, 20)}/20`;
+
+    if (totalCompletedCount >= 20) {
+        calendarProgress.style.color = '#00ff00';
+        calendarProgress.textContent += ' ✓';
+    }
 }
 
 // Save notes to localStorage
 function saveNotes() {
     localStorage.setItem('notes', JSON.stringify(notes));
+}
+
+// Save events to localStorage
+function saveEvents() {
+    localStorage.setItem('events', JSON.stringify(events));
 }
 
 // Add a new todo
@@ -352,11 +406,14 @@ resetBtn.addEventListener('click', () => {
         localStorage.removeItem('todos');
         localStorage.removeItem('totalCompleted');
         localStorage.removeItem('notes');
+        localStorage.removeItem('events');
         todos = [];
         totalCompletedCount = 0;
         currentFilter = 'all';
         notes = [];
         editingNoteId = null;
+        events = {};
+        selectedDateStr = null;
 
         // Reset filter buttons
         filterBtns.forEach(b => b.classList.remove('active'));
@@ -370,6 +427,8 @@ resetBtn.addEventListener('click', () => {
         // Return to menu
         noteEditor.style.display = 'none';
         notesContainer.style.display = 'none';
+        calendarContainer.style.display = 'none';
+        eventEditor.style.display = 'none';
         appContainer.style.display = 'none';
         mainMenu.classList.remove('hidden');
     }
@@ -530,6 +589,210 @@ noteTitle.addEventListener('keypress', (e) => {
     }
 });
 
+// Calendar functionality
+const prevMonthBtn = document.getElementById('prevMonth');
+const nextMonthBtn = document.getElementById('nextMonth');
+const currentMonthEl = document.getElementById('currentMonth');
+const calendarDaysEl = document.getElementById('calendarDays');
+const selectedDateEl = document.getElementById('selectedDate');
+const eventsListEl = document.getElementById('eventsList');
+const addEventBtn = document.getElementById('addEventBtn');
+const eventEditor = document.getElementById('eventEditor');
+const closeEventEditor = document.getElementById('closeEventEditor');
+const eventTitle = document.getElementById('eventTitle');
+const eventDescription = document.getElementById('eventDescription');
+const eventTime = document.getElementById('eventTime');
+const saveEventBtn = document.getElementById('saveEventBtn');
+const cancelEventBtn = document.getElementById('cancelEventBtn');
+
+// Navigate months
+prevMonthBtn.addEventListener('click', () => {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    renderCalendar();
+});
+
+nextMonthBtn.addEventListener('click', () => {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    renderCalendar();
+});
+
+// Event editor controls
+addEventBtn.addEventListener('click', () => {
+    eventEditor.style.display = 'flex';
+    eventTitle.focus();
+});
+
+closeEventEditor.addEventListener('click', () => {
+    eventEditor.style.display = 'none';
+    clearEventForm();
+});
+
+cancelEventBtn.addEventListener('click', () => {
+    eventEditor.style.display = 'none';
+    clearEventForm();
+});
+
+eventEditor.addEventListener('click', (e) => {
+    if (e.target === eventEditor) {
+        eventEditor.style.display = 'none';
+        clearEventForm();
+    }
+});
+
+saveEventBtn.addEventListener('click', saveEvent);
+
+// Render calendar
+function renderCalendar() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+
+    // Update month display
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'];
+    currentMonthEl.textContent = `${monthNames[month]} ${year}`;
+
+    // Get first day of month and number of days
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    // Clear calendar
+    calendarDaysEl.innerHTML = '';
+
+    // Add empty cells for days before month starts
+    for (let i = 0; i < firstDay; i++) {
+        const emptyCell = document.createElement('div');
+        emptyCell.className = 'calendar-day empty';
+        calendarDaysEl.appendChild(emptyCell);
+    }
+
+    // Add days of month
+    const today = new Date();
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dayCell = document.createElement('div');
+        dayCell.className = 'calendar-day';
+        dayCell.textContent = day;
+
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+        // Highlight today
+        if (year === today.getFullYear() && month === today.getMonth() && day === today.getDate()) {
+            dayCell.classList.add('today');
+        }
+
+        // Highlight if has events
+        if (events[dateStr] && events[dateStr].length > 0) {
+            dayCell.classList.add('has-events');
+            const eventDot = document.createElement('div');
+            eventDot.className = 'event-dot';
+            dayCell.appendChild(eventDot);
+        }
+
+        // Click handler
+        dayCell.addEventListener('click', () => selectDate(dateStr, day, month, year));
+
+        calendarDaysEl.appendChild(dayCell);
+    }
+}
+
+// Select a date
+function selectDate(dateStr, day, month, year) {
+    selectedDateStr = dateStr;
+
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'];
+    selectedDateEl.textContent = `${monthNames[month]} ${day}, ${year}`;
+
+    addEventBtn.style.display = 'block';
+    renderEvents();
+
+    // Highlight selected day
+    document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
+    event.target.classList.add('selected');
+}
+
+// Render events for selected date
+function renderEvents() {
+    if (!selectedDateStr) return;
+
+    eventsListEl.innerHTML = '';
+    const dateEvents = events[selectedDateStr] || [];
+
+    if (dateEvents.length === 0) {
+        eventsListEl.innerHTML = '<div class="empty-state">No events for this day</div>';
+        return;
+    }
+
+    dateEvents.forEach((evt, index) => {
+        const eventCard = document.createElement('div');
+        eventCard.className = 'event-card';
+
+        eventCard.innerHTML = `
+            <div class="event-card-header">
+                <span class="event-time">${evt.time || 'All day'}</span>
+                <button class="delete-event-btn" onclick="deleteEvent(${index})">✕</button>
+            </div>
+            <h4 class="event-title">${evt.title}</h4>
+            ${evt.description ? `<p class="event-description">${evt.description}</p>` : ''}
+        `;
+
+        eventsListEl.appendChild(eventCard);
+    });
+}
+
+// Save event
+function saveEvent() {
+    const title = eventTitle.value.trim();
+
+    if (!title) {
+        alert('Please enter an event title!');
+        return;
+    }
+
+    if (!selectedDateStr) {
+        alert('Please select a date first!');
+        return;
+    }
+
+    const event = {
+        title: title,
+        description: eventDescription.value.trim(),
+        time: eventTime.value
+    };
+
+    if (!events[selectedDateStr]) {
+        events[selectedDateStr] = [];
+    }
+
+    events[selectedDateStr].push(event);
+    saveEvents();
+    renderCalendar();
+    renderEvents();
+
+    eventEditor.style.display = 'none';
+    clearEventForm();
+}
+
+// Delete event
+function deleteEvent(index) {
+    if (confirm('Delete this event?')) {
+        events[selectedDateStr].splice(index, 1);
+        if (events[selectedDateStr].length === 0) {
+            delete events[selectedDateStr];
+        }
+        saveEvents();
+        renderCalendar();
+        renderEvents();
+    }
+}
+
+// Clear event form
+function clearEventForm() {
+    eventTitle.value = '';
+    eventDescription.value = '';
+    eventTime.value = '';
+}
+
 // Initialize the app
 loadTodos();
 loadNotes();
+loadEvents();

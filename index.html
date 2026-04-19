@@ -30,10 +30,11 @@
                     <div class="option-description unlock-progress">Complete 10 tasks to unlock</div>
                 </button>
 
-                <button class="menu-option disabled">
+                <button id="calendarBtn" class="menu-option locked">
+                    <div class="lock-icon">🔒</div>
                     <div class="option-icon">📅</div>
                     <div class="option-title">Calendar</div>
-                    <div class="option-description">Coming Soon</div>
+                    <div class="option-description unlock-progress">Complete 20 tasks to unlock</div>
                 </button>
 
                 <button id="tipsBtn" class="menu-option tips-button">
@@ -120,6 +121,54 @@
         </div>
     </div>
 
+    <!-- Calendar Container -->
+    <div id="calendarContainer" class="calendar-container">
+        <div class="app-header">
+            <button id="backToMenuFromCalendar" class="back-btn">← Back to Menu</button>
+            <h1>My Calendar</h1>
+        </div>
+
+        <div class="calendar-view">
+            <div class="calendar-header">
+                <button id="prevMonth" class="month-nav-btn">‹</button>
+                <h2 id="currentMonth">January 2024</h2>
+                <button id="nextMonth" class="month-nav-btn">›</button>
+            </div>
+
+            <div class="calendar-grid">
+                <div class="calendar-day-header">Sun</div>
+                <div class="calendar-day-header">Mon</div>
+                <div class="calendar-day-header">Tue</div>
+                <div class="calendar-day-header">Wed</div>
+                <div class="calendar-day-header">Thu</div>
+                <div class="calendar-day-header">Fri</div>
+                <div class="calendar-day-header">Sat</div>
+                <div id="calendarDays" class="calendar-days"></div>
+            </div>
+
+            <div class="events-section">
+                <h3>Events for <span id="selectedDate">Select a date</span></h3>
+                <div id="eventsList" class="events-list"></div>
+                <button id="addEventBtn" class="add-event-btn" style="display: none;">+ Add Event</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Editor Modal -->
+    <div id="eventEditor" class="event-editor">
+        <div class="event-editor-content">
+            <button id="closeEventEditor" class="close-event-editor">✕</button>
+            <h2>Add Event</h2>
+            <input type="text" id="eventTitle" placeholder="Event title..." class="event-title-input" />
+            <textarea id="eventDescription" placeholder="Description (optional)..." class="event-description-input"></textarea>
+            <input type="time" id="eventTime" class="event-time-input" />
+            <div class="event-editor-actions">
+                <button id="saveEventBtn" class="save-event-btn">Save Event</button>
+                <button id="cancelEventBtn" class="cancel-event-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Tips Modal -->
     <div id="tipsModal" class="tips-modal">
         <div class="tips-content">
@@ -140,7 +189,10 @@
                     <div class="tip-icon">📅</div>
                     <div class="tip-info">
                         <h3>Calendar</h3>
-                        <p><strong>Coming Soon!</strong></p>
+                        <p>Complete <strong>20 tasks</strong> in the To-Do List</p>
+                        <div class="tip-progress">
+                            <span id="calendarProgress">0/20</span>
+                        </div>
                     </div>
                 </div>
             </div>
