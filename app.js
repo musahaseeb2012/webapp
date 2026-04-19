@@ -4,14 +4,17 @@ const todoListBtn = document.getElementById('todoListBtn');
 const notesBtn = document.getElementById('notesBtn');
 const calendarBtn = document.getElementById('calendarBtn');
 const tipsBtn = document.getElementById('tipsBtn');
+const shopBtn = document.getElementById('shopBtn');
 const backToMenuBtn = document.getElementById('backToMenuBtn');
 const appContainer = document.querySelector('.container');
 const notesContainer = document.getElementById('notesContainer');
 const noteEditor = document.getElementById('noteEditor');
 const calendarContainer = document.getElementById('calendarContainer');
+const shopContainer = document.getElementById('shopContainer');
 const backToMenuFromNotes = document.getElementById('backToMenuFromNotes');
 const backToNotesList = document.getElementById('backToNotesList');
 const backToMenuFromCalendar = document.getElementById('backToMenuFromCalendar');
+const backToMenuFromShop = document.getElementById('backToMenuFromShop');
 const addNewNoteBtn = document.getElementById('addNewNoteBtn');
 const tipsModal = document.getElementById('tipsModal');
 const closeTips = document.getElementById('closeTips');
@@ -21,6 +24,7 @@ appContainer.style.display = 'none';
 notesContainer.style.display = 'none';
 noteEditor.style.display = 'none';
 calendarContainer.style.display = 'none';
+shopContainer.style.display = 'none';
 
 // Open To-Do List
 todoListBtn.addEventListener('click', () => {
@@ -55,6 +59,13 @@ addNewNoteBtn.addEventListener('click', () => {
 tipsBtn.addEventListener('click', () => {
     tipsModal.style.display = 'flex';
     updateTipsProgress();
+});
+
+// Open Shop
+shopBtn.addEventListener('click', () => {
+    mainMenu.classList.add('hidden');
+    shopContainer.style.display = 'block';
+    renderShop();
 });
 
 // Close Tips Modal
@@ -94,6 +105,12 @@ backToMenuFromCalendar.addEventListener('click', () => {
     mainMenu.classList.remove('hidden');
 });
 
+// Back to menu from Shop
+backToMenuFromShop.addEventListener('click', () => {
+    shopContainer.style.display = 'none';
+    mainMenu.classList.remove('hidden');
+});
+
 // Get DOM elements
 const todoInput = document.getElementById('todoInput');
 const addBtn = document.getElementById('addBtn');
@@ -111,6 +128,9 @@ let editingNoteId = null;
 let events = {};
 let currentDate = new Date();
 let selectedDateStr = null;
+let points = 0;
+let purchasedThemes = ['default'];
+let currentTheme = 'default';
 
 // Load todos from localStorage on page load
 function loadTodos() {
@@ -145,6 +165,26 @@ function loadEvents() {
     const savedEvents = localStorage.getItem('events');
     if (savedEvents) {
         events = JSON.parse(savedEvents);
+    }
+}
+
+// Load points and themes
+function loadPointsAndThemes() {
+    const savedPoints = localStorage.getItem('points');
+    if (savedPoints) {
+        points = parseInt(savedPoints);
+        updatePointsDisplay();
+    }
+
+    const savedPurchasedThemes = localStorage.getItem('purchasedThemes');
+    if (savedPurchasedThemes) {
+        purchasedThemes = JSON.parse(savedPurchasedThemes);
+    }
+
+    const savedTheme = localStorage.getItem('currentTheme');
+    if (savedTheme) {
+        currentTheme = savedTheme;
+        applyTheme(currentTheme);
     }
 }
 
@@ -212,6 +252,35 @@ function saveNotes() {
 // Save events to localStorage
 function saveEvents() {
     localStorage.setItem('events', JSON.stringify(events));
+}
+
+// Save points and themes
+function savePoints() {
+    localStorage.setItem('points', points);
+}
+
+function savePurchasedThemes() {
+    localStorage.setItem('purchasedThemes', JSON.stringify(purchasedThemes));
+}
+
+function saveCurrentTheme() {
+    localStorage.setItem('currentTheme', currentTheme);
+}
+
+// Update points display
+function updatePointsDisplay() {
+    document.getElementById('menuPoints').textContent = points;
+    document.getElementById('shopPoints').textContent = points;
+}
+
+// Show points notification
+function showPointsNotification() {
+    const notification = document.getElementById('pointsNotification');
+    notification.classList.add('show');
+
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 2000);
 }
 
 // Add a new todo
@@ -324,6 +393,12 @@ function toggleTodo(id) {
             totalCompletedCount++;
             updateTotalCompleted();
 
+            // Add 5 points
+            points += 5;
+            savePoints();
+            updatePointsDisplay();
+            showPointsNotification();
+
             // Check if this is a milestone (every 5 tasks)
             if (totalCompletedCount % 5 === 0) {
                 // Show special milestone celebration
@@ -407,6 +482,9 @@ resetBtn.addEventListener('click', () => {
         localStorage.removeItem('totalCompleted');
         localStorage.removeItem('notes');
         localStorage.removeItem('events');
+        localStorage.removeItem('points');
+        localStorage.removeItem('purchasedThemes');
+        localStorage.removeItem('currentTheme');
         todos = [];
         totalCompletedCount = 0;
         currentFilter = 'all';
@@ -414,6 +492,9 @@ resetBtn.addEventListener('click', () => {
         editingNoteId = null;
         events = {};
         selectedDateStr = null;
+        points = 0;
+        purchasedThemes = ['default'];
+        currentTheme = 'default';
 
         // Reset filter buttons
         filterBtns.forEach(b => b.classList.remove('active'));
@@ -423,12 +504,15 @@ resetBtn.addEventListener('click', () => {
         renderTodos();
         renderNotes();
         clearNoteForm();
+        updatePointsDisplay();
+        applyTheme('default');
 
         // Return to menu
         noteEditor.style.display = 'none';
         notesContainer.style.display = 'none';
         calendarContainer.style.display = 'none';
         eventEditor.style.display = 'none';
+        shopContainer.style.display = 'none';
         appContainer.style.display = 'none';
         mainMenu.classList.remove('hidden');
     }
@@ -792,7 +876,85 @@ function clearEventForm() {
     eventTime.value = '';
 }
 
+// Themes data
+const themes = [
+    { id: 'default', name: 'Crimson Bolt', colors: { primary: '#dc143c', secondary: '#1e90ff' }, cost: 0, icon: '⚡' },
+    { id: 'ocean', name: 'Ocean Wave', colors: { primary: '#00CED1', secondary: '#1E90FF' }, cost: 50, icon: '🌊' },
+    { id: 'sunset', name: 'Sunset Glow', colors: { primary: '#FF6347', secondary: '#FFD700' }, cost: 75, icon: '🌅' },
+    { id: 'forest', name: 'Forest Green', colors: { primary: '#228B22', secondary: '#90EE90' }, cost: 100, icon: '🌲' },
+    { id: 'purple', name: 'Royal Purple', colors: { primary: '#9370DB', secondary: '#DA70D6' }, cost: 125, icon: '👑' },
+    { id: 'fire', name: 'Blazing Fire', colors: { primary: '#FF4500', secondary: '#FF8C00' }, cost: 150, icon: '🔥' },
+    { id: 'ice', name: 'Arctic Ice', colors: { primary: '#4682B4', secondary: '#87CEEB' }, cost: 150, icon: '❄️' },
+    { id: 'gold', name: 'Golden Luxury', colors: { primary: '#FFD700', secondary: '#FFA500' }, cost: 200, icon: '✨' }
+];
+
+// Render shop
+function renderShop() {
+    const themeGrid = document.getElementById('themeGrid');
+    themeGrid.innerHTML = '';
+
+    themes.forEach(theme => {
+        const isPurchased = purchasedThemes.includes(theme.id);
+        const isActive = currentTheme === theme.id;
+
+        const themeCard = document.createElement('div');
+        themeCard.className = `theme-card ${isActive ? 'active' : ''}`;
+        themeCard.style.borderColor = theme.colors.primary;
+
+        themeCard.innerHTML = `
+            <div class="theme-icon">${theme.icon}</div>
+            <h3 class="theme-name">${theme.name}</h3>
+            <div class="theme-preview" style="background: linear-gradient(135deg, ${theme.colors.primary} 0%, ${theme.colors.secondary} 100%);"></div>
+            ${isPurchased
+                ? (isActive
+                    ? '<button class="theme-btn active-btn">Active ✓</button>'
+                    : `<button class="theme-btn apply-btn" onclick="applyTheme('${theme.id}')">Apply</button>`)
+                : `<button class="theme-btn buy-btn" onclick="buyTheme('${theme.id}')">${theme.cost === 0 ? 'Free' : theme.cost + ' pts'}</button>`
+            }
+        `;
+
+        themeGrid.appendChild(themeCard);
+    });
+}
+
+// Buy theme
+function buyTheme(themeId) {
+    const theme = themes.find(t => t.id === themeId);
+
+    if (!theme) return;
+
+    if (points >= theme.cost) {
+        points -= theme.cost;
+        purchasedThemes.push(themeId);
+        savePoints();
+        savePurchasedThemes();
+        updatePointsDisplay();
+        renderShop();
+
+        // Auto-apply purchased theme
+        applyTheme(themeId);
+    } else {
+        alert(`Not enough points! You need ${theme.cost - points} more points.`);
+    }
+}
+
+// Apply theme
+function applyTheme(themeId) {
+    const theme = themes.find(t => t.id === themeId);
+    if (!theme) return;
+
+    currentTheme = themeId;
+    saveCurrentTheme();
+
+    // Update CSS variables
+    document.documentElement.style.setProperty('--primary-color', theme.colors.primary);
+    document.documentElement.style.setProperty('--secondary-color', theme.colors.secondary);
+
+    renderShop();
+}
+
 // Initialize the app
 loadTodos();
 loadNotes();
 loadEvents();
+loadPointsAndThemes();

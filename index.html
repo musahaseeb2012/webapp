@@ -42,6 +42,16 @@
                     <div class="option-title">Tips</div>
                     <div class="option-description">How to unlock features</div>
                 </button>
+
+                <button id="shopBtn" class="menu-option shop-button">
+                    <div class="option-icon">🛍️</div>
+                    <div class="option-title">Shop</div>
+                    <div class="option-description">Buy themes with points</div>
+                    <div class="points-display">
+                        <span class="points-icon">💰</span>
+                        <span id="menuPoints">0</span> pts
+                    </div>
+                </button>
             </div>
         </div>
     </div>
@@ -152,6 +162,28 @@
                 <button id="addEventBtn" class="add-event-btn" style="display: none;">+ Add Event</button>
             </div>
         </div>
+    </div>
+
+    <!-- Shop Container -->
+    <div id="shopContainer" class="shop-container">
+        <div class="app-header">
+            <button id="backToMenuFromShop" class="back-btn">← Back to Menu</button>
+            <h1>Theme Shop</h1>
+            <div class="shop-points">
+                <span class="points-icon">💰</span>
+                <span id="shopPoints">0</span> Points
+            </div>
+        </div>
+
+        <div class="shop-content">
+            <div class="theme-grid" id="themeGrid"></div>
+        </div>
+    </div>
+
+    <!-- Points Notification -->
+    <div id="pointsNotification" class="points-notification">
+        <span class="points-plus">+5</span>
+        <span class="points-text">Points!</span>
     </div>
 
     <!-- Event Editor Modal -->
