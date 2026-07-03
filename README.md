@@ -1,16 +1,23 @@
-# To-Do List Web Application
+# CarCheck — Car Quality & Value Checker
 
-A simple and elegant to-do list web application built with vanilla HTML, CSS, and JavaScript.
+A single-page web app for checking whether a used car is worth buying: enter its
+make, model, year, mileage, condition and asking price to get an estimated
+quality score and see how the asking price compares to its estimated market
+value.
 
 ## Features
 
-- Add new tasks
-- Mark tasks as completed
-- Delete tasks
-- Filter tasks (All, Active, Completed)
-- Clear all completed tasks
-- Persistent storage using localStorage
-- Responsive design with smooth animations
+- **Quality score (0-100)** built from brand/model reliability reputation, age,
+  mileage-per-year, condition, and title status, with a letter grade and a
+  breakdown of how each factor contributed.
+- **Price vs. worth comparison** — estimates a market value using a
+  depreciation curve plus mileage and condition adjustments, then labels the
+  asking price as a Great Deal, Good Deal, Fair Price, Slightly Overpriced, or
+  Overpriced.
+- **Common issues to watch for** — known problem areas for the make/model,
+  pulled from a curated reference dataset.
+- **Buying checklist** — pre-purchase inspection, vehicle history report,
+  title verification, test drive checklist.
 
 ## Getting Started
 
@@ -29,29 +36,35 @@ A simple and elegant to-do list web application built with vanilla HTML, CSS, an
    ```bash
    node server.js
    ```
-
 3. Open your browser and go to: `http://localhost:3000`
 
 ## Usage
 
-- Type a task in the input field and click "Add Task" or press Enter
-- Click the checkbox to mark a task as completed
-- Click "Delete" to remove a task
-- Use the filter buttons to view All, Active, or Completed tasks
-- Click "Clear Completed" to remove all completed tasks at once
+1. Enter the car's make (a dropdown of recognized makes appears as you type).
+2. Optionally enter the model — if it's in the reference dataset, the estimate
+   gets more precise.
+3. Enter year, mileage, condition, title status, and the asking price.
+4. Click "Check This Car" to see the quality score, common issues, and how the
+   asking price compares to the estimated value.
 
 ## Files
 
-- `index.html` - Main HTML structure
-- `styles.css` - Styling and animations
-- `app.js` - JavaScript functionality
-- `server.js` - Simple Node.js HTTP server
-- `package.json` - Project configuration
+- `index.html` — page structure and result rendering
+- `car-styles.css` — styling
+- `car-app.js` — quality score and valuation logic
+- `car-data.js` — curated make/model reference data (reliability, base
+  pricing, common issues)
+- `server.js` — simple Node.js HTTP static file server
 
 ## Technologies
 
-- HTML5
-- CSS3 (with animations and gradients)
+- HTML5, CSS3
 - Vanilla JavaScript (ES6+)
-- Node.js HTTP server
-- localStorage API for data persistence
+- Node.js HTTP server (no external dependencies)
+
+## Disclaimer
+
+Estimates are generated from general reliability reputation and typical
+depreciation trends — not live market listings, VIN-decoded data, or
+manufacturer figures. Treat results as a starting point, not a substitute for
+a professional inspection or a real-time valuation tool (e.g. KBB, Edmunds).

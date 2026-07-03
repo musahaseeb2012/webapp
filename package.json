@@ -1,12 +1,12 @@
 {
-  "name": "todo-list-app",
+  "name": "carcheck",
   "version": "1.0.0",
-  "description": "A simple to-do list web application",
+  "description": "Check any car's estimated quality score and see how its asking price compares to its actual worth",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
-  "keywords": ["todo", "list", "webapp"],
+  "keywords": ["car", "quality", "valuation", "webapp"],
   "author": "",
   "license": "MIT"
 }

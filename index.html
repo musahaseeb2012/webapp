@@ -3,238 +3,259 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do List App</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>CarCheck — Car Quality &amp; Value Checker</title>
+    <meta name="description" content="Check any car's estimated quality score and see if its asking price matches its actual worth.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚗</text></svg>">
+    <link rel="stylesheet" href="car-styles.css">
 </head>
 <body>
-    <!-- Main Menu Screen -->
-    <div id="mainMenu" class="main-menu">
-        <div class="menu-content">
-            <div class="menu-header">
-                <div class="menu-icon">⚡</div>
-                <h1 class="menu-title">Productivity Hub</h1>
-                <p class="menu-subtitle">Choose your tool to get things done</p>
+    <div class="wrap">
+        <header class="site">
+            <div class="brand">
+                <div class="brand-badge">🚗</div>
+                <span>CarCheck</span>
             </div>
+            <p class="tag">Quality score &amp; price-vs-worth checker</p>
+        </header>
 
-            <div class="menu-options">
-                <button id="todoListBtn" class="menu-option">
-                    <div class="option-icon">✓</div>
-                    <div class="option-title">To-Do List</div>
-                    <div class="option-description">Manage your daily tasks</div>
-                </button>
+        <section class="hero">
+            <h1>Is that car actually worth it?</h1>
+            <p>Enter the details of any car — make, model, year, mileage and condition — to get an
+                estimated quality score and see how its asking price compares to what it's really worth.</p>
+        </section>
 
-                <button id="notesBtn" class="menu-option locked">
-                    <div class="lock-icon">🔒</div>
-                    <div class="option-icon">📝</div>
-                    <div class="option-title">Notes</div>
-                    <div class="option-description unlock-progress">Complete 10 tasks to unlock</div>
-                </button>
+        <section class="card">
+            <form class="checker" id="checker-form" novalidate>
+                <div class="field">
+                    <label for="make">Make</label>
+                    <input list="make-list" id="make" name="make" placeholder="e.g. Toyota" autocomplete="off" required>
+                    <datalist id="make-list"></datalist>
+                </div>
 
-                <button id="calendarBtn" class="menu-option locked">
-                    <div class="lock-icon">🔒</div>
-                    <div class="option-icon">📅</div>
-                    <div class="option-title">Calendar</div>
-                    <div class="option-description unlock-progress">Complete 20 tasks to unlock</div>
-                </button>
+                <div class="field">
+                    <label for="model">Model</label>
+                    <input type="text" id="model" name="model" placeholder="e.g. Camry" autocomplete="off">
+                    <small class="hint">Optional — improves accuracy if we recognize it</small>
+                </div>
 
-                <button id="tipsBtn" class="menu-option tips-button">
-                    <div class="option-icon">💡</div>
-                    <div class="option-title">Tips</div>
-                    <div class="option-description">How to unlock features</div>
-                </button>
+                <div class="field">
+                    <label for="year">Year</label>
+                    <input type="number" id="year" name="year" placeholder="e.g. 2019" min="1980" required>
+                </div>
 
-                <button id="shopBtn" class="menu-option shop-button">
-                    <div class="option-icon">🛍️</div>
-                    <div class="option-title">Shop</div>
-                    <div class="option-description">Buy themes with points</div>
-                    <div class="points-display">
-                        <span class="points-icon">💰</span>
-                        <span id="menuPoints">0</span> pts
-                    </div>
-                </button>
-            </div>
-        </div>
-    </div>
+                <div class="field">
+                    <label for="mileage">Mileage</label>
+                    <input type="number" id="mileage" name="mileage" placeholder="e.g. 45000" min="0" required>
+                </div>
 
-    <div class="container">
-        <div class="app-header">
-            <button id="backToMenuBtn" class="back-btn">← Back to Menu</button>
-            <h1>My To-Do List</h1>
-        </div>
+                <div class="field">
+                    <label for="condition">Condition</label>
+                    <select id="condition" name="condition" required>
+                        <option value="excellent">Excellent</option>
+                        <option value="good" selected>Good</option>
+                        <option value="fair">Fair</option>
+                        <option value="poor">Poor</option>
+                    </select>
+                </div>
 
-        <div class="input-section">
-            <input type="text" id="todoInput" placeholder="Add a new task..." />
-            <button id="addBtn">Add Task</button>
-        </div>
+                <div class="field">
+                    <label for="title">Title Status</label>
+                    <select id="title" name="title" required>
+                        <option value="clean" selected>Clean</option>
+                        <option value="rebuilt">Rebuilt/Reconstructed</option>
+                        <option value="salvage">Salvage</option>
+                    </select>
+                </div>
 
-        <div class="filters">
-            <button class="filter-btn active" data-filter="all">All</button>
-            <button class="filter-btn" data-filter="active">Active</button>
-            <button class="filter-btn" data-filter="completed">Completed</button>
-        </div>
+                <div class="field span-2">
+                    <label for="price">Asking Price ($)</label>
+                    <input type="number" id="price" name="price" placeholder="e.g. 21500" min="0" required>
+                </div>
 
-        <ul id="todoList" class="todo-list"></ul>
+                <div class="error-box" id="error-box"></div>
 
-        <div class="stats">
-            <div class="stats-left">
-                <span id="taskCount">0 tasks remaining</span>
-                <button id="resetApp" class="reset-btn" title="Reset all data">🔄 Reset</button>
-            </div>
-            <button id="clearCompleted">Clear Completed</button>
-        </div>
+                <div class="submit-row">
+                    <button type="submit" class="primary">Check This Car</button>
+                </div>
+            </form>
+        </section>
 
-        <div class="achievement-stats">
-            <div class="total-completed">
-                <span class="completed-icon">✓</span>
-                <span id="totalCompleted">0</span>
-                <span class="completed-label">Tasks Completed</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Achievement Badge -->
-    <div id="achievementBadge" class="achievement-badge">
-        <div class="badge-icon">⭐</div>
-        <div class="badge-text">Well Done!</div>
-        <div class="badge-subtext">Task Completed</div>
-    </div>
-
-    <!-- Milestone Badge -->
-    <div id="milestoneBadge" class="milestone-badge">
-        <div class="milestone-icon">🏆</div>
-        <div class="milestone-text">You're Crushing It!</div>
-        <div class="milestone-subtext">5 Tasks Milestone!</div>
-    </div>
-
-    <!-- Notes List Container -->
-    <div id="notesContainer" class="notes-container">
-        <div class="app-header">
-            <button id="backToMenuFromNotes" class="back-btn">← Back to Menu</button>
-            <h1>My Notes</h1>
-        </div>
-
-        <div class="notes-list-page">
-            <button id="addNewNoteBtn" class="add-new-note-btn">+ Add New Note</button>
-            <div id="notesList" class="notes-list"></div>
-        </div>
-    </div>
-
-    <!-- Note Editor Container -->
-    <div id="noteEditor" class="note-editor">
-        <div class="editor-header">
-            <button id="backToNotesList" class="back-btn">← Back to Notes</button>
-            <button id="saveNoteBtn" class="save-note-btn-header">Save</button>
-        </div>
-        <div class="editor-content">
-            <input type="text" id="noteTitle" placeholder="Note title..." class="note-title-input" />
-            <textarea id="noteContent" placeholder="Start writing your note here..." class="note-content-input"></textarea>
-        </div>
-    </div>
-
-    <!-- Calendar Container -->
-    <div id="calendarContainer" class="calendar-container">
-        <div class="app-header">
-            <button id="backToMenuFromCalendar" class="back-btn">← Back to Menu</button>
-            <h1>My Calendar</h1>
-        </div>
-
-        <div class="calendar-view">
-            <div class="calendar-header">
-                <button id="prevMonth" class="month-nav-btn">‹</button>
-                <h2 id="currentMonth">January 2024</h2>
-                <button id="nextMonth" class="month-nav-btn">›</button>
-            </div>
-
-            <div class="calendar-grid">
-                <div class="calendar-day-header">Sun</div>
-                <div class="calendar-day-header">Mon</div>
-                <div class="calendar-day-header">Tue</div>
-                <div class="calendar-day-header">Wed</div>
-                <div class="calendar-day-header">Thu</div>
-                <div class="calendar-day-header">Fri</div>
-                <div class="calendar-day-header">Sat</div>
-                <div id="calendarDays" class="calendar-days"></div>
-            </div>
-
-            <div class="events-section">
-                <h3>Events for <span id="selectedDate">Select a date</span></h3>
-                <div id="eventsList" class="events-list"></div>
-                <button id="addEventBtn" class="add-event-btn" style="display: none;">+ Add Event</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Shop Container -->
-    <div id="shopContainer" class="shop-container">
-        <div class="app-header">
-            <button id="backToMenuFromShop" class="back-btn">← Back to Menu</button>
-            <h1>Theme Shop</h1>
-            <div class="shop-points">
-                <span class="points-icon">💰</span>
-                <span id="shopPoints">0</span> Points
-            </div>
-        </div>
-
-        <div class="shop-content">
-            <div class="theme-grid" id="themeGrid"></div>
-        </div>
-    </div>
-
-    <!-- Points Notification -->
-    <div id="pointsNotification" class="points-notification">
-        <span class="points-plus">+5</span>
-        <span class="points-text">Points!</span>
-    </div>
-
-    <!-- Event Editor Modal -->
-    <div id="eventEditor" class="event-editor">
-        <div class="event-editor-content">
-            <button id="closeEventEditor" class="close-event-editor">✕</button>
-            <h2>Add Event</h2>
-            <input type="text" id="eventTitle" placeholder="Event title..." class="event-title-input" />
-            <textarea id="eventDescription" placeholder="Description (optional)..." class="event-description-input"></textarea>
-            <input type="time" id="eventTime" class="event-time-input" />
-            <div class="event-editor-actions">
-                <button id="saveEventBtn" class="save-event-btn">Save Event</button>
-                <button id="cancelEventBtn" class="cancel-event-btn">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tips Modal -->
-    <div id="tipsModal" class="tips-modal">
-        <div class="tips-content">
-            <button id="closeTips" class="close-tips">✕</button>
-            <h2>🎯 How to Unlock Features</h2>
-            <div class="tips-list">
-                <div class="tip-item">
-                    <div class="tip-icon">📝</div>
-                    <div class="tip-info">
-                        <h3>Notes</h3>
-                        <p>Complete <strong>10 tasks</strong> in the To-Do List</p>
-                        <div class="tip-progress">
-                            <span id="notesProgress">0/10</span>
+        <section id="results">
+            <div class="results-grid">
+                <div class="card result-card">
+                    <h2>Quality Score</h2>
+                    <div class="gauge-wrap">
+                        <div class="gauge" id="gauge">
+                            <div class="gauge-inner">
+                                <div class="score-num" id="score-num">–</div>
+                                <div class="score-grade" id="score-grade">–</div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="verdict-text" id="verdict-text"></p>
+                            <p class="sub-text" id="reliability-text"></p>
                         </div>
                     </div>
+                    <div class="breakdown" id="breakdown"></div>
                 </div>
-                <div class="tip-item">
-                    <div class="tip-icon">📅</div>
-                    <div class="tip-info">
-                        <h3>Calendar</h3>
-                        <p>Complete <strong>20 tasks</strong> in the To-Do List</p>
-                        <div class="tip-progress">
-                            <span id="calendarProgress">0/20</span>
+
+                <div class="card result-card">
+                    <h2>Price vs. Worth</h2>
+                    <div class="price-compare">
+                        <div class="price-row">
+                            <span class="label">Estimated Market Value</span>
+                            <span class="value" id="est-value">–</span>
+                        </div>
+                        <div class="price-row">
+                            <span class="label">Asking Price</span>
+                            <span class="value" id="ask-value">–</span>
+                        </div>
+                        <div>
+                            <span class="badge" id="deal-badge">–</span>
+                            <p class="diff-text" id="diff-text"></p>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="tips-warning">
-                <div class="warning-icon">⚠️</div>
-                <p><strong>Warning:</strong> Using the Reset button will delete ALL tasks, notes, calendar events, and progress. You will lose access to unlocked features until you earn them again!</p>
+
+            <div class="card" style="margin-bottom:20px;">
+                <h2>Things to Watch For</h2>
+                <ul class="issues-list" id="issues-list"></ul>
             </div>
-        </div>
+
+            <div class="card">
+                <h2>Before You Buy</h2>
+                <ul class="tips-list">
+                    <li>Get a pre-purchase inspection from an independent mechanic.</li>
+                    <li>Pull a vehicle history report (Carfax/AutoCheck) using the VIN.</li>
+                    <li>Confirm the title status matches what the seller claims.</li>
+                    <li>Test drive it and check for warning lights, unusual noises, and fluid leaks.</li>
+                    <li>Compare against similar listings in your area before negotiating.</li>
+                </ul>
+                <p class="disclaimer">
+                    Estimates are generated from general reliability reputation and typical depreciation
+                    trends — not live market listings, VIN-decoded data, or manufacturer figures. Use this
+                    as a starting point, not a substitute for a professional inspection or a real-time
+                    valuation tool (e.g. KBB, Edmunds).
+                </p>
+            </div>
+        </section>
+
+        <footer class="site">CarCheck — informational estimates only, not professional advice.</footer>
     </div>
 
-    <script src="app.js"></script>
+    <script src="car-data.js"></script>
+    <script src="car-app.js"></script>
+    <script>
+        (function () {
+            const form = document.getElementById('checker-form');
+            const errorBox = document.getElementById('error-box');
+            const results = document.getElementById('results');
+            const makeList = document.getElementById('make-list');
+
+            Object.keys(CAR_DATA.makes).sort().forEach((make) => {
+                const opt = document.createElement('option');
+                opt.value = make;
+                makeList.appendChild(opt);
+            });
+
+            function fmtMoney(n) {
+                return '$' + Math.round(n).toLocaleString('en-US');
+            }
+
+            function showError(msg) {
+                errorBox.textContent = msg;
+                errorBox.classList.add('show');
+                results.classList.remove('show');
+            }
+
+            function clearError() {
+                errorBox.classList.remove('show');
+                errorBox.textContent = '';
+            }
+
+            function renderGauge(score) {
+                const gauge = document.getElementById('gauge');
+                let color = '#ff5c6c';
+                if (score >= 80) color = '#29d3a2';
+                else if (score >= 60) color = '#3ea6ff';
+                else if (score >= 45) color = '#ffb648';
+                gauge.style.background = `conic-gradient(${color} ${score * 3.6}deg, #22304d ${score * 3.6}deg)`;
+                document.getElementById('score-num').textContent = score;
+            }
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                clearError();
+
+                const make = form.make.value.trim();
+                const model = form.model.value.trim();
+                const year = parseInt(form.year.value, 10);
+                const mileage = parseInt(form.mileage.value, 10);
+                const condition = form.condition.value;
+                const title = form.title.value;
+                const price = parseFloat(form.price.value);
+
+                if (!make) return showError('Please enter a make (e.g. Toyota, Honda, Ford).');
+                if (!year || year < 1980 || year > CarChecker.CURRENT_YEAR + 1) {
+                    return showError(`Please enter a valid year between 1980 and ${CarChecker.CURRENT_YEAR + 1}.`);
+                }
+                if (isNaN(mileage) || mileage < 0) return showError('Please enter a valid mileage.');
+                if (isNaN(price) || price <= 0) return showError('Please enter a valid asking price.');
+
+                const input = { make, model, year, mileage, condition, title };
+
+                const quality = CarChecker.computeQualityScore(input);
+                const { grade, verdict } = CarChecker.gradeFor(quality.total);
+                const { estimatedValue, usedSpecificModel } = CarChecker.estimateValue(input);
+                const compare = CarChecker.comparePrice(estimatedValue, price);
+
+                renderGauge(quality.total);
+                document.getElementById('score-grade').textContent = 'Grade ' + grade;
+                document.getElementById('verdict-text').textContent = verdict;
+                document.getElementById('reliability-text').textContent =
+                    `${make}${model ? ' ' + model : ''} rates ${quality.reliability.toFixed(1)}/10 for reliability`
+                    + (usedSpecificModel ? '' : ' (make-level average)')
+                    + `. Typical annual maintenance: ~${fmtMoney(quality.avgMaintenance)}.`;
+
+                const breakdown = document.getElementById('breakdown');
+                breakdown.innerHTML = '';
+                quality.breakdown.forEach((b) => {
+                    const pct = (b.points / b.max) * 100;
+                    const row = document.createElement('div');
+                    row.className = 'bar-row';
+                    row.innerHTML = `
+                        <div class="bar-label"><span>${b.label}</span><span>${b.points}/${b.max}</span></div>
+                        <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+                    `;
+                    breakdown.appendChild(row);
+                });
+
+                document.getElementById('est-value').textContent = fmtMoney(estimatedValue);
+                document.getElementById('ask-value').textContent = fmtMoney(price);
+
+                const badge = document.getElementById('deal-badge');
+                badge.textContent = compare.verdict;
+                badge.className = 'badge ' + compare.className;
+
+                const diffAbs = Math.abs(Math.round(compare.diff));
+                const diffPctAbs = Math.abs(compare.diffPct).toFixed(1);
+                document.getElementById('diff-text').textContent = compare.diff >= 0
+                    ? `Asking price is ${fmtMoney(diffAbs)} (${diffPctAbs}%) above estimated value.`
+                    : `Asking price is ${fmtMoney(diffAbs)} (${diffPctAbs}%) below estimated value.`;
+
+                const issuesList = document.getElementById('issues-list');
+                issuesList.innerHTML = '';
+                quality.issues.forEach((issue) => {
+                    const li = document.createElement('li');
+                    li.textContent = issue;
+                    issuesList.appendChild(li);
+                });
+
+                results.classList.add('show');
+                results.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        })();
+    </script>
 </body>
 </html>
