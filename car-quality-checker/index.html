@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Car Quality &amp; Value Checker</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="site-header">
+    <div class="container">
+        <h1>🚗 Car Quality &amp; Value Checker</h1>
+        <p>Enter a car's details to get a quality score and see how its asking price compares to its estimated fair market value.</p>
+    </div>
+</header>
+
+<main class="container layout">
+    <section class="card form-card">
+        <h2>Vehicle Details</h2>
+        <form id="car-form" novalidate>
+            <div class="field-row">
+                <div class="field">
+                    <label for="make">Make</label>
+                    <input type="text" id="make" list="make-list" placeholder="e.g. Toyota" autocomplete="off" required>
+                    <datalist id="make-list"></datalist>
+                </div>
+                <div class="field">
+                    <label for="model">Model</label>
+                    <input type="text" id="model" placeholder="e.g. Camry" autocomplete="off" required>
+                </div>
+            </div>
+
+            <div id="category-group" class="field is-hidden">
+                <label for="category">Vehicle category <span class="hint">(model not in our database — pick the closest match)</span></label>
+                <select id="category"></select>
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <label for="year">Year</label>
+                    <input type="number" id="year" min="1980" required>
+                </div>
+                <div class="field">
+                    <label for="mileage">Mileage</label>
+                    <input type="number" id="mileage" min="0" placeholder="e.g. 45000" required>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <label for="price">Current asking price ($)</label>
+                    <input type="number" id="price" min="0" placeholder="e.g. 19500" required>
+                </div>
+                <div class="field">
+                    <label for="msrp-override">Original MSRP ($) <span class="hint">(optional)</span></label>
+                    <input type="number" id="msrp-override" min="0">
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <label for="condition">Overall condition</label>
+                    <select id="condition"></select>
+                </div>
+                <div class="field">
+                    <label for="accident">Accident history</label>
+                    <select id="accident"></select>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <label for="service">Service records</label>
+                    <select id="service"></select>
+                </div>
+                <div class="field">
+                    <label for="owners">Previous owners</label>
+                    <select id="owners"></select>
+                </div>
+            </div>
+
+            <div id="form-error" class="error-box is-hidden" role="alert"></div>
+
+            <button type="submit" class="btn-primary">Check This Car</button>
+        </form>
+    </section>
+
+    <section class="card results-card">
+        <div id="empty-state" class="empty-state">
+            <p>Fill in the form and click <strong>“Check This Car”</strong> to see its quality score and value comparison.</p>
+        </div>
+
+        <div id="results" class="is-hidden">
+            <h2 id="result-title"></h2>
+            <p id="result-subtitle" class="muted"></p>
+
+            <div class="score-panel">
+                <div id="quality-gauge" class="gauge">
+                    <span id="quality-score">0</span>
+                    <span class="gauge-label">Quality Score</span>
+                </div>
+
+                <div class="value-panel">
+                    <div class="value-row">
+                        <span class="value-label">Estimated fair value</span>
+                        <span id="estimated-value" class="value-amount"></span>
+                    </div>
+                    <div class="value-row">
+                        <span class="value-label">Asking price</span>
+                        <span id="asking-price" class="value-amount"></span>
+                    </div>
+                    <div id="verdict" class="verdict"></div>
+                    <div id="price-diff" class="price-diff"></div>
+                </div>
+            </div>
+
+            <h3>Quality Breakdown</h3>
+            <ul id="breakdown-list" class="breakdown-list"></ul>
+        </div>
+    </section>
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <p>Estimates are generated from general depreciation trends and the details you provide — they are illustrative only, not a live market valuation. Always verify with an independent inspection and a real pricing guide (e.g. KBB, Edmunds) or vehicle history report before buying.</p>
+    </div>
+</footer>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

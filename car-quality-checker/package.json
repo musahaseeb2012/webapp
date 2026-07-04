@@ -1,0 +1,12 @@
+{
+  "name": "car-quality-value-checker",
+  "version": "1.0.0",
+  "description": "Check a car's quality score and see how its asking price compares to its estimated fair market value.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["car", "valuation", "quality", "webapp"],
+  "author": "",
+  "license": "MIT"
+}
