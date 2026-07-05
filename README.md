@@ -55,3 +55,9 @@ A simple and elegant to-do list web application built with vanilla HTML, CSS, an
 - Vanilla JavaScript (ES6+)
 - Node.js HTTP server
 - localStorage API for data persistence
+
+## AutoVerdict — Car Quality & Value Checker
+
+A separate standalone app in this repo (`car-checker.html`, `car-checker.css`, `car-checker.js`, `car-data.js`). Look up any make/model/year to see a reliability score, safety rating, common issues, and pros/cons, then enter mileage, condition, and an asking price to see an estimated fair market value and whether that price is a good deal.
+
+Run the same server (`npm start`) and open `http://localhost:3000/car-checker.html`.
