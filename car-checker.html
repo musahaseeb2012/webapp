@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoVerdict — Car Quality &amp; Value Checker</title>
+  <meta name="description" content="Check any car's reliability, common issues, and safety rating, and see if the asking price is a fair deal compared to its estimated market value.">
+  <link rel="stylesheet" href="car-checker.css">
+</head>
+<body>
+  <div class="wrap">
+    <header class="site-header">
+      <div class="logo"><span class="mark">🚘</span> AutoVerdict</div>
+      <p>Look up any make and model to see its reliability, common issues, and safety rating — then compare an asking price against its estimated fair market value.</p>
+    </header>
+
+    <section class="search-card">
+      <h2>Select a Vehicle</h2>
+      <div class="field-row">
+        <div class="field">
+          <label for="make">Make</label>
+          <select id="make"></select>
+        </div>
+        <div class="field">
+          <label for="model">Model</label>
+          <select id="model"></select>
+        </div>
+        <div class="field">
+          <label for="year">Year</label>
+          <select id="year"></select>
+        </div>
+      </div>
+      <button class="btn btn-block" id="check-btn">Check This Car</button>
+      <p class="helper-text">Reliability, safety, and pricing figures are informed estimates for general guidance — always pair them with a vehicle history report and a pre-purchase inspection.</p>
+    </section>
+
+    <div id="results">
+      <section class="card" id="quality-card"></section>
+
+      <section class="card" id="valuation-card">
+        <div class="card-title">
+          <h2>Price vs. Actual Value</h2>
+        </div>
+        <div class="valuation-form">
+          <div class="field">
+            <label for="mileage">Current Mileage</label>
+            <input type="number" id="mileage" min="0" step="1000" placeholder="e.g. 45000">
+          </div>
+          <div class="field">
+            <label for="asking-price">Asking Price ($)</label>
+            <input type="number" id="asking-price" min="0" step="500" placeholder="e.g. 21000">
+          </div>
+          <div class="field">
+            <label for="condition">Condition</label>
+            <select id="condition">
+              <option value="excellent">Excellent</option>
+              <option value="good" selected>Good</option>
+              <option value="fair">Fair</option>
+              <option value="poor">Poor</option>
+              <option value="salvage">Salvage / Rebuilt Title</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="accidents">Accident History</label>
+            <select id="accidents">
+              <option value="none" selected>None Reported</option>
+              <option value="minor">Minor (1 accident)</option>
+              <option value="moderate">Moderate (2+ accidents)</option>
+              <option value="major">Major / Frame Damage</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label for="owners">Previous Owners</label>
+            <select id="owners">
+              <option value="1" selected>1 Owner</option>
+              <option value="2">2 Owners</option>
+              <option value="3">3 Owners</option>
+              <option value="4">4+ Owners</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-block" id="calc-btn">Calculate Fair Value</button>
+        <div id="valuation-output"></div>
+      </section>
+    </div>
+
+    <p class="disclaimer">AutoVerdict provides general, estimate-based information for educational purposes only. It is not a substitute for an official appraisal, vehicle history report (e.g. Carfax/AutoCheck), or a mechanic's pre-purchase inspection. Actual market values vary by region, demand, and vehicle-specific factors.</p>
+  </div>
+
+  <script src="car-data.js"></script>
+  <script src="car-checker.js"></script>
+</body>
+</html>
