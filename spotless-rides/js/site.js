@@ -60,7 +60,7 @@
 
   /* ------------------------------------------------- active section link -- */
 
-  var sections = ['story', 'packages', 'pricing', 'process', 'book']
+  var sections = ['story', 'packages', 'process', 'book']
     .map(function (id) { return document.getElementById(id); })
     .filter(Boolean);
 
@@ -150,6 +150,48 @@
     }, { passive: true });
   }
 
+  /* ------------------------------------------------------ size switcher -- */
+
+  // Every price on the page comes off the pressed button's data attributes,
+  // so the prices are written down exactly once — in index.html.
+  var sizeBtns = document.querySelectorAll('.size-btn');
+  var sizeField = document.getElementById('f-size');
+
+  function applySize(btn) {
+    sizeBtns.forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b === btn));
+    });
+
+    ['interior', 'full'].forEach(function (svc) {
+      var priceEl = document.querySelector('[data-price="' + svc + '"]');
+      var metaEl  = document.querySelector('[data-meta="' + svc + '"]');
+      if (!priceEl || !metaEl) return;
+
+      var price = btn.dataset[svc === 'interior' ? 'interior' : 'full'];
+      var hours = btn.dataset[svc === 'interior' ? 'hrsInterior' : 'hrsFull'];
+
+      if (priceEl.textContent !== price && !reduced) {
+        priceEl.classList.remove('is-changing');
+        void priceEl.offsetWidth;          // restart the animation
+        priceEl.classList.add('is-changing');
+      }
+      priceEl.textContent = price;
+      metaEl.textContent  = btn.dataset.size + ' · ≈ ' + hours +
+                            (hours === '1' ? ' hour' : ' hours');
+    });
+
+    // Carry the choice down to the booking form so it isn't asked twice.
+    if (sizeField) sizeField.value = btn.dataset.size;
+  }
+
+  sizeBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () { applySize(btn); });
+  });
+
+  // Whichever button ships pressed decides what the page opens on.
+  var initial = document.querySelector('.size-btn[aria-pressed="true"]') || sizeBtns[0];
+  if (initial) applySize(initial);
+
   /* ---------------------------------------------------------- counters -- */
 
   var counters = document.querySelectorAll('[data-count]');
@@ -215,6 +257,7 @@
         'Name: '    + data.get('name'),
         'Phone: '   + data.get('phone'),
         'Vehicle: ' + data.get('vehicle'),
+        'Size: '    + data.get('size'),
         'Service: ' + data.get('service'),
         '',
         'Notes:',

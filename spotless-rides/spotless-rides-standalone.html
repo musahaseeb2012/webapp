@@ -652,7 +652,7 @@ a{ color:inherit; }
 
 .card__btn{ margin-top:auto; width:100%; transform:translateZ(24px); }
 
-/* ============================ PRICE TABLE ============================ */
+/* ============================ SIZE SWITCHER ============================ */
 
 .visually-hidden{
   position:absolute; width:1px; height:1px;
@@ -660,75 +660,55 @@ a{ color:inherit; }
   clip-path:inset(50%); overflow:hidden; white-space:nowrap;
 }
 
-/* Narrow screens scroll the table itself rather than the whole page. */
-.price-table-wrap{
-  overflow-x:auto;
-  border-radius:var(--r);
-  border:1px solid var(--line);
-  background:var(--card);
-  backdrop-filter:blur(6px);
-  -webkit-overflow-scrolling:touch;
+.size-switch{
+  display:flex; flex-wrap:wrap; align-items:center; gap:.75rem 1.1rem;
+  margin-bottom:2rem;
 }
-
-.price-table{
-  width:100%;
-  min-width:520px;
-  border-collapse:collapse;
-  font-variant-numeric:tabular-nums;
+.size-switch__label{
+  font:700 .72rem/1 var(--body);
+  letter-spacing:.2em; text-transform:uppercase;
+  color:var(--muted-2);
 }
-
-.price-table thead th{
-  padding:1.1rem 1.4rem;
-  text-align:right;
-  font:800 .72rem/1.3 var(--body);
-  letter-spacing:.16em; text-transform:uppercase;
-  color:var(--lime);
-  border-bottom:1px solid rgba(158,230,58,.28);
-  white-space:nowrap;
-}
-.price-table thead th:first-child{ text-align:left; }
-
-.price-table tbody th{
-  padding:1.05rem 1.4rem;
-  text-align:left;
-  font-weight:700; font-size:1rem;
-}
-/* `display:flex` here would pull the cell out of the table layout and break
-   column alignment, so the sub-label is a block inside the cell instead. */
-.price-table tbody th em{
-  display:block; margin-top:.18rem;
-  font-style:normal; font-weight:400; font-size:.81rem;
-  color:var(--muted-2); line-height:1.35;
-}
-.price-table tbody th .tag{
-  display:inline-block;
-  margin-left:.35rem; padding:.1rem .5rem;
+.size-switch__options{
+  display:flex; flex-wrap:wrap; gap:.5rem;
+  padding:.4rem;
   border-radius:999px;
-  background:rgba(255,210,30,.14);
-  border:1px solid rgba(255,210,30,.35);
-  color:var(--yellow);
-  font-size:.68rem; font-weight:700;
-  letter-spacing:.1em; text-transform:uppercase;
-  vertical-align:middle;
+  border:1px solid var(--line);
+  background:rgba(10,43,21,.55);
+  backdrop-filter:blur(6px);
 }
 
-.price-table td{
-  padding:1.05rem 1.4rem;
-  text-align:right;
-  font-family:var(--display);
-  font-size:1.6rem;
-  color:var(--yellow);
+.size-btn{
+  padding:.62rem 1.15rem;
+  border-radius:999px;
+  border:1px solid transparent;
+  background:transparent;
+  color:var(--muted);
+  font:700 .88rem/1 var(--body);
+  letter-spacing:.02em;
+  cursor:pointer;
   white-space:nowrap;
+  transition:background .25s, color .25s, border-color .25s, transform .2s;
 }
-.price-table td:last-child{ color:#fff0a8; }
+.size-btn:hover{
+  color:var(--cream);
+  background:rgba(158,230,58,.12);
+  transform:translateY(-1px);
+}
+.size-btn[aria-pressed="true"]{
+  background:linear-gradient(135deg, var(--yellow), var(--yellow-2));
+  border-color:rgba(255,210,30,.6);
+  color:#08240f;
+  box-shadow:0 8px 20px -8px rgba(255,177,0,.7);
+}
 
-.price-table tbody tr + tr th,
-.price-table tbody tr + tr td{ border-top:1px dashed rgba(158,230,58,.14); }
-
-.price-table tbody tr{ transition:background .3s; }
-.price-table tbody tr:hover{ background:rgba(22,163,74,.13); }
-.price-table tbody tr.is-base{ background:rgba(255,210,30,.06); }
-.price-table tbody tr.is-base:hover{ background:rgba(255,210,30,.11); }
+/* The figure ticks over rather than just swapping, so a price change that
+   happens further down the page still registers. */
+.card__price b{ display:inline-block; font:inherit; }
+.card__price b.is-changing{ animation:priceTick .34s ease; }
+@keyframes priceTick{
+  40%{ transform:translateY(-6px) scale(1.06); opacity:.55; }
+}
 
 .pricing__foot{
   margin:1.8rem 0 0;
@@ -943,43 +923,13 @@ a{ color:inherit; }
   .hero__scroll{ display:none; }
 }
 
-/* A price table that scrolls sideways on a phone hides the prices, which are
-   the whole point of the section. Below this width each row restacks into a
-   card and the column headers move onto the figures themselves. */
-@media (max-width: 700px){
-  .price-table{ min-width:0; display:block; }
-  .price-table thead{ display:none; }
-  .price-table tbody,
-  .price-table tr,
-  .price-table tbody th,
-  .price-table td{ display:block; width:100%; }
-
-  .price-table tbody tr{ padding:1.15rem 1.2rem; }
-  .price-table tbody tr + tr{ border-top:1px dashed rgba(158,230,58,.14); }
-  .price-table tbody tr + tr th,
-  .price-table tbody tr + tr td{ border-top:0; }
-
-  .price-table tbody th{ padding:0 0 .7rem; font-size:1.05rem; }
-
-  .price-table td{
-    display:flex; align-items:baseline; justify-content:space-between; gap:1rem;
-    padding:.4rem 0;
-    font-size:1.5rem;
-  }
-  .price-table td::before{
-    content:attr(data-label);
-    font:700 .74rem/1.3 var(--body);
-    letter-spacing:.14em; text-transform:uppercase;
-    color:var(--muted-2);
-  }
-}
-
 @media (max-width: 560px){
   .field-row{ grid-template-columns:1fr; }
   .hero{ min-height:92svh; padding-top:6rem; }
   .hero__chips{ gap:.55rem 1rem; }
   .marquee{ transform:rotate(-1.6deg) scaleX(1.12); }
-  .price-table tbody tr{ padding:1rem; }
+  .size-switch__options{ width:100%; justify-content:flex-start; }
+  .size-btn{ flex:1 1 auto; padding:.6rem .85rem; font-size:.83rem; }
 }
 
 /* ============================ MOTION PREFERENCES ============================ */
@@ -998,10 +948,10 @@ a{ color:inherit; }
 /* Printing a price list is a real thing detailers do. */
 @media print{
   body{ background:#fff; color:#000; }
-  .hero__canvas, .loader, .nav, .fab, .marquee, .hero__scroll{ display:none !important; }
+  .hero__canvas, .loader, .nav, .fab, .marquee, .hero__scroll, .size-switch{ display:none !important; }
   .reveal{ opacity:1; transform:none; }
-  .price-table-wrap, .card__inner{ break-inside:avoid; border:1px solid #ccc; background:#fff; }
-  .price-table td, .card__price, .stat b{ color:#000; text-shadow:none; }
+  .card__inner{ break-inside:avoid; border:1px solid #ccc; background:#fff; }
+  .card__price, .stat b{ color:#000; text-shadow:none; }
 }
 
 </style>
@@ -1029,8 +979,7 @@ a{ color:inherit; }
 
   <nav class="nav__links" id="navLinks" aria-label="Main">
     <a href="#story">Our Story</a>
-    <a href="#packages">Packages</a>
-    <a href="#pricing">Prices</a>
+    <a href="#packages">Services &amp; Prices</a>
     <a href="#process">How It Works</a>
     <a href="#book">Contact</a>
   </nav>
@@ -1066,7 +1015,7 @@ a{ color:inherit; }
     </p>
 
     <div class="hero__actions">
-      <a class="btn btn--primary btn--lg" href="#pricing">See Every Price</a>
+      <a class="btn btn--primary btn--lg" href="#packages">See Every Price</a>
       <a class="btn btn--ghost btn--lg" href="#story">Why I Started This</a>
     </div>
 
@@ -1165,21 +1114,44 @@ a{ color:inherit; }
 <!--
   ============================================================
   EDIT ME — SERVICES AND PRICES
-  Two services, priced by vehicle size. The prices shown on the
-  cards are the sedan price; the full table below carries every
-  size. Change a number in one place and it only shows up once,
-  so remember the card and the table both list the sedan price.
+
+  Every price on the site lives in the five buttons below, one
+  per vehicle size:
+
+    data-interior  price of the Interior Full Detail
+    data-full      price of the Full Detail
+    data-hrs-*     roughly how long each one takes
+
+  Change a number there and the cards update themselves — the
+  prices are not written anywhere else. The button carrying
+  `aria-pressed="true"` is the one shown when the page loads.
   ============================================================
 -->
 <section class="section packages" id="packages">
   <div class="section__head reveal">
-    <p class="eyebrow">Services</p>
+    <p class="eyebrow">Services &amp; prices</p>
     <h2 class="section__title">Two services. <span class="accent">Done properly.</span></h2>
     <p class="section__sub">
       No confusing menu, no upsells at the door. Inside only, or inside and out —
-      that's it. Prices below are for a sedan; every other vehicle size is in the
-      table underneath.
+      that's it. Pick your vehicle and both prices update, so you know the number
+      before you call.
     </p>
+  </div>
+
+  <div class="size-switch reveal" role="group" aria-label="Choose your vehicle size">
+    <span class="size-switch__label" id="sizeLabel">Your vehicle</span>
+    <div class="size-switch__options" aria-labelledby="sizeLabel">
+      <button type="button" class="size-btn" aria-pressed="false"
+              data-size="Coupe"      data-interior="66"  data-full="135" data-hrs-interior="1.5" data-hrs-full="3.5">Coupe</button>
+      <button type="button" class="size-btn" aria-pressed="true"
+              data-size="Sedan"      data-interior="76"  data-full="150" data-hrs-interior="2"   data-hrs-full="4">Sedan</button>
+      <button type="button" class="size-btn" aria-pressed="false"
+              data-size="Small SUV"  data-interior="91"  data-full="175" data-hrs-interior="2.5" data-hrs-full="4.5">Small SUV</button>
+      <button type="button" class="size-btn" aria-pressed="false"
+              data-size="SUV"        data-interior="106" data-full="200" data-hrs-interior="3"   data-hrs-full="5">SUV</button>
+      <button type="button" class="size-btn" aria-pressed="false"
+              data-size="3-Row SUV"  data-interior="126" data-full="235" data-hrs-interior="3.5" data-hrs-full="5.5">3-Row SUV</button>
+    </div>
   </div>
 
   <div class="cards cards--pair">
@@ -1189,8 +1161,8 @@ a{ color:inherit; }
         <header class="card__head">
           <p class="card__kicker">Inside only</p>
           <h3 class="card__name">Interior Full Detail</h3>
-          <p class="card__price"><span>$</span>76</p>
-          <p class="card__meta">Sedan · &asymp; 2 hours</p>
+          <p class="card__price"><span>$</span><b data-price="interior">76</b></p>
+          <p class="card__meta" data-meta="interior">Sedan · &asymp; 2 hours</p>
         </header>
         <ul class="card__list">
           <li>Full vacuum &mdash; seats, carpet, trunk, every crevice</li>
@@ -1212,8 +1184,8 @@ a{ color:inherit; }
         <header class="card__head">
           <p class="card__kicker">Inside and out</p>
           <h3 class="card__name">Full Detail</h3>
-          <p class="card__price"><span>$</span>150</p>
-          <p class="card__meta">Sedan · &asymp; 4 hours</p>
+          <p class="card__price"><span>$</span><b data-price="full">150</b></p>
+          <p class="card__meta" data-meta="full">Sedan · &asymp; 4 hours</p>
         </header>
         <ul class="card__list">
           <li>Everything in the Interior Full Detail</li>
@@ -1230,64 +1202,12 @@ a{ color:inherit; }
     </article>
 
   </div>
-</section>
-
-<!-- ============================== PRICE TABLE ============================== -->
-<section class="section pricing" id="pricing">
-  <div class="section__head reveal">
-    <p class="eyebrow">Price list</p>
-    <h2 class="section__title">Every price, <span class="accent">every vehicle</span></h2>
-    <p class="section__sub">
-      Bigger vehicle, more seats, more carpet, more time. That's the only reason
-      the price moves &mdash; and you can see exactly where yours lands before you call.
-    </p>
-  </div>
-
-  <div class="price-table-wrap reveal">
-    <table class="price-table">
-      <caption class="visually-hidden">Prices by vehicle size and service</caption>
-      <thead>
-        <tr>
-          <th scope="col">Vehicle</th>
-          <th scope="col">Interior Full Detail</th>
-          <th scope="col">Full Detail</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th scope="row">Coupe<em>2-door, 2&ndash;4 seats</em></th>
-          <td data-label="Interior Full Detail">$66</td>
-          <td data-label="Full Detail">$135</td>
-        </tr>
-        <tr class="is-base">
-          <th scope="row">Sedan<em>Standard 4-door <span class="tag">base price</span></em></th>
-          <td data-label="Interior Full Detail">$76</td>
-          <td data-label="Full Detail">$150</td>
-        </tr>
-        <tr>
-          <th scope="row">Small SUV<em>Compact crossover, hatchback</em></th>
-          <td data-label="Interior Full Detail">$91</td>
-          <td data-label="Full Detail">$175</td>
-        </tr>
-        <tr>
-          <th scope="row">SUV<em>Mid-size SUV, pickup truck</em></th>
-          <td data-label="Interior Full Detail">$106</td>
-          <td data-label="Full Detail">$200</td>
-        </tr>
-        <tr>
-          <th scope="row">3-Row SUV<em>Large SUV, minivan, 7&ndash;8 seats</em></th>
-          <td data-label="Interior Full Detail">$126</td>
-          <td data-label="Full Detail">$235</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
 
   <p class="pricing__foot reveal">
-    Not sure which row you're in? Send me the year, make and model and I'll tell you
-    the exact price before anything is booked. If a vehicle needs genuinely excessive
-    work &mdash; heavy pet damage, mould, construction dust &mdash; I'll quote you the number
-    <b>before</b> I start, never after.
+    Not sure which one you're driving? Send me the year, make and model and I'll
+    confirm the exact price before anything is booked. If a vehicle needs genuinely
+    excessive work — heavy pet damage, mould, construction dust — I'll quote you the
+    number <b>before</b> I start, never after.
   </p>
 </section>
 
@@ -1378,6 +1298,16 @@ a{ color:inherit; }
         </div>
       </div>
       <div class="field">
+        <label for="f-size">Vehicle size</label>
+        <select id="f-size" name="size">
+          <option>Coupe</option>
+          <option selected>Sedan</option>
+          <option>Small SUV</option>
+          <option>SUV</option>
+          <option>3-Row SUV</option>
+        </select>
+      </div>
+      <div class="field">
         <label for="f-service">Service you want</label>
         <select id="f-service" name="service">
           <option selected>Full Detail — inside and out</option>
@@ -1406,12 +1336,12 @@ a{ color:inherit; }
         <h4>Services</h4>
         <a href="#packages">Interior Full Detail</a>
         <a href="#packages">Full Detail</a>
-        <a href="#pricing">Prices by vehicle</a>
+        <a href="#packages">Prices by vehicle</a>
       </div>
       <div>
         <h4>Company</h4>
         <a href="#story">Our story</a>
-        <a href="#pricing">Price list</a>
+        <a href="#packages">Prices</a>
         <a href="#process">How it works</a>
         <a href="#book">Contact</a>
       </div>
@@ -4427,7 +4357,7 @@ function boot(canvas) {
 
   /* ------------------------------------------------- active section link -- */
 
-  var sections = ['story', 'packages', 'pricing', 'process', 'book']
+  var sections = ['story', 'packages', 'process', 'book']
     .map(function (id) { return document.getElementById(id); })
     .filter(Boolean);
 
@@ -4517,6 +4447,48 @@ function boot(canvas) {
     }, { passive: true });
   }
 
+  /* ------------------------------------------------------ size switcher -- */
+
+  // Every price on the page comes off the pressed button's data attributes,
+  // so the prices are written down exactly once — in index.html.
+  var sizeBtns = document.querySelectorAll('.size-btn');
+  var sizeField = document.getElementById('f-size');
+
+  function applySize(btn) {
+    sizeBtns.forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b === btn));
+    });
+
+    ['interior', 'full'].forEach(function (svc) {
+      var priceEl = document.querySelector('[data-price="' + svc + '"]');
+      var metaEl  = document.querySelector('[data-meta="' + svc + '"]');
+      if (!priceEl || !metaEl) return;
+
+      var price = btn.dataset[svc === 'interior' ? 'interior' : 'full'];
+      var hours = btn.dataset[svc === 'interior' ? 'hrsInterior' : 'hrsFull'];
+
+      if (priceEl.textContent !== price && !reduced) {
+        priceEl.classList.remove('is-changing');
+        void priceEl.offsetWidth;          // restart the animation
+        priceEl.classList.add('is-changing');
+      }
+      priceEl.textContent = price;
+      metaEl.textContent  = btn.dataset.size + ' · ≈ ' + hours +
+                            (hours === '1' ? ' hour' : ' hours');
+    });
+
+    // Carry the choice down to the booking form so it isn't asked twice.
+    if (sizeField) sizeField.value = btn.dataset.size;
+  }
+
+  sizeBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () { applySize(btn); });
+  });
+
+  // Whichever button ships pressed decides what the page opens on.
+  var initial = document.querySelector('.size-btn[aria-pressed="true"]') || sizeBtns[0];
+  if (initial) applySize(initial);
+
   /* ---------------------------------------------------------- counters -- */
 
   var counters = document.querySelectorAll('[data-count]');
@@ -4582,6 +4554,7 @@ function boot(canvas) {
         'Name: '    + data.get('name'),
         'Phone: '   + data.get('phone'),
         'Vehicle: ' + data.get('vehicle'),
+        'Size: '    + data.get('size'),
         'Service: ' + data.get('service'),
         '',
         'Notes:',

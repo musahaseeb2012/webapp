@@ -56,8 +56,10 @@ Everything below lives in `index.html`, marked with `EDIT ME` comments.
 | Phone, email, service area, hours | `EDIT ME — CONTACT DETAILS`, near the bottom. Change them in the contact list **and** in the footer. |
 | Where the booking form sends | `data-email` on `<form id="bookForm">` |
 | The origin story | `EDIT ME — THE ORIGIN STORY` |
-| The two service names, prices and what's included | `EDIT ME — SERVICES AND PRICES` — the two `<article class="card">` blocks. The price on the card is the **sedan** price. |
-| Prices for every vehicle size | the `.price-table` rows, in the same section |
+| **Every price** | `EDIT ME — SERVICES AND PRICES` — the five `.size-btn` buttons. Each one carries that vehicle's two prices and durations, and the cards read from them. Prices appear nowhere else. |
+| Service names and what's included | the two `<article class="card">` blocks in the same section |
+| Which size the page opens on | move `aria-pressed="true"` to a different `.size-btn` |
+| Adding or removing a vehicle size | add or delete a `.size-btn`; nothing else needs touching |
 | Stats (cars detailed, years, %) | `data-count` attributes in `.stats` |
 | Trust chips in the hero | `EDIT ME` above `.hero__chips` |
 
@@ -68,9 +70,9 @@ actual history — swap in your real car, your real town, your real first
 customer. Same for the stats and the trust chips: they're placeholders shaped
 like the truth, and the real numbers will always land better.
 
-The two services and the sedan prices ($76 interior, $150 full detail) came
-from you. The prices for the other four vehicle sizes are scaled from those,
-using these steps:
+Visitors pick their vehicle above the two cards and both prices update in
+place. The two services and the sedan prices ($76 interior, $150 full detail)
+came from you. The other four sizes are scaled from those, using these steps:
 
 | Size | Interior | Full detail |
 | --- | --- | --- |
@@ -80,8 +82,8 @@ using these steps:
 | SUV | +$30 | +$50 |
 | 3-Row SUV | +$50 | +$85 |
 
-That's a guess at your pricing, not your pricing. Set those four rows to what
-you actually charge before you share the link.
+That's a guess at your pricing, not your pricing. Set those four buttons to
+what you actually charge before you share the link.
 
 ### Colours
 
@@ -113,7 +115,7 @@ It degrades on purpose:
   bloom and render fewer bubbles.
 - **`prefers-reduced-motion`** stops the camera drift and every CSS animation.
 - **Offscreen or backgrounded** — rendering pauses entirely, so it isn't
-  burning battery while someone reads the price list.
+  burning battery while someone reads the prices.
 
 `vendor/three/` is three.js r169 (MIT, license included), vendored so the site
 has zero external requests: nothing to break if a CDN goes down, and it works
