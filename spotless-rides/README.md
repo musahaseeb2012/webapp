@@ -65,10 +65,12 @@ Everything below lives in `index.html`, marked with `EDIT ME` comments.
 
 ### The draft content
 
-The origin story is written as a believable first-person draft, not as your
-actual history — swap in your real car, your real town, your real first
-customer. Same for the stats and the trust chips: they're placeholders shaped
-like the truth, and the real numbers will always land better.
+The origin story opens on the reader — the pride they already feel about their
+own car, and how it quietly slips away — and only then turns to why the
+business exists. That framing is deliberate; the specifics are still a draft.
+Swap in your real first car, your real first customer, the real moment it
+stopped being a hobby. Same for the stats and the trust chips: they're
+placeholders shaped like the truth, and the real details always land better.
 
 Visitors pick their vehicle above the two cards and both prices update in
 place. The two services and the sedan prices ($76 interior, $150 full detail)
