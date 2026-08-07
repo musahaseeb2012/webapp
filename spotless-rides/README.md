@@ -10,7 +10,9 @@ spotless-rides/
 ├── js/scene.js         the 3D hero (three.js)
 ├── js/site.js          menu, scroll reveals, card tilt, booking form
 ├── assets/             the logo (background removed, web-sized)
-└── vendor/three/       three.js, vendored — no CDN, works offline
+├── vendor/three/       three.js, vendored — no CDN, works offline
+├── build-single-file.js            bundles everything into one .html
+└── spotless-rides-standalone.html  ← generated, don't edit by hand
 ```
 
 ## Running it
@@ -28,6 +30,22 @@ You need a local server rather than double-clicking `index.html`, because the
 
 To publish, upload the whole `spotless-rides` folder to any static host
 (GitHub Pages, Netlify, Cloudflare Pages, or plain shared hosting).
+
+## The one-file version
+
+`spotless-rides-standalone.html` is the entire site — markup, CSS, JavaScript,
+three.js and the logo — inlined into a single file with no external requests.
+Handy for emailing it to someone, hosting somewhere that can't do folders, or
+opening it straight off a USB stick. Unlike the multi-file version it also
+works by double-clicking, with no server.
+
+It's generated, so don't edit it directly. Edit the real files, then:
+
+```bash
+node build-single-file.js
+```
+
+Skip it entirely if you're only ever deploying the folder.
 
 ## What you'll want to change
 
