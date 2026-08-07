@@ -520,35 +520,18 @@ a{ color:inherit; }
   color:var(--muted-2);
 }
 
-/* ============================ PACKAGES ============================ */
-
-.size-note{
-  display:flex; flex-wrap:wrap; align-items:center; gap:.6rem;
-  margin-bottom:2.2rem;
-}
-.size-note__label{
-  font:700 .72rem/1 var(--body); letter-spacing:.2em; text-transform:uppercase;
-  color:var(--muted-2); margin-right:.3rem;
-}
-.size-chip{
-  padding:.5rem 1rem;
-  border-radius:999px;
-  border:1px solid var(--line);
-  background:rgba(10,43,21,.5);
-  font-size:.85rem; color:var(--muted);
-}
-.size-chip b{ color:var(--yellow); }
-.size-chip.is-active{
-  border-color:rgba(255,210,30,.5);
-  color:var(--cream);
-  background:rgba(255,210,30,.08);
-}
+/* ============================ SERVICES ============================ */
 
 .cards{
   display:grid;
   grid-template-columns:repeat(auto-fit, minmax(265px, 1fr));
   gap:1.3rem;
   perspective:1400px;
+}
+/* Two cards would stretch to half the page each; keep them readable. */
+.cards--pair{
+  grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));
+  max-width:900px;
 }
 
 .card{ transform-style:preserve-3d; }
@@ -610,6 +593,7 @@ a{ color:inherit; }
   font-size:3.1rem; line-height:1;
   color:var(--yellow);
   text-shadow:0 0 30px rgba(255,210,30,.35);
+  font-variant-numeric:tabular-nums;
 }
 .card__price span{ font-size:1.5rem; vertical-align:top; margin-right:.06em; opacity:.85; }
 .card__meta{
@@ -645,88 +629,83 @@ a{ color:inherit; }
 
 .card__btn{ margin-top:auto; width:100%; transform:translateZ(24px); }
 
-/* ============================ PRICE LIST ============================ */
+/* ============================ PRICE TABLE ============================ */
 
-.price-groups{
-  display:grid;
-  grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));
-  gap:1.3rem;
+.visually-hidden{
+  position:absolute; width:1px; height:1px;
+  margin:-1px; padding:0; border:0;
+  clip-path:inset(50%); overflow:hidden; white-space:nowrap;
 }
 
-.price-group{
-  padding:1.7rem 1.5rem;
+/* Narrow screens scroll the table itself rather than the whole page. */
+.price-table-wrap{
+  overflow-x:auto;
   border-radius:var(--r);
-  background:var(--card);
   border:1px solid var(--line);
+  background:var(--card);
   backdrop-filter:blur(6px);
-}
-.price-group__title{
-  display:flex; align-items:center; gap:.65rem;
-  margin:0 0 1.1rem;
-  font-family:var(--display); font-size:1.12rem;
-  text-transform:uppercase; letter-spacing:.02em;
-}
-.price-group__title .dot{
-  width:11px; height:11px; border-radius:50%;
-  background:var(--yellow);
-  box-shadow:0 0 14px var(--yellow);
-  flex-shrink:0;
+  -webkit-overflow-scrolling:touch;
 }
 
-.price-list{ list-style:none; margin:0; padding:0; }
-.price-list li{
-  display:flex; align-items:baseline; gap:.9rem;
-  padding:.78rem 0;
-  border-bottom:1px dashed rgba(158,230,58,.14);
-  transition:padding-left .3s, background .3s;
+.price-table{
+  width:100%;
+  min-width:520px;
+  border-collapse:collapse;
+  font-variant-numeric:tabular-nums;
 }
-.price-list li:last-child{ border-bottom:0; }
-.price-list li:hover{ padding-left:.5rem; }
 
-.pl__name{
-  display:flex; flex-direction:column; gap:.15rem;
-  flex:1; min-width:0;
-  font-weight:600; font-size:.97rem;
+.price-table thead th{
+  padding:1.1rem 1.4rem;
+  text-align:right;
+  font:800 .72rem/1.3 var(--body);
+  letter-spacing:.16em; text-transform:uppercase;
+  color:var(--lime);
+  border-bottom:1px solid rgba(158,230,58,.28);
+  white-space:nowrap;
 }
-.pl__name em{
-  font-style:normal; font-weight:400; font-size:.82rem;
+.price-table thead th:first-child{ text-align:left; }
+
+.price-table tbody th{
+  padding:1.05rem 1.4rem;
+  text-align:left;
+  font-weight:700; font-size:1rem;
+}
+/* `display:flex` here would pull the cell out of the table layout and break
+   column alignment, so the sub-label is a block inside the cell instead. */
+.price-table tbody th em{
+  display:block; margin-top:.18rem;
+  font-style:normal; font-weight:400; font-size:.81rem;
   color:var(--muted-2); line-height:1.35;
 }
-.pl__price{
-  font-family:var(--display);
-  font-size:1.28rem;
+.price-table tbody th .tag{
+  display:inline-block;
+  margin-left:.35rem; padding:.1rem .5rem;
+  border-radius:999px;
+  background:rgba(255,210,30,.14);
+  border:1px solid rgba(255,210,30,.35);
   color:var(--yellow);
-  white-space:nowrap;
-  flex-shrink:0;
+  font-size:.68rem; font-weight:700;
+  letter-spacing:.1em; text-transform:uppercase;
+  vertical-align:middle;
 }
 
-/* --- membership band --- */
-.member{
-  margin-top:2rem;
-  display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between;
-  gap:1.6rem;
-  padding:clamp(1.6rem, 3.4vw, 2.6rem);
-  border-radius:var(--r);
-  background:
-    linear-gradient(120deg, rgba(255,210,30,.14), rgba(22,163,74,.22) 55%, rgba(4,22,11,.6)),
-    var(--ink-2);
-  border:1px solid rgba(255,210,30,.28);
-  position:relative; overflow:hidden;
+.price-table td{
+  padding:1.05rem 1.4rem;
+  text-align:right;
+  font-family:var(--display);
+  font-size:1.6rem;
+  color:var(--yellow);
+  white-space:nowrap;
 }
-.member::after{
-  content:""; position:absolute; right:-8%; top:-60%;
-  width:46%; aspect-ratio:1; border-radius:50%;
-  background:radial-gradient(circle, rgba(255,210,30,.20), transparent 68%);
-  pointer-events:none;
-}
-.member__text{ max-width:56ch; }
-.member__text h3{
-  font-family:var(--display); text-transform:uppercase;
-  font-size:clamp(1.4rem, 1.1rem + 1.4vw, 2.1rem);
-  margin:.2rem 0 .7rem; line-height:1.05;
-}
-.member__text h3 small{ font-size:.5em; font-weight:400; }
-.member__text p{ margin:0; color:var(--muted); }
+.price-table td:last-child{ color:#fff0a8; }
+
+.price-table tbody tr + tr th,
+.price-table tbody tr + tr td{ border-top:1px dashed rgba(158,230,58,.14); }
+
+.price-table tbody tr{ transition:background .3s; }
+.price-table tbody tr:hover{ background:rgba(22,163,74,.13); }
+.price-table tbody tr.is-base{ background:rgba(255,210,30,.06); }
+.price-table tbody tr.is-base:hover{ background:rgba(255,210,30,.11); }
 
 .pricing__foot{
   margin:1.8rem 0 0;
@@ -941,13 +920,43 @@ a{ color:inherit; }
   .hero__scroll{ display:none; }
 }
 
+/* A price table that scrolls sideways on a phone hides the prices, which are
+   the whole point of the section. Below this width each row restacks into a
+   card and the column headers move onto the figures themselves. */
+@media (max-width: 700px){
+  .price-table{ min-width:0; display:block; }
+  .price-table thead{ display:none; }
+  .price-table tbody,
+  .price-table tr,
+  .price-table tbody th,
+  .price-table td{ display:block; width:100%; }
+
+  .price-table tbody tr{ padding:1.15rem 1.2rem; }
+  .price-table tbody tr + tr{ border-top:1px dashed rgba(158,230,58,.14); }
+  .price-table tbody tr + tr th,
+  .price-table tbody tr + tr td{ border-top:0; }
+
+  .price-table tbody th{ padding:0 0 .7rem; font-size:1.05rem; }
+
+  .price-table td{
+    display:flex; align-items:baseline; justify-content:space-between; gap:1rem;
+    padding:.4rem 0;
+    font-size:1.5rem;
+  }
+  .price-table td::before{
+    content:attr(data-label);
+    font:700 .74rem/1.3 var(--body);
+    letter-spacing:.14em; text-transform:uppercase;
+    color:var(--muted-2);
+  }
+}
+
 @media (max-width: 560px){
   .field-row{ grid-template-columns:1fr; }
   .hero{ min-height:92svh; padding-top:6rem; }
   .hero__chips{ gap:.55rem 1rem; }
-  .member{ flex-direction:column; align-items:stretch; text-align:left; }
-  .member .btn{ width:100%; }
   .marquee{ transform:rotate(-1.6deg) scaleX(1.12); }
+  .price-table tbody tr{ padding:1rem; }
 }
 
 /* ============================ MOTION PREFERENCES ============================ */
@@ -968,6 +977,6 @@ a{ color:inherit; }
   body{ background:#fff; color:#000; }
   .hero__canvas, .loader, .nav, .fab, .marquee, .hero__scroll{ display:none !important; }
   .reveal{ opacity:1; transform:none; }
-  .price-group, .card__inner{ break-inside:avoid; border:1px solid #ccc; background:#fff; }
-  .pl__price, .card__price, .stat b{ color:#000; text-shadow:none; }
+  .price-table-wrap, .card__inner{ break-inside:avoid; border:1px solid #ccc; background:#fff; }
+  .price-table td, .card__price, .stat b{ color:#000; text-shadow:none; }
 }

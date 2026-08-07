@@ -56,10 +56,8 @@ Everything below lives in `index.html`, marked with `EDIT ME` comments.
 | Phone, email, service area, hours | `EDIT ME — CONTACT DETAILS`, near the bottom. Change them in the contact list **and** in the footer. |
 | Where the booking form sends | `data-email` on `<form id="bookForm">` |
 | The origin story | `EDIT ME — THE ORIGIN STORY` |
-| Package names and prices | the four `<article class="card">` blocks |
-| The full price list | `EDIT ME — PRICING` — three `.price-group` lists |
-| Size upcharges | the `.size-note` chips |
-| Membership price | the `.member` block |
+| The two service names, prices and what's included | `EDIT ME — SERVICES AND PRICES` — the two `<article class="card">` blocks. The price on the card is the **sedan** price. |
+| Prices for every vehicle size | the `.price-table` rows, in the same section |
 | Stats (cars detailed, years, %) | `data-count` attributes in `.stats` |
 | Trust chips in the hero | `EDIT ME` above `.hero__chips` |
 
@@ -70,9 +68,20 @@ actual history — swap in your real car, your real town, your real first
 customer. Same for the stats and the trust chips: they're placeholders shaped
 like the truth, and the real numbers will always land better.
 
-The prices are a complete, market-plausible menu so the page works the moment
-it's live. Check every number against what you actually charge before you
-share the link.
+The two services and the sedan prices ($76 interior, $150 full detail) came
+from you. The prices for the other four vehicle sizes are scaled from those,
+using these steps:
+
+| Size | Interior | Full detail |
+| --- | --- | --- |
+| Coupe | −$10 | −$15 |
+| Sedan | base | base |
+| Small SUV | +$15 | +$25 |
+| SUV | +$30 | +$50 |
+| 3-Row SUV | +$50 | +$85 |
+
+That's a guess at your pricing, not your pricing. Set those four rows to what
+you actually charge before you share the link.
 
 ### Colours
 
