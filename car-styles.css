@@ -15,6 +15,18 @@
 
 * { box-sizing: border-box; }
 
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
 body {
     margin: 0;
     font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
@@ -126,11 +138,24 @@ input, select {
     border-radius: 9px;
     font-size: 0.95rem;
     outline: none;
-    transition: border-color .15s;
+    transition: border-color .15s, box-shadow .15s;
+    min-height: 44px;
+}
+
+/* iOS date/number spinners already have their own touch affordance;
+   min-height above keeps every field at least Apple's 44pt touch target. */
+select {
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 input:focus, select:focus {
     border-color: var(--accent);
+}
+
+input:focus-visible, select:focus-visible, button.primary:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
 }
 
 input::placeholder { color: #5b6c8c; }
@@ -138,6 +163,45 @@ input::placeholder { color: #5b6c8c; }
 .field small.hint {
     color: #5b6c8c;
     font-size: 0.75rem;
+}
+
+.combobox-field {
+    position: relative;
+}
+
+.combobox-listbox {
+    list-style: none;
+    margin: 6px 0 0;
+    padding: 6px;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg);
+    border: 1px solid var(--card-border);
+    border-radius: 9px;
+    max-height: 260px;
+    overflow-y: auto;
+    z-index: 20;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.combobox-listbox[hidden] { display: none; }
+
+.combobox-listbox li {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.combobox-listbox li[aria-selected="true"],
+.combobox-listbox li:hover {
+    background: rgba(62, 166, 255, 0.15);
+    color: var(--accent);
 }
 
 .submit-row {
@@ -152,6 +216,7 @@ button.primary {
     border: none;
     color: #06131f;
     font-weight: 700;
+    min-height: 48px;
     padding: 13px 34px;
     border-radius: 999px;
     font-size: 1rem;
@@ -176,6 +241,9 @@ button.primary:active { transform: translateY(0); }
 
 #results { display: none; margin-top: 28px; }
 #results.show { display: block; }
+/* Focused programmatically (not via Tab) after a check completes, so it
+   doesn't need a visible keyboard focus ring. */
+#results:focus { outline: none; }
 
 .results-grid {
     display: grid;
