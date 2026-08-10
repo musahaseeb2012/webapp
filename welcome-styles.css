@@ -296,20 +296,9 @@ a { color: inherit; }
 .stage {
     position: relative;
     z-index: 1;
-    width: min(560px, 86vw);
+    width: min(520px, 84vw);
     margin-top: 46px;
-    transform-style: preserve-3d;
-}
-
-.stage-shadow {
-    position: absolute;
-    left: 12%;
-    right: 12%;
-    bottom: 6px;
-    height: 24px;
-    background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.55), transparent 72%);
-    filter: blur(2px);
-    animation: shadow-pulse 6s ease-in-out infinite;
+    perspective: 1000px;
 }
 
 .stage-glow {
@@ -324,24 +313,33 @@ a { color: inherit; }
     pointer-events: none;
 }
 
-.car {
+/* The reference photo is treated as a showroom display panel: a glowing
+   framed card that sways gently in 3D, with its bottom edge masked to
+   fade into the floor grid instead of showing a hard photo edge. */
+.car-frame {
     position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    background: var(--bg);
+    box-shadow:
+        0 0 0 1px rgba(62, 166, 255, 0.28),
+        0 30px 50px rgba(0, 0, 0, 0.55),
+        0 0 60px rgba(62, 166, 255, 0.22);
+    transform-origin: 50% 85%;
+    animation: sway 9s ease-in-out infinite;
+}
+
+.car-frame img {
     display: block;
     width: 100%;
     height: auto;
-    transform-origin: 50% 85%;
-    animation: turntable 9s ease-in-out infinite;
-    filter: drop-shadow(0 18px 20px rgba(0, 0, 0, 0.4));
+    -webkit-mask-image: linear-gradient(to bottom, black 74%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 74%, transparent 100%);
 }
 
-@keyframes turntable {
-    0%, 100% { transform: rotateY(-16deg) rotateX(2deg) translateY(0); }
-    50% { transform: rotateY(16deg) rotateX(2deg) translateY(-6px); }
-}
-
-@keyframes shadow-pulse {
-    0%, 100% { transform: scaleX(1); opacity: 0.55; }
-    50% { transform: scaleX(0.86); opacity: 0.4; }
+@keyframes sway {
+    0%, 100% { transform: rotateY(-7deg) rotateX(2deg) translateY(0); }
+    50% { transform: rotateY(7deg) rotateX(2deg) translateY(-6px); }
 }
 
 @media (max-width: 640px) {
@@ -352,8 +350,7 @@ a { color: inherit; }
 /* ---------- Reduced motion & no-JS fallback ---------- */
 
 @media (prefers-reduced-motion: reduce) {
-    .car { animation: none; transform: rotateY(-10deg); }
-    .stage-shadow { animation: none; }
+    .car-frame { animation: none; transform: rotateY(-5deg); }
 }
 
 .scene[data-tilt="off"] .scene-inner,
