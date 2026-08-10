@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarCheck — Is It Actually Worth It?</title>
+    <meta name="description" content="CarCheck scores a used car's quality and tells you whether the asking price is a good deal — in under a minute.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚗</text></svg>">
+    <link rel="stylesheet" href="welcome-styles.css">
+</head>
+<body>
+    <div class="scene" id="scene">
+        <div class="stars" aria-hidden="true"></div>
+        <div class="floor" id="floor" aria-hidden="true"></div>
+        <div class="horizon" aria-hidden="true"></div>
+
+        <header class="hud-top">
+            <div class="brand">
+                <div class="brand-badge">🚗</div>
+                <span>CarCheck</span>
+            </div>
+            <div class="hud-top-right">
+                <p class="owner-tag">Owned by Spotless Rides</p>
+                <div class="hud-readout" aria-hidden="true">SYS <span class="value">READY</span> · <span id="clock">00:00:00</span></div>
+            </div>
+        </header>
+
+        <div class="scene-inner" id="scene-inner">
+            <main class="hero">
+                <p class="eyebrow">Before you buy —</p>
+                <h1 class="headline">Is it actually <em>worth it?</em></h1>
+                <p class="sub">Enter the make, model, year, mileage and condition. CarCheck scores the
+                    car's quality and tells you whether the asking price is a good deal — in under a minute.</p>
+
+                <a class="cta" href="index.html">
+                    <span class="cta-dot" aria-hidden="true"></span>
+                    Start the Check
+                </a>
+                <p class="hint">No sign-up. No VIN required.</p>
+
+                <div class="stage" aria-hidden="true">
+                    <div class="stage-glow"></div>
+                    <div class="stage-shadow"></div>
+                    <svg class="car" viewBox="0 0 500 200" focusable="false">
+                        <defs>
+                            <linearGradient id="bodyGrad" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stop-color="#3ea6ff"/>
+                                <stop offset="100%" stop-color="#29d3a2"/>
+                            </linearGradient>
+                            <linearGradient id="glassGrad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#eaf6ff" stop-opacity="0.9"/>
+                                <stop offset="100%" stop-color="#7fc4ff" stop-opacity="0.35"/>
+                            </linearGradient>
+                            <radialGradient id="hubGlow" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" stop-color="#eafff6" stop-opacity="0.95"/>
+                                <stop offset="100%" stop-color="#29d3a2" stop-opacity="0"/>
+                            </radialGradient>
+                        </defs>
+
+                        <ellipse cx="266" cy="178" rx="220" ry="10" fill="#000" opacity="0.28"/>
+
+                        <!-- Porsche 911 side profile: one smooth low nose (no reverse curve),
+                             a long low hood, cab-forward glasshouse, a single continuous
+                             fastback roofline down to the engine cover, and a tail that
+                             overhangs past the rear wheel. -->
+                        <path d="M58,138
+                                 C69,138 84,92 95,92
+                                 C112,92 134,86 150,86
+                                 C157,86 165,82 172,82
+                                 C178,70 186,54 192,48
+                                 C211,48 236,45 255,45
+                                 C274,45 300,62 320,62
+                                 C338,62 362,92 380,92
+                                 C389,92 401,112 410,112
+                                 C419,112 431,122 440,122
+                                 C447,122 455,128 462,128
+                                 C469,130 474,133 474,138
+                                 C474,143 470,148 466,148
+                                 L430,150
+                                 C422,142 408,135 392,135
+                                 C376,135 362,142 354,150
+                                 L205,150
+                                 C197,142 183,135 170,135
+                                 C157,135 143,142 135,150
+                                 C118,154 85,148 58,138 Z"
+                              fill="url(#bodyGrad)" stroke="#0d1830" stroke-width="2.5" stroke-linejoin="round"/>
+
+                        <!-- windshield -->
+                        <path d="M172,82 L192,48 L218,46 L196,78 Z"
+                              fill="url(#glassGrad)" stroke="#0d1830" stroke-width="1.5" stroke-linejoin="round"/>
+
+                        <!-- rear quarter glass (over the engine-cover sweep) -->
+                        <path d="M222,46 C245,45 268,47 288,53 C300,57 310,63 318,71 L262,73 L222,63 Z"
+                              fill="url(#glassGrad)" stroke="#0d1830" stroke-width="1.5" stroke-linejoin="round" opacity="0.92"/>
+
+                        <!-- mirror -->
+                        <path d="M168,80 L180,73 L182,84 Z" fill="#0d1830"/>
+
+                        <!-- door line + handle -->
+                        <line x1="250" y1="48" x2="240" y2="150" stroke="rgba(13,24,48,0.55)" stroke-width="1.5"/>
+                        <circle cx="300" cy="98" r="2.6" fill="#0d1830"/>
+
+                        <!-- headlight, on the front fender -->
+                        <circle cx="88" cy="96" r="9" fill="#eafff6"/>
+                        <circle cx="88" cy="96" r="17" fill="url(#hubGlow)"/>
+
+                        <!-- wheels: wider rear stance, tucked under the body -->
+                        <circle cx="170" cy="150" r="25" fill="#0a0f1a" stroke="#29d3a2" stroke-width="3"/>
+                        <circle cx="170" cy="150" r="9" fill="url(#hubGlow)"/>
+                        <circle cx="392" cy="150" r="27" fill="#0a0f1a" stroke="#29d3a2" stroke-width="3"/>
+                        <circle cx="392" cy="150" r="10" fill="url(#hubGlow)"/>
+                    </svg>
+                </div>
+            </main>
+        </div>
+
+        <footer class="hud-bottom">
+            <span>Informational estimates only — not professional advice.</span>
+        </footer>
+    </div>
+
+    <script>
+        (function () {
+            var scene = document.getElementById('scene');
+            var sceneInner = document.getElementById('scene-inner');
+            var floor = document.getElementById('floor');
+            var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            var canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+            if (!reduceMotion && canHover) {
+                var raf = null;
+                scene.addEventListener('pointermove', function (e) {
+                    var rect = scene.getBoundingClientRect();
+                    var dx = (e.clientX - rect.left) / rect.width - 0.5;
+                    var dy = (e.clientY - rect.top) / rect.height - 0.5;
+                    if (raf) cancelAnimationFrame(raf);
+                    raf = requestAnimationFrame(function () {
+                        sceneInner.style.transform = 'rotateX(' + (dy * -4).toFixed(2) + 'deg) rotateY(' + (dx * 6).toFixed(2) + 'deg)';
+                        floor.style.transform = 'rotateX(72deg) translate(' + (dx * -12).toFixed(1) + 'px,' + (dy * -6).toFixed(1) + 'px)';
+                    });
+                });
+                scene.addEventListener('pointerleave', function () {
+                    sceneInner.style.transform = '';
+                    floor.style.transform = 'rotateX(72deg)';
+                });
+            } else {
+                scene.setAttribute('data-tilt', 'off');
+            }
+
+            var clock = document.getElementById('clock');
+            function pad(n) { return String(n).padStart(2, '0'); }
+            function tick() {
+                var d = new Date();
+                clock.textContent = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+            }
+            tick();
+            setInterval(tick, 1000);
+        })();
+    </script>
+</body>
+</html>

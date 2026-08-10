@@ -56,6 +56,14 @@ header.site {
     gap: 10px;
     font-weight: 700;
     font-size: 1.3rem;
+    color: inherit;
+    text-decoration: none;
+}
+
+.brand:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 4px;
+    border-radius: 8px;
 }
 
 .brand-badge {
