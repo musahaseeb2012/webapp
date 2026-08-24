@@ -1,3 +1,16 @@
+# Web Apps
+
+This repository serves two independent vanilla-JS apps from the same static server:
+
+| App | Path | Description |
+| --- | --- | --- |
+| To-Do List | `/` | Task list with filters and localStorage persistence |
+| AMG Configurator | `/amg/` | Car configurator with a live SVG preview — see [`amg/README.md`](amg/README.md) |
+
+Start both with `npm start` and open <http://localhost:3000/> or <http://localhost:3000/amg/>.
+
+---
+
 # To-Do List Web Application
 
 A simple and elegant to-do list web application built with vanilla HTML, CSS, and JavaScript.

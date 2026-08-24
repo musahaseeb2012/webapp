@@ -19,9 +19,18 @@ const mimeTypes = {
 const server = http.createServer((req, res) => {
     console.log(`${req.method} ${req.url}`);
 
-    let filePath = '.' + req.url;
-    if (filePath === './') {
-        filePath = './index.html';
+    // strip the query string, then serve index.html for any directory request
+    let urlPath = decodeURIComponent(req.url.split('?')[0]);
+    if (urlPath.endsWith('/')) {
+        urlPath += 'index.html';
+    }
+
+    const root = path.resolve('.');
+    const filePath = path.join(root, path.normalize(urlPath));
+    if (!filePath.startsWith(root)) {
+        res.writeHead(403, { 'Content-Type': 'text/html' });
+        res.end('<h1>403 - Forbidden</h1>', 'utf-8');
+        return;
     }
 
     const extname = String(path.extname(filePath)).toLowerCase();
