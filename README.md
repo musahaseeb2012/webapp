@@ -1,19 +1,29 @@
 # CarCheck — Car Quality & Value Checker
 
-A single-page web app for checking whether a used car is worth buying: enter its
-make, model, year, mileage, condition and asking price to get an estimated
-quality score and see how the asking price compares to its estimated market
-value.
+A single-page web app for checking whether a new or used car is worth buying:
+enter its details to get an estimated quality score and see how the price
+compares to its estimated worth. Check a few cars and compare them side by
+side.
 
 ## Features
 
-- **Quality score (0-100)** built from brand/model reliability reputation, age,
-  mileage-per-year, condition, and title status, with a letter grade and a
-  breakdown of how each factor contributed.
-- **Price vs. worth comparison** — estimates a market value using a
-  depreciation curve plus mileage and condition adjustments, then labels the
-  asking price as a Great Deal, Good Deal, Fair Price, Slightly Overpriced, or
-  Overpriced.
+- **New or used**, toggled per car:
+  - **Used** — enter make, model, year, mileage, condition, title status, and
+    asking price. Quality score is built from brand/model reliability
+    reputation, age, mileage-per-year, condition, and title status.
+    Estimated value comes from a depreciation curve plus mileage/condition
+    adjustments.
+  - **New** — enter make, model, year, MSRP, incentives/rebates, and the
+    negotiated price. Quality score is built from reliability reputation and
+    predicted resale value retention. Estimated fair price is ~5% off MSRP
+    after incentives.
+- Either way, results include a letter grade and a factor breakdown, and the
+  price is labeled a Great Deal, Good Deal, Fair Price, Slightly Overpriced,
+  or Overpriced.
+- **Compare deals** — every car you check (new or used) is added to a
+  comparison table so you can weigh several listings side by side, with the
+  best quality score and best value automatically highlighted. Rows can be
+  removed individually or cleared all at once.
 - **Common issues to watch for** — known problem areas for the make/model,
   pulled from a curated reference dataset.
 - **Buying checklist** — pre-purchase inspection, vehicle history report,
@@ -40,12 +50,16 @@ value.
 
 ## Usage
 
-1. Enter the car's make (a dropdown of recognized makes appears as you type).
-2. Optionally enter the model — if it's in the reference dataset, the estimate
+1. Pick **Used Car** or **New Car**.
+2. Enter the make (a dropdown of recognized makes appears as you type) and,
+   optionally, the model — if it's in the reference dataset, the estimate
    gets more precise.
-3. Enter year, mileage, condition, title status, and the asking price.
-4. Click "Check This Car" to see the quality score, common issues, and how the
-   asking price compares to the estimated value.
+3. Fill in the rest: for a used car, year/mileage/condition/title/asking
+   price; for a new car, year/MSRP/incentives/negotiated price.
+4. Click "Check This Car" to see the quality score, common issues, and how
+   the price compares to the estimated value. The car is also added to the
+   **Your Comparison** table below, so you can check several and compare them
+   side by side.
 
 ## Files
 

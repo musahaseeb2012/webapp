@@ -20,11 +20,17 @@
 
         <section class="hero">
             <h1>Is that car actually worth it?</h1>
-            <p>Enter the details of any car — make, model, year, mileage and condition — to get an
-                estimated quality score and see how its asking price compares to what it's really worth.</p>
+            <p>Enter the details of any new or used car — make, model, year, and price — to get an
+                estimated quality score and see how the price compares to what it's really worth. Check a
+                few and compare them side by side.</p>
         </section>
 
         <section class="card">
+            <div class="type-toggle" role="radiogroup" aria-label="Car type">
+                <button type="button" class="type-btn active" id="type-used-btn" data-type="used" aria-pressed="true">Used Car</button>
+                <button type="button" class="type-btn" id="type-new-btn" data-type="new" aria-pressed="false">New Car</button>
+            </div>
+
             <form class="checker" id="checker-form" novalidate>
                 <div class="field combobox-field">
                     <label for="make">Make</label>
@@ -45,33 +51,53 @@
                     <input type="number" id="year" name="year" placeholder="e.g. 2019" min="1980" required>
                 </div>
 
-                <div class="field">
-                    <label for="mileage">Mileage</label>
-                    <input type="number" id="mileage" name="mileage" placeholder="e.g. 45000" min="0" required>
+                <div class="used-fields">
+                    <div class="field">
+                        <label for="mileage">Mileage</label>
+                        <input type="number" id="mileage" name="mileage" placeholder="e.g. 45000" min="0" required>
+                    </div>
+
+                    <div class="field">
+                        <label for="condition">Condition</label>
+                        <select id="condition" name="condition" required>
+                            <option value="excellent">Excellent</option>
+                            <option value="good" selected>Good</option>
+                            <option value="fair">Fair</option>
+                            <option value="poor">Poor</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="title">Title Status</label>
+                        <select id="title" name="title" required>
+                            <option value="clean" selected>Clean</option>
+                            <option value="rebuilt">Rebuilt/Reconstructed</option>
+                            <option value="salvage">Salvage</option>
+                        </select>
+                    </div>
+
+                    <div class="field span-2">
+                        <label for="price">Asking Price ($)</label>
+                        <input type="number" id="price" name="price" placeholder="e.g. 21500" min="0" required>
+                    </div>
                 </div>
 
-                <div class="field">
-                    <label for="condition">Condition</label>
-                    <select id="condition" name="condition" required>
-                        <option value="excellent">Excellent</option>
-                        <option value="good" selected>Good</option>
-                        <option value="fair">Fair</option>
-                        <option value="poor">Poor</option>
-                    </select>
-                </div>
+                <div class="new-fields" hidden>
+                    <div class="field">
+                        <label for="msrp">MSRP / Sticker Price ($)</label>
+                        <input type="number" id="msrp" name="msrp" placeholder="e.g. 32000" min="0">
+                    </div>
 
-                <div class="field">
-                    <label for="title">Title Status</label>
-                    <select id="title" name="title" required>
-                        <option value="clean" selected>Clean</option>
-                        <option value="rebuilt">Rebuilt/Reconstructed</option>
-                        <option value="salvage">Salvage</option>
-                    </select>
-                </div>
+                    <div class="field">
+                        <label for="incentives">Incentives / Rebates ($)</label>
+                        <input type="number" id="incentives" name="incentives" placeholder="e.g. 1000" min="0" value="0">
+                        <small class="hint">Manufacturer rebates, dealer cash, etc. Optional.</small>
+                    </div>
 
-                <div class="field span-2">
-                    <label for="price">Asking Price ($)</label>
-                    <input type="number" id="price" name="price" placeholder="e.g. 21500" min="0" required>
+                    <div class="field span-2">
+                        <label for="new-price">Negotiated / Offer Price ($)</label>
+                        <input type="number" id="new-price" name="new-price" placeholder="e.g. 29500" min="0">
+                    </div>
                 </div>
 
                 <div class="error-box" id="error-box" role="alert" aria-atomic="true"></div>
@@ -107,11 +133,11 @@
                     <h2>Price vs. Worth</h2>
                     <div class="price-compare">
                         <div class="price-row">
-                            <span class="label">Estimated Market Value</span>
+                            <span class="label" id="est-value-label">Estimated Market Value</span>
                             <span class="value" id="est-value">–</span>
                         </div>
                         <div class="price-row">
-                            <span class="label">Asking Price</span>
+                            <span class="label" id="ask-value-label">Asking Price</span>
                             <span class="value" id="ask-value">–</span>
                         </div>
                         <div>
@@ -142,6 +168,33 @@
                     as a starting point, not a substitute for a professional inspection or a real-time
                     valuation tool (e.g. KBB, Edmunds).
                 </p>
+            </div>
+        </section>
+
+        <section id="comparison-section" hidden>
+            <div class="card">
+                <div class="comparison-header">
+                    <h2>Your Comparison</h2>
+                    <button type="button" id="clear-comparison-btn" class="btn-clear">Clear all</button>
+                </div>
+                <p class="sub-text">Every car you check is added here so you can compare deals side by
+                    side — new or used.</p>
+                <div class="comparison-table-wrap">
+                    <table class="comparison-table" id="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Car</th>
+                                <th>Price</th>
+                                <th>Est. Value</th>
+                                <th>Quality</th>
+                                <th>Deal</th>
+                                <th><span class="sr-only">Remove</span></th>
+                            </tr>
+                        </thead>
+                        <tbody id="comparison-body"></tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
@@ -241,6 +294,146 @@
                 setTimeout(closeListbox, 120);
             });
 
+            // ---------- New vs. used car type toggle ----------
+
+            const usedFields = document.querySelector('.used-fields');
+            const newFields = document.querySelector('.new-fields');
+            const typeUsedBtn = document.getElementById('type-used-btn');
+            const typeNewBtn = document.getElementById('type-new-btn');
+            const mileageInput = document.getElementById('mileage');
+            const priceInput = document.getElementById('price');
+            const msrpInput = document.getElementById('msrp');
+            const newPriceInput = document.getElementById('new-price');
+            let carType = 'used';
+
+            function setCarType(type) {
+                carType = type;
+                const isUsed = type === 'used';
+
+                usedFields.hidden = !isUsed;
+                newFields.hidden = isUsed;
+
+                typeUsedBtn.classList.toggle('active', isUsed);
+                typeNewBtn.classList.toggle('active', !isUsed);
+                typeUsedBtn.setAttribute('aria-pressed', String(isUsed));
+                typeNewBtn.setAttribute('aria-pressed', String(!isUsed));
+
+                mileageInput.required = isUsed;
+                priceInput.required = isUsed;
+                msrpInput.required = !isUsed;
+                newPriceInput.required = !isUsed;
+
+                clearError();
+            }
+
+            typeUsedBtn.addEventListener('click', () => setCarType('used'));
+            typeNewBtn.addEventListener('click', () => setCarType('new'));
+
+            // ---------- Comparison list ----------
+
+            const comparisonSection = document.getElementById('comparison-section');
+            const comparisonBody = document.getElementById('comparison-body');
+            const clearComparisonBtn = document.getElementById('clear-comparison-btn');
+            let comparisonList = [];
+            let comparisonIdCounter = 0;
+
+            function renderComparison() {
+                comparisonBody.innerHTML = '';
+
+                if (comparisonList.length === 0) {
+                    comparisonSection.hidden = true;
+                    return;
+                }
+                comparisonSection.hidden = false;
+
+                let bestQuality = comparisonList[0];
+                let bestValue = comparisonList[0];
+                comparisonList.forEach((e) => {
+                    if (e.quality.total > bestQuality.quality.total) bestQuality = e;
+                    if (e.compare.diffPct < bestValue.compare.diffPct) bestValue = e;
+                });
+
+                comparisonList.forEach((entry) => {
+                    const tr = document.createElement('tr');
+                    const carLabel = `${entry.year} ${entry.make}${entry.model ? ' ' + entry.model : ''}`;
+
+                    const typeTd = document.createElement('td');
+                    const typePill = document.createElement('span');
+                    typePill.className = 'type-pill ' + entry.carType;
+                    typePill.textContent = entry.carType === 'new' ? 'New' : 'Used';
+                    typeTd.appendChild(typePill);
+                    tr.appendChild(typeTd);
+
+                    const carTd = document.createElement('td');
+                    const carNameDiv = document.createElement('div');
+                    carNameDiv.textContent = carLabel;
+                    carTd.appendChild(carNameDiv);
+                    if (entry === bestQuality || entry === bestValue) {
+                        const badgeRow = document.createElement('div');
+                        badgeRow.className = 'mini-badge-row';
+                        if (entry === bestQuality) {
+                            const b = document.createElement('span');
+                            b.className = 'mini-badge quality';
+                            b.textContent = 'Best Quality';
+                            badgeRow.appendChild(b);
+                        }
+                        if (entry === bestValue) {
+                            const b = document.createElement('span');
+                            b.className = 'mini-badge value';
+                            b.textContent = 'Best Value';
+                            badgeRow.appendChild(b);
+                        }
+                        carTd.appendChild(badgeRow);
+                    }
+                    tr.appendChild(carTd);
+
+                    const priceTd = document.createElement('td');
+                    priceTd.textContent = fmtMoney(entry.price);
+                    tr.appendChild(priceTd);
+
+                    const valueTd = document.createElement('td');
+                    valueTd.textContent = fmtMoney(entry.estimatedValue);
+                    tr.appendChild(valueTd);
+
+                    const qualityTd = document.createElement('td');
+                    qualityTd.textContent = `${entry.quality.total} (${entry.grade})`;
+                    tr.appendChild(qualityTd);
+
+                    const dealTd = document.createElement('td');
+                    const dealBadge = document.createElement('span');
+                    dealBadge.className = 'badge ' + entry.compare.className;
+                    dealBadge.textContent = entry.compare.verdict;
+                    dealTd.appendChild(dealBadge);
+                    tr.appendChild(dealTd);
+
+                    const removeTd = document.createElement('td');
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.className = 'remove-btn';
+                    removeBtn.setAttribute('aria-label', 'Remove ' + carLabel + ' from comparison');
+                    removeBtn.textContent = '✕';
+                    removeBtn.addEventListener('click', () => {
+                        comparisonList = comparisonList.filter((e) => e.id !== entry.id);
+                        renderComparison();
+                    });
+                    removeTd.appendChild(removeBtn);
+                    tr.appendChild(removeTd);
+
+                    comparisonBody.appendChild(tr);
+                });
+            }
+
+            clearComparisonBtn.addEventListener('click', () => {
+                comparisonList = [];
+                renderComparison();
+            });
+
+            function addToComparison(entry) {
+                entry.id = ++comparisonIdCounter;
+                comparisonList.push(entry);
+                renderComparison();
+            }
+
             function fmtMoney(n) {
                 return '$' + Math.round(n).toLocaleString('en-US');
             }
@@ -273,24 +466,46 @@
                 const make = form.make.value.trim();
                 const model = form.model.value.trim();
                 const year = parseInt(form.year.value, 10);
-                const mileage = parseInt(form.mileage.value, 10);
-                const condition = form.condition.value;
-                const title = form.title.value;
-                const price = parseFloat(form.price.value);
 
                 if (!make) return showError('Please enter a make (e.g. Toyota, Honda, Ford).');
                 if (!year || year < 1980 || year > CarChecker.CURRENT_YEAR + 1) {
                     return showError(`Please enter a valid year between 1980 and ${CarChecker.CURRENT_YEAR + 1}.`);
                 }
-                if (isNaN(mileage) || mileage < 0) return showError('Please enter a valid mileage.');
-                if (isNaN(price) || price <= 0) return showError('Please enter a valid asking price.');
 
-                const input = { make, model, year, mileage, condition, title };
+                let quality, estimatedValue, usedSpecificModel, price;
 
-                const quality = CarChecker.computeQualityScore(input);
+                if (carType === 'used') {
+                    const mileage = parseInt(form.mileage.value, 10);
+                    const condition = form.condition.value;
+                    const title = form.title.value;
+                    price = parseFloat(form.price.value);
+
+                    if (isNaN(mileage) || mileage < 0) return showError('Please enter a valid mileage.');
+                    if (isNaN(price) || price <= 0) return showError('Please enter a valid asking price.');
+
+                    const input = { make, model, year, mileage, condition, title };
+                    quality = CarChecker.computeQualityScore(input);
+                    ({ estimatedValue, usedSpecificModel } = CarChecker.estimateValue(input));
+                } else {
+                    const msrp = parseFloat(form.msrp.value);
+                    const incentives = parseFloat(form.incentives.value) || 0;
+                    price = parseFloat(form['new-price'].value);
+
+                    if (isNaN(msrp) || msrp <= 0) return showError('Please enter a valid MSRP.');
+                    if (isNaN(price) || price <= 0) return showError('Please enter a valid negotiated price.');
+
+                    const input = { make, model, year, msrp, incentives };
+                    quality = CarChecker.computeNewCarQualityScore(input);
+                    ({ estimatedValue, usedSpecificModel } = CarChecker.estimateNewCarValue(input));
+                }
+
                 const { grade, verdict } = CarChecker.gradeFor(quality.total);
-                const { estimatedValue, usedSpecificModel } = CarChecker.estimateValue(input);
                 const compare = CarChecker.comparePrice(estimatedValue, price);
+
+                document.getElementById('est-value-label').textContent =
+                    carType === 'used' ? 'Estimated Market Value' : 'Fair Target Price';
+                document.getElementById('ask-value-label').textContent =
+                    carType === 'used' ? 'Asking Price' : 'Negotiated Price';
 
                 renderGauge(quality.total);
                 document.getElementById('score-grade').textContent = 'Grade ' + grade;
@@ -322,9 +537,10 @@
 
                 const diffAbs = Math.abs(Math.round(compare.diff));
                 const diffPctAbs = Math.abs(compare.diffPct).toFixed(1);
+                const priceLabel = carType === 'used' ? 'Asking price' : 'Negotiated price';
                 document.getElementById('diff-text').textContent = compare.diff >= 0
-                    ? `Asking price is ${fmtMoney(diffAbs)} (${diffPctAbs}%) above estimated value.`
-                    : `Asking price is ${fmtMoney(diffAbs)} (${diffPctAbs}%) below estimated value.`;
+                    ? `${priceLabel} is ${fmtMoney(diffAbs)} (${diffPctAbs}%) above estimated value.`
+                    : `${priceLabel} is ${fmtMoney(diffAbs)} (${diffPctAbs}%) below estimated value.`;
 
                 const issuesList = document.getElementById('issues-list');
                 issuesList.innerHTML = '';
@@ -340,7 +556,9 @@
 
                 srStatus.textContent =
                     `Results: quality score ${quality.total} out of 100, grade ${grade}. ${verdict} `
-                    + `Estimated value ${fmtMoney(estimatedValue)}, asking price ${fmtMoney(price)} — ${compare.verdict}.`;
+                    + `Estimated value ${fmtMoney(estimatedValue)}, price ${fmtMoney(price)} — ${compare.verdict}.`;
+
+                addToComparison({ carType, make, model, year, price, estimatedValue, quality, grade, compare });
             });
         })();
     </script>

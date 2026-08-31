@@ -112,6 +112,46 @@
         };
     }
 
+    function estimateNewCarValue(input) {
+        const msrp = input.msrp;
+        const incentives = input.incentives || 0;
+
+        // A well-negotiated new-car deal is typically a few percent under
+        // sticker; treat ~5% off MSRP (after incentives) as the fair target
+        // price, floored so the target never drops unrealistically low.
+        const fairTarget = Math.max(msrp * 0.95 - incentives, msrp * 0.75);
+
+        return {
+            estimatedValue: Math.round(fairTarget / 50) * 50,
+            basePrice: msrp,
+            usedSpecificModel: !!lookupModel(input.make, input.model)
+        };
+    }
+
+    function computeNewCarQualityScore(input) {
+        const makeData = lookupMake(input.make);
+        const modelData = lookupModel(input.make, input.model);
+        const reliability = modelData ? modelData.reliability : makeData.reliability;
+
+        // A new car has no mileage/condition/title history to weigh, so
+        // quality instead leans on predicted reliability and how well the
+        // model is expected to hold its value over time.
+        const reliabilityScore = (reliability / 10) * 70;
+        const resaleScore = (makeData.resale / 10) * 30;
+        const total = reliabilityScore + resaleScore;
+
+        return {
+            total: Math.round(Math.min(100, Math.max(0, total))),
+            breakdown: [
+                { label: 'Brand & Model Reliability', points: Math.round(reliabilityScore), max: 70 },
+                { label: 'Resale Value Retention', points: Math.round(resaleScore), max: 30 }
+            ],
+            reliability,
+            avgMaintenance: makeData.avgMaintenance,
+            issues: (modelData && modelData.issues) || makeData.issues
+        };
+    }
+
     function gradeFor(score) {
         if (score >= 90) return { grade: 'A+', verdict: 'Excellent — a strong, low-risk pick.' };
         if (score >= 80) return { grade: 'A', verdict: 'Very good — a solid, dependable choice.' };
@@ -140,7 +180,9 @@
         CONDITION_META,
         TITLE_META,
         estimateValue,
+        estimateNewCarValue,
         computeQualityScore,
+        computeNewCarQualityScore,
         gradeFor,
         comparePrice,
         normalizeMakeKey
