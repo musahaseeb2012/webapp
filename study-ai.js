@@ -173,12 +173,14 @@ function renderLibrary() {
         <li class="material-item ${chosen ? 'selected' : ''}" data-id="${m.id}">
             <div class="material-top">
                 <span class="material-check">✓</span>
+                ${m.photo ? `<img class="material-photo" src="${m.photo}" alt="">` : ''}
                 <span class="material-title">${escapeHtml(m.title)}</span>
             </div>
             <div class="material-meta">
                 <span class="tag tag-type">${TYPE_LABEL[m.type] || m.type}</span>
                 ${m.subject ? `<span class="tag">${escapeHtml(m.subject)}</span>` : ''}
                 <span>${wordCount(m.text).toLocaleString()} words</span>
+                ${m.photoCount ? `<span>📷 ${m.photoCount}</span>` : ''}
             </div>
             <div class="material-actions">
                 <button class="btn btn-sm btn-ghost" data-act="read">Read</button>
@@ -395,6 +397,156 @@ const TUTOR_SYSTEM = [
     'When the material is an assignment or homework, coach rather than complete: break the task down, explain the concepts and method, show a similar worked example, and let the student write their own answer.',
     'Never invent facts, quotations, sources or numbers that are not in the material.'
 ].join(' ');
+
+// ---------------------------------------------------------------------------
+// Photos
+// ---------------------------------------------------------------------------
+// A photo is read once, when it is added, and stored as text. Everything after
+// that — questions, quizzes, search, the built-in engine — works on the text,
+// so a photographed worksheet behaves exactly like pasted notes.
+
+const MAX_PHOTOS = 4;
+const PHOTO_MAX_EDGE = 1600;   // ~1.2MP after downscaling, which is what the API wants
+const THUMB_MAX_EDGE = 220;
+
+let pendingPhotos = [];
+
+const TRANSCRIBE_PROMPT = [
+    'These are photos of a student\'s school material — notes, a worksheet, a textbook page or a problem written on a board.',
+    'Write out everything on them as plain text, in reading order.',
+    'Keep question numbering exactly as it appears. Keep headings and bullet structure.',
+    'Write maths and formulas in plain readable text (for example "x^2 + 3x - 4 = 0", "H2O").',
+    'Where there is a diagram, chart or figure, describe it in square brackets, e.g. [Diagram: a right-angled triangle labelled a, b, c].',
+    'If some of the handwriting is genuinely unreadable, write [unclear] there rather than guessing.',
+    'Output only the transcription — no preamble, no commentary.'
+].join(' ');
+
+/* Shrink to something the API is happy with, and honour EXIF rotation. */
+function prepareImage(file, maxEdge) {
+    return new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => {
+            URL.revokeObjectURL(url);
+            const scale = Math.min(1, maxEdge / Math.max(img.width, img.height));
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.max(1, Math.round(img.width * scale));
+            canvas.height = Math.max(1, Math.round(img.height * scale));
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+            canvas.toBlob(
+                (blob) => resolve({ dataUrl, blob }),
+                'image/jpeg',
+                0.85
+            );
+        };
+        img.onerror = () => {
+            URL.revokeObjectURL(url);
+            reject(new Error(`${file.name} is not an image this browser can open. JPEG or PNG works best.`));
+        };
+        img.src = url;
+    });
+}
+
+function dataUrlBody(dataUrl) {
+    return dataUrl.slice(dataUrl.indexOf(',') + 1);
+}
+
+async function addPhotos(fileList) {
+    const files = Array.from(fileList || []).filter((f) => /^image\//.test(f.type));
+    if (!files.length) {
+        setPhotoStatus('Those were not images. Take a photo, or pick a JPEG or PNG.', 'failed');
+        return;
+    }
+    if (pendingPhotos.length + files.length > MAX_PHOTOS) {
+        setPhotoStatus(`Up to ${MAX_PHOTOS} photos at a time — add the rest as a second material.`, 'failed');
+        return;
+    }
+
+    setPhotoStatus('Preparing photos…', 'working');
+    for (const file of files) {
+        try {
+            const [full, thumb] = await Promise.all([
+                prepareImage(file, PHOTO_MAX_EDGE),
+                prepareImage(file, THUMB_MAX_EDGE)
+            ]);
+            pendingPhotos.push({
+                id: uid(),
+                name: file.name,
+                full: full.dataUrl,
+                blob: full.blob,
+                thumb: thumb.dataUrl
+            });
+        } catch (err) {
+            setPhotoStatus(err.message, 'failed');
+        }
+    }
+    renderPhotoStrip();
+    if (pendingPhotos.length) readPhotos();
+}
+
+function renderPhotoStrip() {
+    $('photoStrip').innerHTML = pendingPhotos.map((p) => `
+        <div class="photo-thumb" data-id="${p.id}">
+            <img src="${p.thumb}" alt="${escapeHtml(p.name)}">
+            <button type="button" data-remove="${p.id}" title="Remove">✕</button>
+        </div>`).join('');
+}
+
+function setPhotoStatus(message, state) {
+    const el = $('photoStatus');
+    el.textContent = message;
+    el.className = 'photo-status' + (state ? ' ' + state : '');
+}
+
+/* Read every pending photo in one call, and put the text where it can be edited. */
+async function readPhotos() {
+    if (!pendingPhotos.length) return;
+
+    if (!engineAvailable()) {
+        setPhotoStatus('Reading photos needs Claude — the built-in engine cannot see images. ' +
+            'Turn Claude on in Settings, or type the question in instead.', 'failed');
+        return;
+    }
+
+    setPhotoStatus(`Reading ${pendingPhotos.length} photo${pendingPhotos.length === 1 ? '' : 's'}…`, 'working');
+    $('saveMaterialBtn').disabled = true;
+
+    try {
+        const text = await transcribePhotos(pendingPhotos);
+        const box = $('materialText');
+        box.value = box.value.trim() ? `${box.value.trim()}\n\n${text}` : text;
+        if (!$('materialTitle').value.trim()) {
+            $('materialTitle').value = text.split('\n')[0].slice(0, 60).trim() || 'Photo of my work';
+        }
+        setPhotoStatus('Read. Check it below and fix anything it got wrong, then save.', '');
+        $('contentHint').textContent = '— read from your photo, edit anything that came out wrong';
+    } catch (err) {
+        console.error(err);
+        setPhotoStatus(photoErrorCopy(err), 'failed');
+    } finally {
+        $('saveMaterialBtn').disabled = false;
+    }
+}
+
+function photoErrorCopy(err) {
+    return `Could not read the photos. ${err && err.message ? err.message : ''}`.trim();
+}
+
+/* Sends the images to Claude and returns the transcription. */
+async function transcribePhotos(photos) {
+    const content = photos.map((p) => ({
+        type: 'image',
+        source: { type: 'base64', media_type: 'image/jpeg', data: dataUrlBody(p.full) }
+    }));
+    content.push({ type: 'text', text: TRANSCRIBE_PROMPT });
+
+    return callClaude([{ role: 'user', content }], {
+        maxTokens: 8000,
+        effort: 'medium'
+    });
+}
 
 // ---------------------------------------------------------------------------
 // Built-in engine — works with no key and no network
@@ -1121,6 +1273,11 @@ function openMaterialModal(id) {
     $('materialSubject').value = m ? m.subject : '';
     $('materialType').value = m ? m.type : 'notes';
     $('materialText').value = m ? m.text : '';
+    pendingPhotos = [];
+    renderPhotoStrip();
+    setPhotoStatus('', '');
+    $('contentHint').textContent = '';
+    switchSource(m ? 'text' : 'photo');
     openModal('materialModal');
     $('materialTitle').focus();
 }
@@ -1149,6 +1306,8 @@ function saveMaterial() {
             subject: $('materialSubject').value.trim(),
             type: $('materialType').value,
             text,
+            photo: pendingPhotos.length ? pendingPhotos[0].thumb : null,
+            photoCount: pendingPhotos.length,
             createdAt: Date.now()
         };
         materials.unshift(material);
@@ -1271,6 +1430,46 @@ $('materialList').addEventListener('click', (e) => {
     else selectedIds.add(id);
     save(STORE.selection, Array.from(selectedIds));
     renderLibrary();
+});
+
+// Photo / text source switch
+function switchSource(name) {
+    document.querySelectorAll('.source-tab').forEach((t) => t.classList.toggle('active', t.dataset.source === name));
+    $('sourcePhoto').classList.toggle('active', name === 'photo');
+    $('sourceText').classList.toggle('active', name === 'text');
+}
+
+document.querySelectorAll('.source-tab').forEach((tab) => {
+    tab.addEventListener('click', () => switchSource(tab.dataset.source));
+});
+
+// Photos
+const photozone = $('photozone');
+photozone.addEventListener('click', () => $('photoInput').click());
+$('photoInput').addEventListener('change', (e) => {
+    addPhotos(e.target.files);
+    e.target.value = '';
+});
+['dragenter', 'dragover'].forEach((evt) => {
+    photozone.addEventListener(evt, (e) => {
+        e.preventDefault();
+        photozone.classList.add('hot');
+    });
+});
+['dragleave', 'drop'].forEach((evt) => {
+    photozone.addEventListener(evt, (e) => {
+        e.preventDefault();
+        photozone.classList.remove('hot');
+    });
+});
+photozone.addEventListener('drop', (e) => addPhotos(e.dataTransfer.files));
+
+$('photoStrip').addEventListener('click', (e) => {
+    const id = e.target.dataset.remove;
+    if (!id) return;
+    pendingPhotos = pendingPhotos.filter((p) => p.id !== id);
+    renderPhotoStrip();
+    if (!pendingPhotos.length) setPhotoStatus('', '');
 });
 
 // File drop / picker

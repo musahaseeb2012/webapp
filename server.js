@@ -22,7 +22,7 @@ const mimeTypes = {
 // Keeping the key here means it never reaches the browser.
 
 const DEFAULT_MODEL = process.env.ANTHROPIC_MODEL || 'claude-opus-5';
-const MAX_BODY_BYTES = 2 * 1024 * 1024;
+const MAX_BODY_BYTES = 16 * 1024 * 1024;   // photos travel as base64, so this needs headroom
 const MAX_OUTPUT_TOKENS = 16000;
 
 let anthropic = null;

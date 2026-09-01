@@ -147,13 +147,31 @@
                         <option value="slides">Lecture slides</option>
                     </select>
                 </div>
-                <div class="field">
-                    <label for="materialText">Content</label>
-                    <textarea id="materialText" placeholder="Paste your notes, the assignment brief, or the homework questions here…"></textarea>
+                <div class="source-tabs">
+                    <button type="button" class="source-tab active" data-source="photo">📷 From a photo</button>
+                    <button type="button" class="source-tab" data-source="text">⌨ Type or paste</button>
                 </div>
-                <div id="dropzone" class="dropzone">
-                    📄 Drop a text file here, or click to choose — .txt, .md, .csv, .html, .json and other plain-text files
-                    <input type="file" id="fileInput" accept=".txt,.md,.markdown,.csv,.tsv,.json,.html,.htm,.rtf,.log,text/*" multiple hidden>
+
+                <div id="sourcePhoto" class="source-panel active">
+                    <div id="photozone" class="dropzone">
+                        📷 <strong>Take a photo, or choose one</strong>
+                        <div class="hint" style="margin-top:6px">A page of notes, a worksheet, a problem off the board — up to 4 at a time</div>
+                        <input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp" capture="environment" multiple hidden>
+                    </div>
+                    <div id="photoStrip" class="photo-strip"></div>
+                    <div id="photoStatus" class="photo-status"></div>
+                </div>
+
+                <div id="sourceText" class="source-panel">
+                    <div id="dropzone" class="dropzone">
+                        📄 Drop a text file here, or click to choose — .txt, .md, .csv, .html, .json and other plain-text files
+                        <input type="file" id="fileInput" accept=".txt,.md,.markdown,.csv,.tsv,.json,.html,.htm,.rtf,.log,text/*" multiple hidden>
+                    </div>
+                </div>
+
+                <div class="field" style="margin-top:14px">
+                    <label for="materialText">Content <span id="contentHint" class="hint"></span></label>
+                    <textarea id="materialText" placeholder="Paste your notes, the assignment brief, or the homework questions here…"></textarea>
                 </div>
             </div>
             <div class="modal-foot">

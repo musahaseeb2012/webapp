@@ -8,10 +8,15 @@ A vanilla HTML/CSS/JavaScript workspace: a to-do list, notes, a calendar, a poin
 Put your class notes, assignments and homework into a library, pick what you want to work on,
 and then either **ask about it** or **get quizzed on it**.
 
-- **Library** — paste text or drop in plain-text files (`.txt`, `.md`, `.csv`, `.json`, `.html`).
-  Tag each item with a subject and a type (notes, assignment, homework, reading, slides).
-  Everything is stored in your browser with `localStorage`; nothing is uploaded unless you turn
-  Claude on.
+- **From a photo** — point your phone at a worksheet, a page of notes or a problem on the board.
+  Claude reads it once, when you add it, and drops the text into an editable box so you can fix
+  anything it misread before saving. Diagrams come through as a bracketed description. Up to four
+  photos per item. Because it is stored as text, a photographed worksheet then behaves exactly
+  like typed notes — quizzes, search and the built-in engine all work on it.
+- **Library** — or paste text and drop in plain-text files (`.txt`, `.md`, `.csv`, `.json`,
+  `.html`). Tag each item with a subject and a type (notes, assignment, homework, reading,
+  slides). Everything is stored in your browser with `localStorage`; nothing is uploaded unless
+  you turn Claude on.
 - **Explain & Ask** — a chat that only works from the material you selected. One-tap prompts for
   *explain simply*, *summarise*, *key terms*, *step by step*, *worked example*, *help me start*
   and *common mistakes*.
@@ -26,8 +31,8 @@ the task down, explains the method and shows a similar worked example.
 
 | | Needs a key | What it does |
 |---|---|---|
-| **Built-in** | No | Runs entirely in the page. Pulls out key terms and definitions, summarises, answers by finding the relevant lines, and builds fill-the-gap, true/false, short answer and flashcard questions. Works offline. |
-| **Claude** | Yes | Real explanations and properly written questions, plus fair marking of your written answers. |
+| **Built-in** | No | Runs entirely in the page. Pulls out key terms and definitions, summarises, answers by finding the relevant lines, and builds fill-the-gap, true/false, short answer and flashcard questions. Works offline. Cannot read photos — it has no eyes. |
+| **Claude** | Yes | Reads your photos, real explanations, properly written questions, and fair marking of your written answers. |
 
 The app picks the better one automatically and falls back to the built-in engine whenever Claude
 is unavailable, so it never dead-ends. The current engine is shown in the top-right pill.
@@ -79,8 +84,9 @@ standalone build there is no server, so Claude needs a key pasted into Settings.
 
 ## Known limits
 
-- Only plain text goes in — PDFs, Word documents and photos of notes are not read yet. Copy the
-  text out and paste it in.
+- Photos and plain text go in; PDFs and Word documents do not. Copy the text out, or photograph
+  the page.
+- Reading a photo needs Claude. Without a key you can still type or paste.
 - `localStorage` holds roughly 5 MB, which is a lot of notes but not unlimited; the app warns you
   when it is full.
 - Answers arrive in one go rather than streaming in.
