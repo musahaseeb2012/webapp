@@ -221,6 +221,7 @@ const CONTEXT_CHAR_LIMIT = 120000;
 function buildContext() {
     const chosen = selectedMaterials();
     if (!chosen.length) return null;
+    if (!chosen.some((m) => m.text.trim())) return null;
 
     let out = '';
     let truncated = false;
@@ -896,7 +897,9 @@ async function askTutor(question) {
 
     const context = buildContext();
     if (!context) {
-        toast('Select at least one material first.');
+        toast(selectedMaterials().length
+            ? 'That material has no content yet — add some text or a photo to it first.'
+            : 'Select at least one material first.');
         return;
     }
 
@@ -991,7 +994,9 @@ async function generateQuiz() {
     if (busy) return;
     const context = buildContext();
     if (!context) {
-        toast('Select at least one material first.');
+        toast(selectedMaterials().length
+            ? 'That material has no content yet — add some text or a photo to it first.'
+            : 'Select at least one material first.');
         return;
     }
 
@@ -1284,10 +1289,6 @@ function openMaterialModal(id) {
 
 function saveMaterial() {
     const text = $('materialText').value.trim();
-    if (!text) {
-        toast('Paste or drop in some content first.');
-        return;
-    }
     const title = $('materialTitle').value.trim() ||
         text.split('\n')[0].slice(0, 60).trim() || 'Untitled material';
 
