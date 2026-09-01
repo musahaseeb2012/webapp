@@ -32,6 +32,14 @@ todoListBtn.addEventListener('click', () => {
     appContainer.style.display = 'block';
 });
 
+// Open Study AI (its own page)
+const studyAIBtn = document.getElementById('studyAIBtn');
+if (studyAIBtn) {
+    studyAIBtn.addEventListener('click', () => {
+        window.location.href = 'study-ai.html';
+    });
+}
+
 // Open Notes (if unlocked)
 notesBtn.addEventListener('click', () => {
     if (!notesBtn.classList.contains('locked')) {
