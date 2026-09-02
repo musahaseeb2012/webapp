@@ -87,21 +87,19 @@ came from you. The other four sizes are scaled from those, using these steps:
 That's a guess at your pricing, not your pricing. Set those four buttons to
 what you actually charge before you share the link.
 
-### The logo still says "Spotless Rides"
+### Replacing the logo
 
-The badge in `assets/` is artwork — the old name is drawn into the image, so
-renaming the business doesn't change it. Every piece of *text* on the site now
-says Falcore Rides, but the logo in the header, the hero, the story panel and
-the footer still reads Spotless Rides.
+Two files carry the badge, and everything on the site points at those two
+filenames — swap them and nothing else needs editing:
 
-To fix it, export a Falcore Rides badge as a transparent PNG and replace both
-files, keeping the names:
+- `assets/logo.png` — 1200px wide, used in the hero, the story panel and the
+  footer
+- `assets/logo-512.png` — the same artwork at 512px, used in the nav bar, the
+  loading screen and the browser tab icon
 
-- `assets/logo.png` — around 1200px wide, used in the hero, story and footer
-- `assets/logo-512.png` — the same artwork at 512px, used in the nav bar,
-  the loading screen and the browser tab icon
-
-Nothing else needs editing; every reference points at those two filenames.
+Export new artwork as a transparent PNG. If yours has a solid background,
+knock it out first — a flat colour behind the badge shows up as a rectangle
+against the dark page.
 
 ### Colours
 
