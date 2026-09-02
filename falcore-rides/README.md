@@ -60,6 +60,7 @@ Everything below lives in `index.html`, marked with `EDIT ME` comments.
 | Service names and what's included | the two `<article class="card">` blocks in the same section |
 | Which size the page opens on | move `aria-pressed="true"` to a different `.size-btn` |
 | Adding or removing a vehicle size | add or delete a `.size-btn`; nothing else needs touching |
+| The journey timeline | `EDIT ME — THE JOURNEY` — one `.j-panel` per year plus a matching `.year` button; the ids pair them (`jy-2021` → `jp-2021`) |
 | Stats (cars detailed, years, %) | `data-count` attributes in `.stats` |
 | Trust chips in the hero | `EDIT ME` above `.hero__chips` |
 
@@ -69,8 +70,13 @@ The origin story opens on the reader — the pride they already feel about their
 own car, and how it quietly slips away — and only then turns to why the
 business exists. That framing is deliberate; the specifics are still a draft.
 Swap in your real first car, your real first customer, the real moment it
-stopped being a hobby. Same for the stats and the trust chips: they're
-placeholders shaped like the truth, and the real details always land better.
+stopped being a hobby. The seven years in the journey timeline are the same —
+plausible milestones in a plausible order, waiting for the real ones. Same for
+the stats and the trust chips: they're placeholders shaped like the truth, and
+the real details always land better.
+
+The one part of the timeline that isn't guesswork is the 2020 panel: Falcon +
+Core, set like a dictionary entry, because that's what the name is made of.
 
 Visitors pick their vehicle above the two cards and both prices update in
 place. The two services and the sedan prices ($76 interior, $150 full detail)

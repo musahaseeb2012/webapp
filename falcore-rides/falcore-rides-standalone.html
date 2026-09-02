@@ -543,6 +543,125 @@ a{ color:inherit; }
   color:var(--muted-2);
 }
 
+/* ============================ JOURNEY ============================ */
+
+.section__head--slim{ margin-bottom:clamp(1.2rem, 2.5vw, 2rem); }
+
+.journey__grid{
+  display:grid;
+  grid-template-columns:minmax(0, 1.05fr) minmax(0, .95fr);
+  gap:clamp(2rem, 5vw, 4.5rem);
+  align-items:center;
+}
+
+/* All panels sit in the same slot; a floor height keeps the year strip from
+   jumping around as you step through them. */
+.journey__panels{ min-height:clamp(17rem, 26vw, 20rem); }
+.j-panel[hidden]{ display:none; }
+.j-panel{ animation:panelIn .45s cubic-bezier(.2,.7,.3,1) both; }
+@keyframes panelIn{
+  from{ opacity:0; transform:translateY(14px); }
+}
+
+.j-panel__year{
+  margin:0 0 .5rem;
+  font-family:var(--display);
+  font-size:.95rem; letter-spacing:.28em;
+  color:var(--muted-2);
+}
+.j-panel__title{
+  font-family:var(--display);
+  font-size:clamp(1.75rem, 1.1rem + 2.4vw, 3.1rem);
+  line-height:1;
+  letter-spacing:-.02em;
+  text-transform:uppercase;
+  margin:0 0 1.3rem;
+  text-wrap:balance;
+}
+.j-panel p{ margin:0 0 1rem; color:var(--muted); max-width:52ch; }
+.j-panel p:last-child{ margin-bottom:0; }
+
+/* The name, set like a dictionary entry. */
+.j-def{ margin:0 0 1.3rem; }
+.j-def dt{
+  font-weight:800; font-size:1.02rem;
+  text-transform:uppercase; letter-spacing:.04em;
+  color:var(--cream);
+  margin-top:1rem;
+}
+.j-def dt:first-child{ margin-top:0; }
+.j-def dt span{ color:var(--lime); font-weight:700; }
+.j-def dd{ margin:.15rem 0 0; color:var(--muted); max-width:46ch; }
+.j-def__say{ color:var(--muted-2); font-size:.92rem; }
+
+/* --- the blocks: one per year, lighting up as you step forward --- */
+
+.j-blocks{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  grid-template-rows:repeat(5, 1fr);
+  gap:clamp(.45rem, 1.1vw, .95rem);
+  width:min(100%, 360px);
+  aspect-ratio:4 / 5;
+  margin-inline:auto;
+}
+
+.j-block{
+  grid-column:var(--c);
+  grid-row:var(--r) / span var(--rs, 1);
+  border-radius:clamp(12px, 2.4vw, 26px);
+  border:1px solid rgba(158,230,58,.20);
+  background:linear-gradient(160deg, rgba(22,163,74,.20), rgba(6,28,14,.88));
+  transition:background .5s ease, border-color .5s ease, box-shadow .5s ease, transform .5s cubic-bezier(.2,.9,.3,1.3);
+}
+/* Years already behind us. */
+.j-block.is-past{
+  background:linear-gradient(160deg, rgba(22,163,74,.62), rgba(8,40,20,.95));
+  border-color:rgba(158,230,58,.38);
+}
+/* The year you're looking at. */
+.j-block.is-now{
+  background:linear-gradient(150deg, var(--yellow), var(--yellow-2));
+  border-color:rgba(255,210,30,.75);
+  box-shadow:0 16px 38px -20px rgba(255,177,0,.7);
+  transform:scale(1.04);
+}
+
+/* --- year strip --- */
+
+.years{
+  display:flex; align-items:center; gap:.35rem;
+  margin-top:clamp(2rem, 4vw, 3.2rem);
+  padding-bottom:.4rem;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.years::-webkit-scrollbar{ display:none; }
+
+.year{
+  display:inline-flex; align-items:center; gap:.5rem;
+  flex:0 0 auto;
+  padding:.7rem 1.15rem;
+  border:1px solid transparent;
+  border-radius:999px;
+  background:transparent;
+  color:var(--muted-2);
+  font:700 1rem/1 var(--body);
+  font-variant-numeric:tabular-nums;
+  cursor:pointer;
+  transition:color .25s, background .25s, border-color .25s, transform .2s;
+}
+.year svg{ width:17px; height:17px; fill:currentColor; opacity:.55; transition:transform .25s, opacity .25s; }
+.year:hover{ color:var(--cream); background:rgba(158,230,58,.1); }
+.year:hover svg{ transform:translateX(3px); opacity:1; }
+.year[aria-selected="true"]{
+  background:linear-gradient(135deg, var(--yellow), var(--yellow-2));
+  border-color:rgba(255,210,30,.6);
+  color:#08240f;
+  box-shadow:0 10px 24px -10px rgba(255,177,0,.75);
+}
+.year[aria-selected="true"] svg{ opacity:1; }
+
 /* ============================ SERVICES ============================ */
 
 .cards{
@@ -895,6 +1014,10 @@ a{ color:inherit; }
 /* ============================ RESPONSIVE ============================ */
 
 @media (max-width: 960px){
+  .journey__grid{ grid-template-columns:1fr; }
+  .journey__panels{ min-height:0; }
+  .journey__art{ order:-1; }
+  .j-blocks{ width:min(72%, 230px); margin-inline:0; }
   .story__grid{ grid-template-columns:1fr; }
   .story__visual{ position:static; max-width:520px; }
   .footer__top{ grid-template-columns:1fr; }
@@ -928,6 +1051,12 @@ a{ color:inherit; }
   .hero{ min-height:92svh; padding-top:6rem; }
   .hero__chips{ gap:.55rem 1rem; }
   .marquee{ transform:rotate(-1.6deg) scaleX(1.12); }
+  .year{ padding:.6rem .85rem; font-size:.92rem; }
+  .years{
+    /* let the strip run to the screen edges so it reads as scrollable */
+    margin-inline:calc(var(--pad) * -1);
+    padding-inline:var(--pad);
+  }
   .size-switch__options{ width:100%; justify-content:flex-start; }
   .size-btn{ flex:1 1 auto; padding:.6rem .85rem; font-size:.83rem; }
 }
@@ -979,6 +1108,7 @@ a{ color:inherit; }
 
   <nav class="nav__links" id="navLinks" aria-label="Main">
     <a href="#story">Our Story</a>
+    <a href="#journey">Journey</a>
     <a href="#packages">Services &amp; Prices</a>
     <a href="#process">How It Works</a>
     <a href="#book">Contact</a>
@@ -1121,6 +1251,178 @@ a{ color:inherit; }
     <div class="stat"><b data-count="7" data-suffix=" yrs">0</b><span>Doing this by hand</span></div>
     <div class="stat"><b data-count="98" data-suffix="%">0</b><span>Customers who rebook</span></div>
     <div class="stat"><b data-count="0" data-prefix="$" data-suffix="">0</b><span>Hidden fees, ever</span></div>
+  </div>
+</section>
+
+<!-- ============================== JOURNEY ============================== -->
+<!--
+  ============================================================
+  EDIT ME — THE JOURNEY
+  One <article class="j-panel"> per year, and one matching
+  <button class="year"> in the tab strip underneath. The ids
+  pair them up: jy-2021 (the tab) points at jp-2021 (the panel).
+
+  To add a year, copy one of each and give both the new year.
+  The blocks on the right light up one per year automatically —
+  there are seven of them because there are seven years, so add
+  a <span class="j-block"> too if you add an eighth.
+
+  The milestones are a draft. Replace them with what actually
+  happened and in which year.
+  ============================================================
+-->
+<section class="section journey" id="journey">
+  <div class="section__head section__head--slim reveal">
+    <p class="eyebrow">Our journey</p>
+    <!-- The visible heading is the year's own title, so this one is for
+         screen readers and the document outline only. -->
+    <h2 class="visually-hidden">Our journey</h2>
+  </div>
+
+  <div class="journey__grid">
+    <div class="journey__panels reveal">
+      <article class="j-panel" id="jp-2020" role="tabpanel"
+               aria-labelledby="jy-2020" tabindex="0">
+        <p class="j-panel__year">2020</p>
+        <h3 class="j-panel__title">Falcore <span class="accent">Rides</span></h3>
+        <dl class="j-def">
+          <dt>Falcon <span>(noun)</span></dt>
+          <dd class="j-def__say">/ˈfal-kən/</dd>
+          <dd>A bird built for speed and precision. It notices the one thing everything else misses.</dd>
+          <dt>Core <span>(noun)</span></dt>
+          <dd class="j-def__say">/kôr/</dd>
+          <dd>The part at the center that everything else is built around.</dd>
+        </dl>
+        <p>
+          Put the two together and you have the standard I hold every car to:
+          nothing missed, nothing rushed.
+        </p>
+      </article>
+      <article class="j-panel" id="jp-2021" role="tabpanel"
+               aria-labelledby="jy-2021" tabindex="0" hidden>
+        <p class="j-panel__year">2021</p>
+        <h3 class="j-panel__title">The first car <span class="accent">that wasn't mine</span></h3>
+        <p>
+          A friend handed me his keys on a Saturday morning, mostly as a favor to me.
+          I spent nine hours on a car I'd promised in four, and he paid me anyway.
+        </p>
+        <p>
+          Then he walked a slow lap around it, grinning. I've been chasing that
+          reaction ever since.
+        </p>
+      </article>
+      <article class="j-panel" id="jp-2022" role="tabpanel"
+               aria-labelledby="jy-2022" tabindex="0" hidden>
+        <p class="j-panel__year">2022</p>
+        <h3 class="j-panel__title">Everything fits <span class="accent">in the van</span></h3>
+        <p>
+          Water tank, generator, extractor, and more microfiber than any one person
+          should reasonably own. No shop, no drop-off, no waiting room with bad coffee.
+        </p>
+        <p>
+          If your car is sitting in a driveway or a work parking lot, that's where the
+          detail happens.
+        </p>
+      </article>
+      <article class="j-panel" id="jp-2023" role="tabpanel"
+               aria-labelledby="jy-2023" tabindex="0" hidden>
+        <p class="j-panel__year">2023</p>
+        <h3 class="j-panel__title">Learning <span class="accent">the machine</span></h3>
+        <p>
+          Washing a car is easy. Correcting paint without burning through it is not.
+        </p>
+        <p>
+          A year of practice panels, a lot of ruined pads, and eventually swirl marks
+          I could actually remove instead of hide.
+        </p>
+      </article>
+      <article class="j-panel" id="jp-2024" role="tabpanel"
+               aria-labelledby="jy-2024" tabindex="0" hidden>
+        <p class="j-panel__year">2024</p>
+        <h3 class="j-panel__title">Word of mouth <span class="accent">did the marketing</span></h3>
+        <p>
+          No ads, no flyers, no van wrap. Just people opening a back door and telling
+          a friend to look at the carpet.
+        </p>
+        <p>
+          Weekends filled first, then weekdays, then a waiting list I felt guilty about.
+        </p>
+      </article>
+      <article class="j-panel" id="jp-2025" role="tabpanel"
+               aria-labelledby="jy-2025" tabindex="0" hidden>
+        <p class="j-panel__year">2025</p>
+        <h3 class="j-panel__title">Two services, <span class="accent">one honest price</span></h3>
+        <p>
+          I cut the menu down. No tiers designed to nudge you toward the expensive one,
+          no add-ons invented at the door.
+        </p>
+        <p>
+          Inside, or inside and out — priced by the size of your vehicle, and printed
+          on this page where you can read it before you call.
+        </p>
+      </article>
+      <article class="j-panel" id="jp-2026" role="tabpanel"
+               aria-labelledby="jy-2026" tabindex="0" hidden>
+        <p class="j-panel__year">2026</p>
+        <h3 class="j-panel__title">Where <span class="accent">it's going</span></h3>
+        <p>
+          Same hands, same standard, a little more of the calendar than there used to be.
+        </p>
+        <p>
+          If you're reading this, the next car on it could be yours.
+        </p>
+      </article>
+    </div>
+
+    <div class="journey__art reveal" aria-hidden="true">
+      <div class="j-blocks">
+        <span class="j-block" style="--c:1;--r:1;--rs:2"></span>
+        <span class="j-block" style="--c:2;--r:2;--rs:1"></span>
+        <span class="j-block" style="--c:2;--r:3;--rs:1"></span>
+        <span class="j-block" style="--c:3;--r:3;--rs:1"></span>
+        <span class="j-block" style="--c:3;--r:4;--rs:1"></span>
+        <span class="j-block" style="--c:4;--r:4;--rs:1"></span>
+        <span class="j-block" style="--c:4;--r:5;--rs:1"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="years reveal" role="tablist" aria-label="Our journey, by year">
+      <button class="year" id="jy-2020" role="tab" type="button"
+              aria-controls="jp-2020" aria-selected="true" tabindex="0">
+        2020
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h13l-4.6-4.6L14 6l7 6-7 6-1.6-1.4L17 12H4z"/></svg>
+      </button>
+      <button class="year" id="jy-2021" role="tab" type="button"
+              aria-controls="jp-2021" aria-selected="false" tabindex="-1">
+        2021
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h13l-4.6-4.6L14 6l7 6-7 6-1.6-1.4L17 12H4z"/></svg>
+      </button>
+      <button class="year" id="jy-2022" role="tab" type="button"
+              aria-controls="jp-2022" aria-selected="false" tabindex="-1">
+        2022
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h13l-4.6-4.6L14 6l7 6-7 6-1.6-1.4L17 12H4z"/></svg>
+      </button>
+      <button class="year" id="jy-2023" role="tab" type="button"
+              aria-controls="jp-2023" aria-selected="false" tabindex="-1">
+        2023
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h13l-4.6-4.6L14 6l7 6-7 6-1.6-1.4L17 12H4z"/></svg>
+      </button>
+      <button class="year" id="jy-2024" role="tab" type="button"
+              aria-controls="jp-2024" aria-selected="false" tabindex="-1">
+        2024
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h13l-4.6-4.6L14 6l7 6-7 6-1.6-1.4L17 12H4z"/></svg>
+      </button>
+      <button class="year" id="jy-2025" role="tab" type="button"
+              aria-controls="jp-2025" aria-selected="false" tabindex="-1">
+        2025
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h13l-4.6-4.6L14 6l7 6-7 6-1.6-1.4L17 12H4z"/></svg>
+      </button>
+      <button class="year" id="jy-2026" role="tab" type="button"
+              aria-controls="jp-2026" aria-selected="false" tabindex="-1">
+        2026
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h13l-4.6-4.6L14 6l7 6-7 6-1.6-1.4L17 12H4z"/></svg>
+      </button>
   </div>
 </section>
 
@@ -1355,6 +1657,7 @@ a{ color:inherit; }
       <div>
         <h4>Company</h4>
         <a href="#story">Our story</a>
+        <a href="#journey">Our journey</a>
         <a href="#packages">Prices</a>
         <a href="#process">How it works</a>
         <a href="#book">Contact</a>
@@ -4371,7 +4674,7 @@ function boot(canvas) {
 
   /* ------------------------------------------------- active section link -- */
 
-  var sections = ['story', 'packages', 'process', 'book']
+  var sections = ['story', 'journey', 'packages', 'process', 'book']
     .map(function (id) { return document.getElementById(id); })
     .filter(Boolean);
 
@@ -4459,6 +4762,55 @@ function boot(canvas) {
         ticking = false;
       });
     }, { passive: true });
+  }
+
+  /* ----------------------------------------------------------- journey -- */
+
+  // Year tabs. Standard tablist behaviour: one tab in the tab order at a
+  // time, arrow keys move between them, and the blocks on the right light up
+  // one per year so the graphic reads as the timeline rather than decoration.
+  var yearTabs = Array.prototype.slice.call(document.querySelectorAll('.year'));
+  var jBlocks  = Array.prototype.slice.call(document.querySelectorAll('.j-block'));
+
+  function showYear(index, moveFocus) {
+    index = Math.max(0, Math.min(index, yearTabs.length - 1));
+
+    yearTabs.forEach(function (tab, i) {
+      var on = i === index;
+      tab.setAttribute('aria-selected', String(on));
+      tab.tabIndex = on ? 0 : -1;
+      var panel = document.getElementById(tab.getAttribute('aria-controls'));
+      if (panel) panel.hidden = !on;
+    });
+
+    jBlocks.forEach(function (block, i) {
+      block.classList.toggle('is-past', i < index);
+      block.classList.toggle('is-now', i === index);
+    });
+
+    if (moveFocus) {
+      yearTabs[index].focus();
+      // Keep the active year in view when the strip scrolls on narrow screens.
+      yearTabs[index].scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    }
+  }
+
+  yearTabs.forEach(function (tab, i) {
+    tab.addEventListener('click', function () { showYear(i, false); });
+
+    tab.addEventListener('keydown', function (e) {
+      var delta = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: 1, ArrowUp: -1 }[e.key];
+      if (delta) { e.preventDefault(); showYear(i + delta, true); return; }
+      if (e.key === 'Home') { e.preventDefault(); showYear(0, true); }
+      if (e.key === 'End')  { e.preventDefault(); showYear(yearTabs.length - 1, true); }
+    });
+  });
+
+  if (yearTabs.length) {
+    var startAt = yearTabs.findIndex(function (t) {
+      return t.getAttribute('aria-selected') === 'true';
+    });
+    showYear(startAt < 0 ? 0 : startAt, false);
   }
 
   /* ------------------------------------------------------ size switcher -- */

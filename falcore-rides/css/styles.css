@@ -520,6 +520,125 @@ a{ color:inherit; }
   color:var(--muted-2);
 }
 
+/* ============================ JOURNEY ============================ */
+
+.section__head--slim{ margin-bottom:clamp(1.2rem, 2.5vw, 2rem); }
+
+.journey__grid{
+  display:grid;
+  grid-template-columns:minmax(0, 1.05fr) minmax(0, .95fr);
+  gap:clamp(2rem, 5vw, 4.5rem);
+  align-items:center;
+}
+
+/* All panels sit in the same slot; a floor height keeps the year strip from
+   jumping around as you step through them. */
+.journey__panels{ min-height:clamp(17rem, 26vw, 20rem); }
+.j-panel[hidden]{ display:none; }
+.j-panel{ animation:panelIn .45s cubic-bezier(.2,.7,.3,1) both; }
+@keyframes panelIn{
+  from{ opacity:0; transform:translateY(14px); }
+}
+
+.j-panel__year{
+  margin:0 0 .5rem;
+  font-family:var(--display);
+  font-size:.95rem; letter-spacing:.28em;
+  color:var(--muted-2);
+}
+.j-panel__title{
+  font-family:var(--display);
+  font-size:clamp(1.75rem, 1.1rem + 2.4vw, 3.1rem);
+  line-height:1;
+  letter-spacing:-.02em;
+  text-transform:uppercase;
+  margin:0 0 1.3rem;
+  text-wrap:balance;
+}
+.j-panel p{ margin:0 0 1rem; color:var(--muted); max-width:52ch; }
+.j-panel p:last-child{ margin-bottom:0; }
+
+/* The name, set like a dictionary entry. */
+.j-def{ margin:0 0 1.3rem; }
+.j-def dt{
+  font-weight:800; font-size:1.02rem;
+  text-transform:uppercase; letter-spacing:.04em;
+  color:var(--cream);
+  margin-top:1rem;
+}
+.j-def dt:first-child{ margin-top:0; }
+.j-def dt span{ color:var(--lime); font-weight:700; }
+.j-def dd{ margin:.15rem 0 0; color:var(--muted); max-width:46ch; }
+.j-def__say{ color:var(--muted-2); font-size:.92rem; }
+
+/* --- the blocks: one per year, lighting up as you step forward --- */
+
+.j-blocks{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  grid-template-rows:repeat(5, 1fr);
+  gap:clamp(.45rem, 1.1vw, .95rem);
+  width:min(100%, 360px);
+  aspect-ratio:4 / 5;
+  margin-inline:auto;
+}
+
+.j-block{
+  grid-column:var(--c);
+  grid-row:var(--r) / span var(--rs, 1);
+  border-radius:clamp(12px, 2.4vw, 26px);
+  border:1px solid rgba(158,230,58,.20);
+  background:linear-gradient(160deg, rgba(22,163,74,.20), rgba(6,28,14,.88));
+  transition:background .5s ease, border-color .5s ease, box-shadow .5s ease, transform .5s cubic-bezier(.2,.9,.3,1.3);
+}
+/* Years already behind us. */
+.j-block.is-past{
+  background:linear-gradient(160deg, rgba(22,163,74,.62), rgba(8,40,20,.95));
+  border-color:rgba(158,230,58,.38);
+}
+/* The year you're looking at. */
+.j-block.is-now{
+  background:linear-gradient(150deg, var(--yellow), var(--yellow-2));
+  border-color:rgba(255,210,30,.75);
+  box-shadow:0 16px 38px -20px rgba(255,177,0,.7);
+  transform:scale(1.04);
+}
+
+/* --- year strip --- */
+
+.years{
+  display:flex; align-items:center; gap:.35rem;
+  margin-top:clamp(2rem, 4vw, 3.2rem);
+  padding-bottom:.4rem;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.years::-webkit-scrollbar{ display:none; }
+
+.year{
+  display:inline-flex; align-items:center; gap:.5rem;
+  flex:0 0 auto;
+  padding:.7rem 1.15rem;
+  border:1px solid transparent;
+  border-radius:999px;
+  background:transparent;
+  color:var(--muted-2);
+  font:700 1rem/1 var(--body);
+  font-variant-numeric:tabular-nums;
+  cursor:pointer;
+  transition:color .25s, background .25s, border-color .25s, transform .2s;
+}
+.year svg{ width:17px; height:17px; fill:currentColor; opacity:.55; transition:transform .25s, opacity .25s; }
+.year:hover{ color:var(--cream); background:rgba(158,230,58,.1); }
+.year:hover svg{ transform:translateX(3px); opacity:1; }
+.year[aria-selected="true"]{
+  background:linear-gradient(135deg, var(--yellow), var(--yellow-2));
+  border-color:rgba(255,210,30,.6);
+  color:#08240f;
+  box-shadow:0 10px 24px -10px rgba(255,177,0,.75);
+}
+.year[aria-selected="true"] svg{ opacity:1; }
+
 /* ============================ SERVICES ============================ */
 
 .cards{
@@ -872,6 +991,10 @@ a{ color:inherit; }
 /* ============================ RESPONSIVE ============================ */
 
 @media (max-width: 960px){
+  .journey__grid{ grid-template-columns:1fr; }
+  .journey__panels{ min-height:0; }
+  .journey__art{ order:-1; }
+  .j-blocks{ width:min(72%, 230px); margin-inline:0; }
   .story__grid{ grid-template-columns:1fr; }
   .story__visual{ position:static; max-width:520px; }
   .footer__top{ grid-template-columns:1fr; }
@@ -905,6 +1028,12 @@ a{ color:inherit; }
   .hero{ min-height:92svh; padding-top:6rem; }
   .hero__chips{ gap:.55rem 1rem; }
   .marquee{ transform:rotate(-1.6deg) scaleX(1.12); }
+  .year{ padding:.6rem .85rem; font-size:.92rem; }
+  .years{
+    /* let the strip run to the screen edges so it reads as scrollable */
+    margin-inline:calc(var(--pad) * -1);
+    padding-inline:var(--pad);
+  }
   .size-switch__options{ width:100%; justify-content:flex-start; }
   .size-btn{ flex:1 1 auto; padding:.6rem .85rem; font-size:.83rem; }
 }
