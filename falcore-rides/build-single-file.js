@@ -18,7 +18,7 @@ const path = require('path');
 
 const ROOT = __dirname;
 const read = (...p) => fs.readFileSync(path.join(ROOT, ...p), 'utf8');
-const out  = process.argv[2] || path.join(ROOT, 'spotless-rides-standalone.html');
+const out  = process.argv[2] || path.join(ROOT, 'falcore-rides-standalone.html');
 
 /* ------------------------------------------------------------------ three */
 

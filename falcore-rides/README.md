@@ -1,10 +1,10 @@
-# Spotless Rides — website
+# Falcore Rides — website
 
-A single-page site for the Spotless Rides mobile detailing business, with an
+A single-page site for the Falcore Rides mobile detailing business, with an
 animated 3D hero built on top of the logo.
 
 ```
-spotless-rides/
+falcore-rides/
 ├── index.html          all the copy, the prices, the contact details
 ├── css/styles.css      colours, layout, animations
 ├── js/scene.js         the 3D hero (three.js)
@@ -12,7 +12,7 @@ spotless-rides/
 ├── assets/             the logo (background removed, web-sized)
 ├── vendor/three/       three.js, vendored — no CDN, works offline
 ├── build-single-file.js            bundles everything into one .html
-└── spotless-rides-standalone.html  ← generated, don't edit by hand
+└── falcore-rides-standalone.html  ← generated, don't edit by hand
 ```
 
 ## Running it
@@ -20,7 +20,7 @@ spotless-rides/
 It's a plain static site — no build step, no npm install.
 
 ```bash
-cd spotless-rides
+cd falcore-rides
 python3 -m http.server 8000
 # then open http://localhost:8000
 ```
@@ -28,12 +28,12 @@ python3 -m http.server 8000
 You need a local server rather than double-clicking `index.html`, because the
 3D scene loads as an ES module and browsers block modules on `file://`.
 
-To publish, upload the whole `spotless-rides` folder to any static host
+To publish, upload the whole `falcore-rides` folder to any static host
 (GitHub Pages, Netlify, Cloudflare Pages, or plain shared hosting).
 
 ## The one-file version
 
-`spotless-rides-standalone.html` is the entire site — markup, CSS, JavaScript,
+`falcore-rides-standalone.html` is the entire site — markup, CSS, JavaScript,
 three.js and the logo — inlined into a single file with no external requests.
 Handy for emailing it to someone, hosting somewhere that can't do folders, or
 opening it straight off a USB stick. Unlike the multi-file version it also
@@ -86,6 +86,22 @@ came from you. The other four sizes are scaled from those, using these steps:
 
 That's a guess at your pricing, not your pricing. Set those four buttons to
 what you actually charge before you share the link.
+
+### The logo still says "Spotless Rides"
+
+The badge in `assets/` is artwork — the old name is drawn into the image, so
+renaming the business doesn't change it. Every piece of *text* on the site now
+says Falcore Rides, but the logo in the header, the hero, the story panel and
+the footer still reads Spotless Rides.
+
+To fix it, export a Falcore Rides badge as a transparent PNG and replace both
+files, keeping the names:
+
+- `assets/logo.png` — around 1200px wide, used in the hero, story and footer
+- `assets/logo-512.png` — the same artwork at 512px, used in the nav bar,
+  the loading screen and the browser tab icon
+
+Nothing else needs editing; every reference points at those two filenames.
 
 ### Colours
 

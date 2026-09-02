@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SPOTLESS RIDES — page behaviour
+   FALCORE RIDES — page behaviour
    Loader, nav, scroll reveals, 3D card tilt, counters, and the booking form.
    No dependencies.
    ========================================================================== */
@@ -264,7 +264,7 @@
         data.get('notes') || '(none)'
       ].join('\n');
 
-      var to = form.dataset.email || 'hello@spotlessrides.com';
+      var to = form.dataset.email || 'hello@falcorerides.com';
       window.location.href = 'mailto:' + to +
         '?subject=' + encodeURIComponent(subject) +
         '&body='    + encodeURIComponent(body);

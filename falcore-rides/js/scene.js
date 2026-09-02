@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SPOTLESS RIDES — 3D hero scene
+   FALCORE RIDES — 3D hero scene
    A stylised detailing bay behind the badge: a wet, reflective floor, a pair
    of neon shine rings orbiting the logo, rising soap suds and drifting
    sparkles. The logo itself stays crisp HTML on top of it.
