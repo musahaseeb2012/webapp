@@ -60,7 +60,7 @@
 
   /* ------------------------------------------------- active section link -- */
 
-  var sections = ['story', 'journey', 'packages', 'process', 'book']
+  var sections = ['story', 'packages', 'process', 'book']
     .map(function (id) { return document.getElementById(id); })
     .filter(Boolean);
 
@@ -148,55 +148,6 @@
         ticking = false;
       });
     }, { passive: true });
-  }
-
-  /* ----------------------------------------------------------- journey -- */
-
-  // Year tabs. Standard tablist behaviour: one tab in the tab order at a
-  // time, arrow keys move between them, and the blocks on the right light up
-  // one per year so the graphic reads as the timeline rather than decoration.
-  var yearTabs = Array.prototype.slice.call(document.querySelectorAll('.year'));
-  var jBlocks  = Array.prototype.slice.call(document.querySelectorAll('.j-block'));
-
-  function showYear(index, moveFocus) {
-    index = Math.max(0, Math.min(index, yearTabs.length - 1));
-
-    yearTabs.forEach(function (tab, i) {
-      var on = i === index;
-      tab.setAttribute('aria-selected', String(on));
-      tab.tabIndex = on ? 0 : -1;
-      var panel = document.getElementById(tab.getAttribute('aria-controls'));
-      if (panel) panel.hidden = !on;
-    });
-
-    jBlocks.forEach(function (block, i) {
-      block.classList.toggle('is-past', i < index);
-      block.classList.toggle('is-now', i === index);
-    });
-
-    if (moveFocus) {
-      yearTabs[index].focus();
-      // Keep the active year in view when the strip scrolls on narrow screens.
-      yearTabs[index].scrollIntoView({ block: 'nearest', inline: 'nearest' });
-    }
-  }
-
-  yearTabs.forEach(function (tab, i) {
-    tab.addEventListener('click', function () { showYear(i, false); });
-
-    tab.addEventListener('keydown', function (e) {
-      var delta = { ArrowRight: 1, ArrowLeft: -1, ArrowDown: 1, ArrowUp: -1 }[e.key];
-      if (delta) { e.preventDefault(); showYear(i + delta, true); return; }
-      if (e.key === 'Home') { e.preventDefault(); showYear(0, true); }
-      if (e.key === 'End')  { e.preventDefault(); showYear(yearTabs.length - 1, true); }
-    });
-  });
-
-  if (yearTabs.length) {
-    var startAt = yearTabs.findIndex(function (t) {
-      return t.getAttribute('aria-selected') === 'true';
-    });
-    showYear(startAt < 0 ? 0 : startAt, false);
   }
 
   /* ------------------------------------------------------ size switcher -- */
