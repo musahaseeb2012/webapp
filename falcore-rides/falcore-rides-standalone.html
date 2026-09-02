@@ -511,38 +511,6 @@ a{ color:inherit; }
 }
 .story__text b{ color:var(--lime); }
 
-/* --- stats --- */
-.stats{
-  margin-top:clamp(2.5rem, 5vw, 4rem);
-  display:grid;
-  grid-template-columns:repeat(auto-fit, minmax(155px, 1fr));
-  gap:1px;
-  background:var(--line);
-  border:1px solid var(--line);
-  border-radius:var(--r);
-  overflow:hidden;
-}
-.stat{
-  background:linear-gradient(180deg, rgba(10,43,21,.85), rgba(4,22,11,.9));
-  padding:1.6rem 1.1rem;
-  text-align:center;
-  transition:background .35s;
-}
-.stat:hover{ background:rgba(22,163,74,.18); }
-.stat b{
-  display:block;
-  font-family:var(--display);
-  font-size:clamp(1.9rem, 1.3rem + 1.8vw, 2.9rem);
-  line-height:1;
-  color:var(--yellow);
-  text-shadow:0 0 26px rgba(255,210,30,.35);
-}
-.stat span{
-  display:block; margin-top:.45rem;
-  font-size:.82rem; letter-spacing:.1em; text-transform:uppercase;
-  color:var(--muted-2);
-}
-
 /* ============================ THE NAME ============================ */
 
 /* Falcon + Core, set like a dictionary entry, sitting inside the story where
@@ -978,7 +946,7 @@ a{ color:inherit; }
   .hero__canvas, .loader, .nav, .fab, .marquee, .hero__scroll, .size-switch{ display:none !important; }
   .reveal{ opacity:1; transform:none; }
   .card__inner{ break-inside:avoid; border:1px solid #ccc; background:#fff; }
-  .card__price, .stat b{ color:#000; text-shadow:none; }
+  .card__price{ color:#000; text-shadow:none; }
 }
 
 </style>
@@ -1155,20 +1123,9 @@ a{ color:inherit; }
         <span class="hl">Every price is on this page. No "call for a quote." No
         surprise upcharge when I show up.</span>
       </p>
-      <p>
-        Still my hands, my towels, my name on the badge. Bring me the car you were
-        proud of — you'll be proud of it again.
-      </p>
     </div>
   </div>
 
-  <!-- EDIT ME: real numbers when you have them -->
-  <div class="stats reveal">
-    <div class="stat"><b data-count="1200" data-suffix="+">0</b><span>Cars detailed</span></div>
-    <div class="stat"><b data-count="7" data-suffix=" yrs">0</b><span>Doing this by hand</span></div>
-    <div class="stat"><b data-count="98" data-suffix="%">0</b><span>Customers who rebook</span></div>
-    <div class="stat"><b data-count="0" data-prefix="$" data-suffix="">0</b><span>Hidden fees, ever</span></div>
-  </div>
 </section>
 
 <!-- ============================== SERVICES ============================== -->
@@ -4549,44 +4506,6 @@ function boot(canvas) {
   // Whichever button ships pressed decides what the page opens on.
   var initial = document.querySelector('.size-btn[aria-pressed="true"]') || sizeBtns[0];
   if (initial) applySize(initial);
-
-  /* ---------------------------------------------------------- counters -- */
-
-  var counters = document.querySelectorAll('[data-count]');
-
-  function runCounter(el) {
-    var end    = parseFloat(el.dataset.count) || 0;
-    var prefix = el.dataset.prefix || '';
-    var suffix = el.dataset.suffix || '';
-
-    if (reduced || end === 0) {
-      el.textContent = prefix + end + suffix;
-      return;
-    }
-
-    var start = performance.now();
-    var dur   = 1500;
-
-    (function step(now) {
-      var p = Math.min((now - start) / dur, 1);
-      var eased = 1 - Math.pow(1 - p, 3);
-      el.textContent = prefix + Math.round(end * eased).toLocaleString() + suffix;
-      if (p < 1) requestAnimationFrame(step);
-    })(start);
-  }
-
-  if ('IntersectionObserver' in window) {
-    var countObs = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        runCounter(entry.target);
-        countObs.unobserve(entry.target);
-      });
-    }, { threshold: 0.5 });
-    counters.forEach(function (c) { countObs.observe(c); });
-  } else {
-    counters.forEach(runCounter);
-  }
 
   /* -------------------------------------------------------------- form -- */
 

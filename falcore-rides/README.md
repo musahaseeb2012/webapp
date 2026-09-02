@@ -61,7 +61,6 @@ Everything below lives in `index.html`, marked with `EDIT ME` comments.
 | Which size the page opens on | move `aria-pressed="true"` to a different `.size-btn` |
 | Adding or removing a vehicle size | add or delete a `.size-btn`; nothing else needs touching |
 | What the name means | the `.namecard` block inside the story |
-| Stats (cars detailed, years, %) | `data-count` attributes in `.stats` |
 | Trust chips in the hero | `EDIT ME` above `.hero__chips` |
 
 ### The draft content
@@ -70,7 +69,7 @@ The origin story opens on the reader — the pride they already feel about their
 own car, and how it quietly slips away — and only then turns to why the
 business exists. That framing is deliberate; the specifics are still a draft.
 Swap in your real first car, your real first customer, the real moment it
-stopped being a hobby. Same for the stats and the trust chips: they're
+stopped being a hobby. Same for the trust chips in the hero: they're
 placeholders shaped like the truth, and the real details always land better.
 
 The one part that isn't guesswork is the name card partway through — Falcon +

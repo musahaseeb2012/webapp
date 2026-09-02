@@ -192,44 +192,6 @@
   var initial = document.querySelector('.size-btn[aria-pressed="true"]') || sizeBtns[0];
   if (initial) applySize(initial);
 
-  /* ---------------------------------------------------------- counters -- */
-
-  var counters = document.querySelectorAll('[data-count]');
-
-  function runCounter(el) {
-    var end    = parseFloat(el.dataset.count) || 0;
-    var prefix = el.dataset.prefix || '';
-    var suffix = el.dataset.suffix || '';
-
-    if (reduced || end === 0) {
-      el.textContent = prefix + end + suffix;
-      return;
-    }
-
-    var start = performance.now();
-    var dur   = 1500;
-
-    (function step(now) {
-      var p = Math.min((now - start) / dur, 1);
-      var eased = 1 - Math.pow(1 - p, 3);
-      el.textContent = prefix + Math.round(end * eased).toLocaleString() + suffix;
-      if (p < 1) requestAnimationFrame(step);
-    })(start);
-  }
-
-  if ('IntersectionObserver' in window) {
-    var countObs = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        runCounter(entry.target);
-        countObs.unobserve(entry.target);
-      });
-    }, { threshold: 0.5 });
-    counters.forEach(function (c) { countObs.observe(c); });
-  } else {
-    counters.forEach(runCounter);
-  }
-
   /* -------------------------------------------------------------- form -- */
 
   // Static hosting, no backend: hand the details to the visitor's mail app.

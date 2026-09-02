@@ -488,38 +488,6 @@ a{ color:inherit; }
 }
 .story__text b{ color:var(--lime); }
 
-/* --- stats --- */
-.stats{
-  margin-top:clamp(2.5rem, 5vw, 4rem);
-  display:grid;
-  grid-template-columns:repeat(auto-fit, minmax(155px, 1fr));
-  gap:1px;
-  background:var(--line);
-  border:1px solid var(--line);
-  border-radius:var(--r);
-  overflow:hidden;
-}
-.stat{
-  background:linear-gradient(180deg, rgba(10,43,21,.85), rgba(4,22,11,.9));
-  padding:1.6rem 1.1rem;
-  text-align:center;
-  transition:background .35s;
-}
-.stat:hover{ background:rgba(22,163,74,.18); }
-.stat b{
-  display:block;
-  font-family:var(--display);
-  font-size:clamp(1.9rem, 1.3rem + 1.8vw, 2.9rem);
-  line-height:1;
-  color:var(--yellow);
-  text-shadow:0 0 26px rgba(255,210,30,.35);
-}
-.stat span{
-  display:block; margin-top:.45rem;
-  font-size:.82rem; letter-spacing:.1em; text-transform:uppercase;
-  color:var(--muted-2);
-}
-
 /* ============================ THE NAME ============================ */
 
 /* Falcon + Core, set like a dictionary entry, sitting inside the story where
@@ -955,5 +923,5 @@ a{ color:inherit; }
   .hero__canvas, .loader, .nav, .fab, .marquee, .hero__scroll, .size-switch{ display:none !important; }
   .reveal{ opacity:1; transform:none; }
   .card__inner{ break-inside:avoid; border:1px solid #ccc; background:#fff; }
-  .card__price, .stat b{ color:#000; text-shadow:none; }
+  .card__price{ color:#000; text-shadow:none; }
 }
