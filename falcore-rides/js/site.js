@@ -194,16 +194,82 @@
 
   /* -------------------------------------------------------------- form -- */
 
-  // Static hosting, no backend: hand the details to the visitor's mail app.
-  // Swap this for a real endpoint (Formspree, Netlify Forms, your own API)
-  // by replacing the submit handler below.
+  // Booking requests go to Firestore over its REST API — one fetch, no SDK.
+  // The alternative was loading the Firebase JS SDK from a CDN, which would
+  // have given this otherwise self-contained site an external dependency for
+  // the sake of a single POST.
+  //
+  // Until firebase-config.js is filled in — and any time the write fails —
+  // the form falls back to opening the visitor's email app, so a request is
+  // never silently lost.
+
   var form = document.getElementById('bookForm');
   var note = document.getElementById('formNote');
 
+  function firebaseReady() {
+    var cfg = window.FALCORE_FIREBASE;
+    return !!(cfg && cfg.projectId && cfg.apiKey && cfg.collection &&
+              cfg.projectId.indexOf('YOUR_') !== 0 &&
+              cfg.apiKey.indexOf('YOUR_') !== 0);
+  }
+
+  // Firestore's REST API wants every value tagged with its type.
+  function asFirestoreDocument(obj) {
+    var fields = {};
+    Object.keys(obj).forEach(function (key) {
+      fields[key] = { stringValue: String(obj[key] == null ? '' : obj[key]) };
+    });
+    return { fields: fields };
+  }
+
+  function sendToFirestore(payload) {
+    var cfg = window.FALCORE_FIREBASE;
+    var url = 'https://firestore.googleapis.com/v1/projects/' +
+              encodeURIComponent(cfg.projectId) +
+              '/databases/(default)/documents/' +
+              encodeURIComponent(cfg.collection) +
+              '?key=' + encodeURIComponent(cfg.apiKey);
+
+    // Don't leave the button disabled forever if the network hangs.
+    var controller = typeof AbortController === 'function' ? new AbortController() : null;
+    var timer = controller && setTimeout(function () { controller.abort(); }, 12000);
+
+    return fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(asFirestoreDocument(payload)),
+      signal: controller ? controller.signal : undefined
+    }).then(function (res) {
+      if (timer) clearTimeout(timer);
+      if (!res.ok) throw new Error('Firestore responded ' + res.status);
+      return res.json();
+    });
+  }
+
+  function mailtoFallback(payload) {
+    var subject = 'Detailing request — ' + (payload.vehicle || 'my car');
+    var body = [
+      'Name: '    + payload.name,
+      'Phone: '   + payload.phone,
+      'Vehicle: ' + payload.vehicle,
+      'Size: '    + payload.size,
+      'Service: ' + payload.service,
+      '',
+      'Notes:',
+      payload.notes || '(none)'
+    ].join('\n');
+
+    var to = form.dataset.email || 'hello@falcorerides.com';
+    window.location.href = 'mailto:' + to +
+      '?subject=' + encodeURIComponent(subject) +
+      '&body='    + encodeURIComponent(body);
+  }
+
   if (form) {
+    var submitBtn = form.querySelector('button[type="submit"]');
+
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-
       note.classList.remove('is-ok', 'is-err');
 
       if (!form.checkValidity()) {
@@ -214,25 +280,47 @@
       }
 
       var data = new FormData(form);
-      var subject = 'Detailing request — ' + (data.get('vehicle') || 'my car');
-      var body = [
-        'Name: '    + data.get('name'),
-        'Phone: '   + data.get('phone'),
-        'Vehicle: ' + data.get('vehicle'),
-        'Size: '    + data.get('size'),
-        'Service: ' + data.get('service'),
-        '',
-        'Notes:',
-        data.get('notes') || '(none)'
-      ].join('\n');
+      var payload = {
+        name:        data.get('name')    || '',
+        phone:       data.get('phone')   || '',
+        vehicle:     data.get('vehicle') || '',
+        size:        data.get('size')    || '',
+        service:     data.get('service') || '',
+        notes:       data.get('notes')   || '',
+        submittedAt: new Date().toISOString()
+      };
 
-      var to = form.dataset.email || 'hello@falcorerides.com';
-      window.location.href = 'mailto:' + to +
-        '?subject=' + encodeURIComponent(subject) +
-        '&body='    + encodeURIComponent(body);
+      if (!firebaseReady()) {
+        mailtoFallback(payload);
+        note.textContent = 'Opening your email app — hit send and I\'ll get back to you today.';
+        note.classList.add('is-ok');
+        return;
+      }
 
-      note.textContent = 'Opening your email app — hit send and I\'ll get back to you today.';
-      note.classList.add('is-ok');
+      var originalLabel = submitBtn ? submitBtn.textContent : '';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending…';
+      }
+      note.textContent = 'Sending your request…';
+
+      sendToFirestore(payload).then(function () {
+        form.reset();
+        note.textContent = 'Got it — I\'ll be in touch today with a time.';
+        note.classList.add('is-ok');
+      }).catch(function (err) {
+        // Blocked, offline, or misconfigured: hand it to email rather than
+        // telling someone their request went through when it didn't.
+        console.warn('Booking write failed, falling back to email:', err);
+        mailtoFallback(payload);
+        note.textContent = 'Opening your email app instead — hit send and it reaches me the same way.';
+        note.classList.add('is-ok');
+      }).then(function () {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalLabel;
+        }
+      });
     });
   }
 

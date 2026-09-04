@@ -12,7 +12,13 @@ falcore-rides/
 ├── assets/             the logo (background removed, web-sized)
 ├── vendor/three/       three.js, vendored — no CDN, works offline
 ├── build-single-file.js            bundles everything into one .html
-└── falcore-rides-standalone.html  ← generated, don't edit by hand
+├── falcore-rides-standalone.html  ← generated, don't edit by hand
+│
+├── js/firebase-config.js   your Firebase project id and web API key
+├── firebase.json           hosting settings
+├── firestore.rules         who may write bookings (and who may read them)
+├── firestore.indexes.json  empty; Firestore wants the file to exist
+└── .firebaserc             which Firebase project to deploy to
 ```
 
 ## Running it
@@ -28,8 +34,9 @@ python3 -m http.server 8000
 You need a local server rather than double-clicking `index.html`, because the
 3D scene loads as an ES module and browsers block modules on `file://`.
 
-To publish, upload the whole `falcore-rides` folder to any static host
-(GitHub Pages, Netlify, Cloudflare Pages, or plain shared hosting).
+To publish, see **Firebase** below — or upload the whole `falcore-rides`
+folder to any static host (Netlify, Cloudflare Pages, GitHub Pages, plain
+shared hosting); it's just files.
 
 ## The one-file version
 
@@ -46,6 +53,102 @@ node build-single-file.js
 ```
 
 Skip it entirely if you're only ever deploying the folder.
+
+## Firebase
+
+Two things: the site is hosted on Firebase Hosting, and booking requests are
+saved to a Firestore database instead of depending on the visitor's email app.
+
+Everything is scaffolded. What's left needs your Google account, so it has to
+be you.
+
+### One-time setup
+
+**1. Make a project** at <https://console.firebase.google.com> — call it
+whatever you like. Note the **project ID** (it's under the name, something
+like `falcore-rides-4d21`).
+
+**2. Register a web app** inside it: ⚙ Project settings → General → "Your
+apps" → the `</>` icon. Firebase shows you a config block; you need one value
+from it, `apiKey`.
+
+**3. Create the database**: Build → Firestore Database → Create database →
+**production mode** (the rules in this repo replace the defaults) → pick a
+region close to your customers.
+
+**4. Fill in `js/firebase-config.js`** with the project ID and API key.
+
+**5. Install the CLI and sign in:**
+
+```bash
+npm install -g firebase-tools
+firebase login
+```
+
+**6. Point the repo at your project** — put the project ID in `.firebaserc`,
+or just run `firebase use --add` and pick it.
+
+### Deploying
+
+From inside the `falcore-rides` folder:
+
+```bash
+firebase deploy
+```
+
+That publishes the site and the database rules together. Your site is then at
+`https://YOUR_PROJECT_ID.web.app`. Deploy one piece at a time with
+`firebase deploy --only hosting` or `--only firestore:rules`.
+
+Re-run `firebase deploy` after any edit. There's no build step.
+
+A domain you own can be attached under Hosting → Add custom domain; Firebase
+issues the SSL certificate for free.
+
+### Reading your bookings
+
+Firebase console → Firestore Database → the `bookings` collection. Each
+request is one document with the name, phone, vehicle, size, service and notes.
+
+Bookings are deliberately **not** readable from a browser — see below — so the
+console (where you're signed in as the owner) is how you read them.
+
+To get a text or email when one arrives, install the **Trigger Email**
+extension from the Firebase console, or add a Cloud Function on
+`onDocumentCreated('bookings/{id}')`.
+
+### About that API key
+
+It's fine that it's in the page. Firebase web API keys are public identifiers,
+not passwords — they ship to every visitor's browser no matter how you deploy.
+Anyone can read yours off the site, and that's how Firebase is designed.
+
+What actually protects the data is `firestore.rules`, which says:
+
+- anyone may **create** a booking
+- **nobody** may read, edit or delete one from a browser
+- a document must look like a booking — the right fields, the right types,
+  sensible length limits — or it's rejected
+
+That last rule is what stops an open collection from becoming free storage for
+whoever finds it. Don't loosen it to `allow read, write: if true`, even
+briefly; that publishes your customers' phone numbers.
+
+### If Firebase isn't set up yet
+
+The form notices and opens the visitor's email app instead — the behaviour the
+site had before. It does the same thing if a write fails for any reason
+(offline, rules rejection, a browser blocking the request), rather than
+telling someone their booking went through when it didn't.
+
+So the site is safe to share right now, before you've touched Firebase at all.
+
+### Why there's no Firebase SDK
+
+The form talks to Firestore's REST API with one `fetch`. Loading the Firebase
+JS SDK would have added an external dependency to a site that otherwise makes
+zero outside requests, for the sake of a single POST. The rules, the console
+and the data are identical either way.
 
 ## What you'll want to change
 
@@ -110,14 +213,10 @@ logo. Change `--yellow`, `--lime`, `--green` and the whole site follows.
 
 ## The booking form
 
-There's no backend, so the form opens the visitor's email app with everything
-pre-filled (a `mailto:` link). That works on any static host and needs no
-account.
-
-If you'd rather have submissions land in an inbox or a spreadsheet without the
-visitor's email app opening, point the form at a form service — the submit
-handler is at the bottom of `js/site.js` and is the only thing that needs to
-change.
+Submissions go to Firestore (see **Firebase** above), and fall back to opening
+the visitor's email app whenever that isn't possible. The submit handler near
+the bottom of `js/site.js` is the whole of it — swap it if you'd rather use a
+form service instead.
 
 ## The 3D hero
 

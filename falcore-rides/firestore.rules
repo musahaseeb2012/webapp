@@ -1,0 +1,51 @@
+rules_version = '2';
+
+// ============================================================================
+// FALCORE RIDES — Firestore security rules
+//
+// The booking form writes straight from the browser, so these rules are the
+// only thing standing between your database and the open internet. They say:
+//
+//   • anyone may submit a booking request
+//   • nobody may read, edit or delete one from a browser — ever
+//   • a request must look like a booking, or it is rejected
+//
+// That last rule matters. Without it an open collection is free storage for
+// whoever finds it. Read your bookings in the Firebase console, where you're
+// signed in as the owner and these rules don't apply.
+//
+// Deploy with:  firebase deploy --only firestore:rules
+// ============================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /bookings/{bookingId} {
+
+      allow create: if isBooking(request.resource.data);
+
+      // Customer details are not public. The console is how you read them.
+      allow read, update, delete: if false;
+    }
+
+    // Anything not named above is closed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+function isBooking(d) {
+  return d.keys().hasOnly(['name', 'phone', 'vehicle', 'size', 'service', 'notes', 'submittedAt'])
+      && d.keys().hasAll(['name', 'phone', 'vehicle', 'submittedAt'])
+
+      && d.name is string    && d.name.size() > 0    && d.name.size() <= 100
+      && d.phone is string   && d.phone.size() > 0   && d.phone.size() <= 40
+      && d.vehicle is string && d.vehicle.size() > 0 && d.vehicle.size() <= 120
+
+      && (!d.keys().hasAny(['size'])    || (d.size is string    && d.size.size() <= 40))
+      && (!d.keys().hasAny(['service']) || (d.service is string && d.service.size() <= 80))
+      && (!d.keys().hasAny(['notes'])   || (d.notes is string   && d.notes.size() <= 2000))
+
+      && d.submittedAt is string && d.submittedAt.size() <= 40;
+}

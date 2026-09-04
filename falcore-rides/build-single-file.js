@@ -108,6 +108,9 @@ swap('<script type="module" src="js/scene.js"></script>',
        ADDONS.map(a => stripModuleSyntax(read('vendor', 'three', ...a))).join('\n')
      }\n${stripModuleSyntax(read('js', 'scene.js'))}\n</script>`);
 
+swap('<script src="js/firebase-config.js" defer></script>',
+     `<script>\n${read('js', 'firebase-config.js')}\n</script>`);
+
 swap('<script src="js/site.js" defer></script>',
      `<script>\n${read('js', 'site.js')}\n</script>`);
 
