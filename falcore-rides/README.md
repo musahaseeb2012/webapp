@@ -76,19 +76,18 @@ The one part that isn't guesswork is the name card partway through — Falcon +
 Core, set like a dictionary entry, because that's what the name is made of.
 
 Visitors pick their vehicle above the two cards and both prices update in
-place. The two services and the sedan prices ($76 interior, $150 full detail)
-came from you. The other four sizes are scaled from those, using these steps:
+place. Every price below is the owner's own:
 
-| Size | Interior | Full detail |
-| --- | --- | --- |
-| Coupe | −$10 | −$15 |
-| Sedan | base | base |
-| Small SUV | +$15 | +$25 |
-| SUV | +$30 | +$50 |
-| 3-Row SUV | +$50 | +$85 |
+| Vehicle size | Interior only | Full detail |
+| --- | ---: | ---: |
+| Coupe | $60 | $100 |
+| Sedan | $75 | $120 |
+| Small SUV | $91 | $140 |
+| SUV | $106 | $160 |
+| 3-Row SUV | $106 | $180 |
 
-That's a guess at your pricing, not your pricing. Set those four buttons to
-what you actually charge before you share the link.
+The durations beside them (`data-hrs-interior`, `data-hrs-full`) are still
+estimates — set them to how long the work actually takes you.
 
 ### Replacing the logo
 
