@@ -85,8 +85,16 @@ npm install -g firebase-tools
 firebase login
 ```
 
-**6. Point the repo at your project** — put the project ID in `.firebaserc`,
-or just run `firebase use --add` and pick it.
+**6. Point the repo at your project:**
+
+```bash
+firebase use --add
+```
+
+Pick your project from the list and it writes `.firebaserc` for you. (That
+file ships with an empty project list on purpose — a placeholder ID in there
+makes the CLI fail with a confusing "Invalid project id" before you can even
+log in.)
 
 ### Deploying
 
