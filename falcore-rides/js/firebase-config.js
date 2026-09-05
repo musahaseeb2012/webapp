@@ -16,8 +16,8 @@
    ========================================================================== */
 
 window.FALCORE_FIREBASE = {
-  projectId:  'YOUR_PROJECT_ID',
-  apiKey:     'YOUR_WEB_API_KEY',
+  projectId:  'car-detail-business',
+  apiKey:     'AIzaSyC5cZ_JVngAl_0GG9fERAG_YZFX46ME2p4',
 
   // The Firestore collection requests are written to. Anything you like —
   // just keep it the same as the collection named in firestore.rules.
