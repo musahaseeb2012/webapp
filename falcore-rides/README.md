@@ -137,8 +137,9 @@ you want to sign in with.
 quietly become an account. Easiest way: sign in on the dashboard once, then use
 Authentication → Users → ⋮ → Reset password, which sends a mail you can act on.
 
-**3. Name yourself in the rules.** Open `firestore.rules`, put your address in
-the `isAdmin()` list, and deploy:
+**3. Name yourself in the rules.** `firestore.rules` is already set to
+`musa.haseeb2012@gmail.com` — if you sign in with a different address, change
+it in the `isAdmin()` list. Then deploy:
 
 ```bash
 firebase deploy --only firestore:rules
