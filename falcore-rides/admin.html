@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bookings — Falcore Rides</title>
+
+<!-- Keep this page out of search results. It's yours, not a landing page. -->
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#04160b">
+
+<link rel="icon" href="assets/logo-512.png" type="image/png">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin">
+
+<header class="admin__bar">
+  <a class="admin__brand" href="index.html">
+    <img src="assets/logo-512.png" alt="" width="44" height="31">
+    <span><b>FALCORE</b><i>RIDES</i></span>
+  </a>
+  <span class="admin__title">Bookings</span>
+  <div class="admin__bar-actions">
+    <button type="button" class="btn btn--ghost admin__refresh" id="refreshBtn" hidden>Refresh</button>
+    <button type="button" class="btn btn--ghost admin__signout" id="signOutBtn" hidden>Sign out</button>
+  </div>
+</header>
+
+<main class="admin__main">
+
+  <!-- ------------------------------------------------------------ login -->
+  <section class="admin__login" id="loginPanel" hidden>
+    <form class="login-card" id="loginForm" novalidate>
+      <img class="login-card__logo" src="assets/logo.png" alt="Falcore Rides">
+      <h1 class="login-card__title">Sign in</h1>
+      <p class="login-card__sub">Only the account named in your Firestore rules can read bookings.</p>
+
+      <div class="field">
+        <label for="a-email">Email</label>
+        <input id="a-email" type="email" autocomplete="username" required placeholder="you@example.com">
+      </div>
+      <div class="field">
+        <label for="a-pass">Password</label>
+        <input id="a-pass" type="password" autocomplete="current-password" required placeholder="••••••••">
+      </div>
+
+      <button class="btn btn--primary btn--block" type="submit">Sign in</button>
+      <p class="form__note" id="loginNote">Set the account up in Firebase console → Authentication.</p>
+    </form>
+  </section>
+
+  <!-- --------------------------------------------------------- dashboard -->
+  <section class="admin__board" id="board" hidden>
+
+    <div class="board__head">
+      <div class="board__counts" id="counts"></div>
+      <div class="board__filters" role="group" aria-label="Filter bookings">
+        <button type="button" class="chip is-active" data-filter="new">New</button>
+        <button type="button" class="chip" data-filter="done">Done</button>
+        <button type="button" class="chip" data-filter="all">All</button>
+      </div>
+    </div>
+
+    <p class="board__status" id="boardStatus">Loading bookings…</p>
+    <ul class="bookings" id="bookings"></ul>
+  </section>
+
+</main>
+
+<script src="js/firebase-config.js" defer></script>
+<script src="js/admin.js" defer></script>
+</body>
+</html>

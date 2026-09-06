@@ -3,16 +3,15 @@ rules_version = '2';
 // ============================================================================
 // FALCORE RIDES — Firestore security rules
 //
-// The booking form writes straight from the browser, so these rules are the
-// only thing standing between your database and the open internet. They say:
+// The booking form writes straight from a browser, so these rules are the only
+// thing between your customers' details and the open internet.
 //
-//   • anyone may submit a booking request
-//   • nobody may read, edit or delete one from a browser — ever
-//   • a request must look like a booking, or it is rejected
+//   • anyone may SUBMIT a booking
+//   • only YOU may read, update or delete one
+//   • a submission must look like a booking, or it is rejected
 //
-// That last rule matters. Without it an open collection is free storage for
-// whoever finds it. Read your bookings in the Firebase console, where you're
-// signed in as the owner and these rules don't apply.
+// ⚠️  SET YOUR EMAIL BELOW. Until you do, the admin page can't read anything —
+//     which is the safe way to fail, but it does mean the dashboard stays empty.
 //
 // Deploy with:  firebase deploy --only firestore:rules
 // ============================================================================
@@ -21,11 +20,8 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     match /bookings/{bookingId} {
-
       allow create: if isBooking(request.resource.data);
-
-      // Customer details are not public. The console is how you read them.
-      allow read, update, delete: if false;
+      allow read, update, delete: if isAdmin();
     }
 
     // Anything not named above is closed.
@@ -35,6 +31,22 @@ service cloud.firestore {
   }
 }
 
+// ---------------------------------------------------------------- admin ----
+//
+// NOTE the email list. It is tempting to write `request.auth != null` instead,
+// and it would be a hole: Firebase's email/password provider lets anybody
+// register an account against your project from a browser. "Signed in" is not
+// the same as "is you", so name yourself explicitly.
+//
+function isAdmin() {
+  return request.auth != null
+      && request.auth.token.email_verified == true
+      && request.auth.token.email in [
+           'YOU@EXAMPLE.COM'   // ← EDIT ME: the address you sign in with
+         ];
+}
+
+// -------------------------------------------------------------- bookings ---
 function isBooking(d) {
   return d.keys().hasOnly(['name', 'phone', 'vehicle', 'size', 'service', 'notes', 'submittedAt'])
       && d.keys().hasAll(['name', 'phone', 'vehicle', 'submittedAt'])

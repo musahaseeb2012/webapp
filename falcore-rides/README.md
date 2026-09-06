@@ -14,11 +14,16 @@ falcore-rides/
 ├── build-single-file.js            bundles everything into one .html
 ├── falcore-rides-standalone.html  ← generated, don't edit by hand
 │
+├── admin.html              your bookings dashboard (sign-in required)
+├── css/admin.css           dashboard styles
+├── js/admin.js             sign-in + reading and updating bookings
+│
 ├── js/firebase-config.js   your Firebase project id and web API key
-├── firebase.json           hosting settings
-├── firestore.rules         who may write bookings (and who may read them)
+├── firebase.json           hosting, rules and functions settings
+├── firestore.rules         who may write bookings, and who may read them
 ├── firestore.indexes.json  empty; Firestore wants the file to exist
-└── .firebaserc             which Firebase project to deploy to
+├── .firebaserc             which Firebase project to deploy to
+└── functions/              optional: emails you when a booking arrives
 ```
 
 ## Running it
@@ -53,6 +58,9 @@ node build-single-file.js
 ```
 
 Skip it entirely if you're only ever deploying the folder.
+
+It bundles the main page only. The dashboard needs Firebase to be reachable
+anyway, so there's nothing a single-file copy of it could do offline.
 
 ## Firebase
 
@@ -113,17 +121,73 @@ Re-run `firebase deploy` after any edit. There's no build step.
 A domain you own can be attached under Hosting → Add custom domain; Firebase
 issues the SSL certificate for free.
 
-### Reading your bookings
+### Your bookings dashboard
 
-Firebase console → Firestore Database → the `bookings` collection. Each
-request is one document with the name, phone, vehicle, size, service and notes.
+`admin.html` is a private page listing every request: name, tap-to-call phone
+number, vehicle, size, service and notes. You can mark a job done or delete it.
+It lives at `/admin.html` on your site — bookmark it.
 
-Bookings are deliberately **not** readable from a browser — see below — so the
-console (where you're signed in as the owner) is how you read them.
+Three things make it work, and it stays empty until all three are true:
 
-To get a text or email when one arrives, install the **Trigger Email**
-extension from the Firebase console, or add a Cloud Function on
-`onDocumentCreated('bookings/{id}')`.
+**1. Create your login.** Firebase console → Authentication → Sign-in method →
+enable **Email/Password**. Then Users → Add user, with the email and password
+you want to sign in with.
+
+**2. Verify that email.** The rules require a verified address, so a typo can't
+quietly become an account. Easiest way: sign in on the dashboard once, then use
+Authentication → Users → ⋮ → Reset password, which sends a mail you can act on.
+
+**3. Name yourself in the rules.** Open `firestore.rules`, put your address in
+the `isAdmin()` list, and deploy:
+
+```bash
+firebase deploy --only firestore:rules
+```
+
+Until then the dashboard shows a permission error that repeats these steps back
+to you, with your address already filled in.
+
+> **Why an email list and not just "is signed in"?**
+> Firebase's email/password provider lets anyone register an account against
+> your project straight from a browser. `request.auth != null` would therefore
+> mean *anyone who signs up*, not *you*. Naming the address is the difference
+> between a private dashboard and a public one.
+
+Signing in keeps you signed in — the browser holds a refresh token and renews
+in the background, so you're not typing a password every hour. "Sign out"
+clears it.
+
+The Firebase console works too, if you'd rather read raw documents.
+
+### Getting told about new bookings
+
+`functions/` holds a Cloud Function that emails you the moment a request lands,
+so you don't have to keep the dashboard open.
+
+**It needs the Blaze plan.** Cloud Functions aren't available on the free Spark
+plan. For a small detailing business the actual bill is around nothing — the
+monthly free allowance is far more than you'll use — but Google wants a card on
+file. Everything else on this site runs on Spark.
+
+If you'd rather not, skip the folder entirely; the dashboard doesn't depend on
+it. Firebase's no-code **Trigger Email** extension is another route, though it
+wants Blaze as well.
+
+```bash
+cd functions && npm install
+
+firebase functions:secrets:set SMTP_HOST   # smtp.gmail.com
+firebase functions:secrets:set SMTP_PORT   # 465
+firebase functions:secrets:set SMTP_USER   # the mailbox to send from
+firebase functions:secrets:set SMTP_PASS   # an app password
+firebase functions:secrets:set ALERT_TO    # where alerts should land
+
+firebase deploy --only functions
+```
+
+With Gmail that has to be an App Password (Google account → Security → 2-Step
+Verification → App passwords), not your normal password. The credentials go
+into Google's Secret Manager, never into this repo.
 
 ### About that API key
 
