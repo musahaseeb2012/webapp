@@ -105,7 +105,34 @@ file ships with an empty project list on purpose — a placeholder ID in there
 makes the CLI fail with a confusing "Invalid project id" before you can even
 log in.)
 
-### Deploying
+### Deploying from a phone or tablet
+
+`.github/workflows/deploy-falcore.yml` makes GitHub run the deploy, so no
+computer is needed. Set it up once, in a browser:
+
+**1. Get a service account key.** Firebase console → ⚙ Project settings →
+**Service accounts** → **Generate new private key**. A `.json` file downloads.
+Open it and copy everything, including the outer `{` and `}`.
+
+**2. Give it to GitHub.** Your repo → Settings → Secrets and variables →
+Actions → **New repository secret**. Name it exactly:
+
+```
+FIREBASE_SERVICE_ACCOUNT
+```
+
+Paste the JSON as the value and save.
+
+**3. Run it.** Actions tab → **Deploy Falcore Rides** → **Run workflow**. It
+takes about a minute and prints the two links when it finishes. After this,
+every push to the branch deploys on its own.
+
+> That key is a real secret, unlike the web API key in `firebase-config.js`.
+> It grants admin access to the project. GitHub encrypts repository secrets
+> and masks them in logs — but never paste it into a file in the repo, an
+> issue, or a chat. If it leaks, revoke it in the same Service accounts screen.
+
+### Deploying from a computer
 
 From inside the `falcore-rides` folder:
 
