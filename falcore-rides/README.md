@@ -21,6 +21,7 @@ falcore-rides/
 ├── js/firebase-config.js   your Firebase project id and web API key
 ├── firebase.json           hosting, rules and functions settings
 ├── firestore.rules         who may write bookings, and who may read them
+├── test-rules.sh           checks those rules locally, no login needed
 ├── firestore.indexes.json  empty; Firestore wants the file to exist
 ├── .firebaserc             which Firebase project to deploy to
 └── functions/              optional: emails you when a booking arrives
@@ -159,6 +160,39 @@ in the background, so you're not typing a password every hour. "Sign out"
 clears it.
 
 The Firebase console works too, if you'd rather read raw documents.
+
+### Testing the rules before you publish them
+
+`./test-rules.sh` runs firestore.rules against the Firestore emulator on your
+own machine — no Firebase login, and it never touches the real database. It
+needs the CLI and Java.
+
+```
+Anyone may submit a booking
+  ✓ valid booking accepted             200
+  ✓ missing phone rejected             403
+  ✓ extra field rejected               403
+  ✓ oversized notes rejected           403
+
+Only the owner may read them
+  ✓ owner, verified email              200
+  ✓ owner, unverified email            403
+  ✓ stranger who signed up             403
+  ✓ nobody signed in                   403
+```
+
+Run it after any edit to the rules. Two failures are easy to ship by accident
+and hard to notice: rules that reject every booking, and rules that let the
+world read your customers' phone numbers. A rules file that fails to *compile*
+is the sneakiest of the three — Firestore then denies everything, and the site
+looks broken for reasons nothing else explains.
+
+That last one is not hypothetical. `d.service is string` doesn't compile:
+`service` is a keyword in the rules language, as in the `service
+cloud.firestore` block at the top of the file. `d.size` has the same problem
+against Map's built-in `size()`. Both need bracket notation — `d['service']`,
+`d['size']` — and the compiler's error points at `is`, several characters past
+the actual cause.
 
 ### Getting told about new bookings
 
