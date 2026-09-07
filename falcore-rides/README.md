@@ -27,6 +27,20 @@ falcore-rides/
 └── functions/              optional: emails you when a booking arrives
 ```
 
+## Where it's live
+
+| | |
+| --- | --- |
+| Site | <https://musahaseeb2012.github.io/webapp/falcore-rides/> |
+| Bookings dashboard | <https://musahaseeb2012.github.io/webapp/falcore-rides/admin.html> |
+
+Served by GitHub Pages from the `claude/spotless-rides-3d-site-j3v62r` branch,
+so every push to it republishes automatically — there's nothing to run.
+
+Firebase Hosting is set up too but not deployed; that route would give the
+shorter `car-detail-business.web.app` address and would also push the Firestore
+rules on every deploy. See **Deploying from a phone or tablet** below.
+
 ## Running it
 
 It's a plain static site — no build step, no npm install.
