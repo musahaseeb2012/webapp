@@ -756,6 +756,9 @@ a{ color:inherit; }
   font:700 .7rem/1 var(--body); letter-spacing:.16em; text-transform:uppercase;
   color:var(--muted-2);
 }
+/* `.book__contacts span` is a flex column, and that selector also catches
+   these nested spans — put them back to plain blocks. */
+.book__contacts .hrs{ display:block; }
 .book__contacts em{
   display:block;
   font-style:normal; font-size:.82rem;

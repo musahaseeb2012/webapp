@@ -259,7 +259,7 @@
       payload.notes || '(none)'
     ].join('\n');
 
-    var to = form.dataset.email || 'hello@falcorerides.com';
+    var to = form.dataset.email || 'musa.haseeb2012@gmail.com';
     window.location.href = 'mailto:' + to +
       '?subject=' + encodeURIComponent(subject) +
       '&body='    + encodeURIComponent(body);

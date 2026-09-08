@@ -304,7 +304,7 @@ Everything below lives in `index.html`, marked with `EDIT ME` comments.
 
 | What | Where |
 | --- | --- |
-| Phone, email, service area, hours | `EDIT ME — CONTACT DETAILS`, near the bottom. Change them in the contact list **and** in the footer. |
+| Phone, email, service area, hours | `EDIT ME — CONTACT DETAILS`, near the bottom. Change them in the contact list **and** in the footer. All four are real as of now. |
 | Where the booking form sends | `data-email` on `<form id="bookForm">` |
 | The origin story | `EDIT ME — THE ORIGIN STORY` |
 | **Every price** | `EDIT ME — SERVICES AND PRICES` — the five `.size-btn` buttons. Each one carries that vehicle's two prices and durations, and the cards read from them. Prices appear nowhere else. |
@@ -320,8 +320,12 @@ The origin story opens on the reader — the pride they already feel about their
 own car, and how it quietly slips away — and only then turns to why the
 business exists. That framing is deliberate; the specifics are still a draft.
 Swap in your real first car, your real first customer, the real moment it
-stopped being a hobby. Same for the trust chips in the hero: they're
-placeholders shaped like the truth, and the real details always land better.
+stopped being a hobby. Same for the three trust chips in the hero ("Fully
+insured", "We come to you", "Satisfaction guaranteed") — check each is
+actually true before leaving it on a public page.
+
+Everything else on the site is real now: the name, logo, prices, phone, email,
+service area and hours.
 
 The one part that isn't guesswork is the name card partway through — Falcon +
 Core, set like a dictionary entry, because that's what the name is made of.
