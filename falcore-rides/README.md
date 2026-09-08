@@ -176,8 +176,10 @@ enable **Email/Password**. Then Users → Add user, with the email and password
 you want to sign in with.
 
 **2. Verify that email.** The rules require a verified address, so a typo can't
-quietly become an account. Easiest way: sign in on the dashboard once, then use
-Authentication → Users → ⋮ → Reset password, which sends a mail you can act on.
+quietly become an account — and an account created by hand in the console starts
+out unverified. The dashboard handles this: sign in and, if the address isn't
+confirmed yet, it says so and offers a button that emails you a link. Open the
+link, sign out, sign back in.
 
 **3. Name yourself in the rules.** `firestore.rules` is already set to
 `musa.haseeb2012@gmail.com` — if you sign in with a different address, change

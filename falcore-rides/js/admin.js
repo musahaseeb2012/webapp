@@ -79,6 +79,67 @@
     });
   }
 
+  /* --------------------------------------------------- email verification */
+
+  // The rules require a verified address, and an account created by hand in
+  // the Firebase console starts out unverified — so without this you would
+  // sign in successfully and then be refused every booking, with nothing on
+  // screen explaining why.
+  function tokenClaims() {
+    try {
+      var part = session.idToken.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      while (part.length % 4) part += '=';
+      var bytes = Uint8Array.from(atob(part), function (c) { return c.charCodeAt(0); });
+      return JSON.parse(new TextDecoder().decode(bytes));
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function sendVerificationEmail() {
+    return fetch('https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=' +
+                 encodeURIComponent(cfg.apiKey), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ requestType: 'VERIFY_EMAIL', idToken: session.idToken })
+    }).then(function (res) {
+      return res.json().then(function (data) {
+        if (!res.ok) throw new Error((data.error && data.error.message) || 'could not send');
+        return data;
+      });
+    });
+  }
+
+  function showVerifyPrompt() {
+    el.board.hidden = false;
+    el.signOut.hidden = false;
+    el.refresh.hidden = true;
+    el.list.innerHTML = '';
+    el.counts.innerHTML = '';
+    el.status.hidden = false;
+    el.status.innerHTML =
+      '<strong>One step left: confirm your email.</strong><br>' +
+      'Accounts created in the Firebase console start out unverified, and the ' +
+      'rules only hand bookings to a verified address.' +
+      '<p style="margin:1rem 0 0"><button type="button" class="btn btn--primary" id="verifyBtn">' +
+      'Email me a confirmation link</button></p>' +
+      '<p style="margin:.9rem 0 0" id="verifyNote">Then open the link, come back, and sign in again.</p>';
+
+    document.getElementById('verifyBtn').addEventListener('click', function () {
+      var btn = this;
+      var note = document.getElementById('verifyNote');
+      btn.disabled = true;
+      note.textContent = 'Sending…';
+      sendVerificationEmail().then(function () {
+        note.textContent = 'Sent to ' + (session.email || 'your address') +
+                           '. Open the link, then sign out and back in.';
+      }).catch(function (err) {
+        note.textContent = 'Could not send it: ' + err.message;
+        btn.disabled = false;
+      });
+    });
+  }
+
   /* ---------------------------------------------------------------- auth */
 
   function signIn(email, password) {
@@ -284,6 +345,14 @@
 
   function showBoard() {
     el.loginPanel.hidden = true;
+
+    // Catch the unverified case here rather than letting it surface as a bare
+    // permission error from Firestore.
+    if (tokenClaims().email_verified === false) {
+      showVerifyPrompt();
+      return;
+    }
+
     el.board.hidden = false;
     el.signOut.hidden = false;
     el.refresh.hidden = false;
