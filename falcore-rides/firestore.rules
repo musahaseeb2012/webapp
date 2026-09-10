@@ -1,0 +1,68 @@
+rules_version = '2';
+
+// ============================================================================
+// FALCORE RIDES — Firestore security rules
+//
+// The booking form writes straight from a browser, so these rules are the only
+// thing between your customers' details and the open internet.
+//
+//   • anyone may SUBMIT a booking
+//   • only YOU may read, update or delete one
+//   • a submission must look like a booking, or it is rejected
+//
+// ⚠️  SET YOUR EMAIL BELOW. Until you do, the admin page can't read anything —
+//     which is the safe way to fail, but it does mean the dashboard stays empty.
+//
+// Deploy with:  firebase deploy --only firestore:rules
+// ============================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /bookings/{bookingId} {
+      allow create: if isBooking(request.resource.data);
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Anything not named above is closed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+// ---------------------------------------------------------------- admin ----
+//
+// NOTE the email list. It is tempting to write `request.auth != null` instead,
+// and it would be a hole: Firebase's email/password provider lets anybody
+// register an account against your project from a browser. "Signed in" is not
+// the same as "is you", so name yourself explicitly.
+//
+function isAdmin() {
+  return request.auth != null
+      && request.auth.token.email_verified == true
+      && request.auth.token.email in [
+           'musa.haseeb2012@gmail.com'   // ← the address you sign in with;
+                                         //   change it if you use another
+         ];
+}
+
+// -------------------------------------------------------------- bookings ---
+function isBooking(d) {
+  return d.keys().hasOnly(['name', 'phone', 'vehicle', 'size', 'service', 'notes', 'submittedAt'])
+      && d.keys().hasAll(['name', 'phone', 'vehicle', 'submittedAt'])
+
+      && d.name is string    && d.name.size() > 0    && d.name.size() <= 100
+      && d.phone is string   && d.phone.size() > 0   && d.phone.size() <= 40
+      && d.vehicle is string && d.vehicle.size() > 0 && d.vehicle.size() <= 120
+
+      // Bracket notation, not dot notation, on these three. `service` is a
+      // keyword in this language (see the `service cloud.firestore` block
+      // above) and `size` collides with Map's own size() — both make the
+      // rules fail to compile, with an error that points at `is`.
+      && (!d.keys().hasAny(['size'])    || (d['size'] is string    && d['size'].size() <= 40))
+      && (!d.keys().hasAny(['service']) || (d['service'] is string && d['service'].size() <= 80))
+      && (!d.keys().hasAny(['notes'])   || (d['notes'] is string   && d['notes'].size() <= 2000))
+
+      && d.submittedAt is string && d.submittedAt.size() <= 40;
+}

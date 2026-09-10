@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Falcore Rides — Mobile Car Detailing | Cleaner • Shinier • Better</title>
+<meta name="description" content="Falcore Rides is a mobile car detailing service in Oakville, travelling as far as Toronto. Two services, honest prices: interior full detail from $60, full detail from $100. Every vehicle size priced up front. We come to you.">
+<meta name="theme-color" content="#04160b">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Falcore Rides — Mobile Car Detailing">
+<meta property="og:description" content="Cleaner • Shinier • Better. Mobile car detailing in Oakville and across to Toronto. Every vehicle size priced up front — we come to you.">
+<meta property="og:image" content="assets/logo.png">
+
+<link rel="icon" href="assets/logo-512.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/logo-512.png">
+<link rel="preload" href="assets/logo.png" as="image">
+<link rel="stylesheet" href="css/styles.css">
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three/three.module.min.js",
+    "three/addons/": "./vendor/three/"
+  }
+}
+</script>
+</head>
+<body>
+
+<!-- ============================== LOADER ============================== -->
+<div class="loader" id="loader" aria-hidden="true">
+  <div class="loader__inner">
+    <div class="loader__ring"></div>
+    <img class="loader__logo" src="assets/logo-512.png" alt="">
+    <p class="loader__text">Warming up the polisher<span class="dots"><i>.</i><i>.</i><i>.</i></span></p>
+  </div>
+</div>
+
+<!-- ============================== NAV ============================== -->
+<header class="nav" id="nav">
+  <a class="nav__brand" href="#top" aria-label="Falcore Rides — home">
+    <img src="assets/logo-512.png" alt="Falcore Rides logo" width="52" height="36">
+    <span class="nav__brand-text">
+      <b>FALCORE</b><i>RIDES</i>
+    </span>
+  </a>
+
+  <nav class="nav__links" id="navLinks" aria-label="Main">
+    <a href="#story">Our Story</a>
+    <a href="#packages">Services &amp; Prices</a>
+    <a href="#process">How It Works</a>
+    <a href="#book">Contact</a>
+  </nav>
+
+  <a class="btn btn--primary nav__cta" href="#book">Book a Detail</a>
+
+  <button class="nav__toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<main id="top">
+
+<!-- ============================== HERO ============================== -->
+<section class="hero" id="hero">
+  <canvas id="scene" class="hero__canvas" aria-hidden="true"></canvas>
+  <div class="hero__vignette" aria-hidden="true"></div>
+
+  <div class="hero__content">
+    <div class="hero__logo-wrap" data-parallax="0.18">
+      <img class="hero__logo" src="assets/logo.png" alt="Falcore Rides — Cleaner, Shinier, Better" width="1200" height="832">
+      <div class="hero__logo-glow" aria-hidden="true"></div>
+    </div>
+
+    <h1 class="hero__title">
+      <span class="line">Your car deserves</span>
+      <span class="line accent">to feel brand new</span>
+    </h1>
+
+    <p class="hero__sub">
+      We pull up to your driveway, plug in, and hand your keys back to a car you
+      actually want to sit in.
+    </p>
+
+    <div class="hero__actions">
+      <a class="btn btn--primary btn--lg" href="#packages">See Every Price</a>
+      <a class="btn btn--ghost btn--lg" href="#story">Why I Started This</a>
+    </div>
+
+    <!-- EDIT ME: swap these three trust chips for what's true for you today -->
+    <ul class="hero__chips">
+      <li><svg viewBox="0 0 24 24"><path d="M12 2 4 6v6c0 5 3.4 9.2 8 10 4.6-.8 8-5 8-10V6z"/></svg>Fully insured</li>
+      <li><svg viewBox="0 0 24 24"><path d="M3 17h2a3 3 0 0 0 6 0h4a3 3 0 0 0 6 0h1v-5l-3-4h-4V5H3z"/></svg>We come to you</li>
+      <li><svg viewBox="0 0 24 24"><path d="m12 2 3 6.5 7 .9-5 4.8 1.3 7L12 17.8 5.7 21.2 7 14.2 2 9.4l7-.9z"/></svg>Satisfaction guaranteed</li>
+    </ul>
+  </div>
+
+  <div class="hero__scroll" aria-hidden="true"><span></span>scroll</div>
+</section>
+
+<!-- ============================== MARQUEE ============================== -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee__track">
+    <span>CLEANER<i>✦</i>SHINIER<i>✦</i>BETTER<i>✦</i>HAND WASHED<i>✦</i>WAXED &amp; SEALED<i>✦</i>PET HAIR GONE<i>✦</i>NO SWIRL MARKS<i>✦</i>MOBILE SERVICE<i>✦</i></span>
+    <span>CLEANER<i>✦</i>SHINIER<i>✦</i>BETTER<i>✦</i>HAND WASHED<i>✦</i>WAXED &amp; SEALED<i>✦</i>PET HAIR GONE<i>✦</i>NO SWIRL MARKS<i>✦</i>MOBILE SERVICE<i>✦</i></span>
+  </div>
+</div>
+
+<!-- ============================== ORIGIN STORY ============================== -->
+<!--
+  ============================================================
+  EDIT ME — THE ORIGIN STORY
+  Written to land on the reader first: the pride they already
+  feel about their own car, and how it quietly slips away. The
+  founder's own story comes in halfway, once they're nodding.
+
+  It's still a draft. Replace the specifics — the friend, the
+  first car, the moment it stopped being a hobby — with what
+  actually happened. The true version always beats the draft.
+  ============================================================
+-->
+<section class="section story" id="story">
+  <div class="section__head reveal">
+    <p class="eyebrow">Our Story</p>
+    <h2 class="section__title">Why I started <span class="accent">Falcore Rides</span></h2>
+  </div>
+
+  <div class="story__grid">
+    <div class="story__visual reveal" data-tilt>
+      <div class="story__card">
+        <img src="assets/logo.png" alt="Falcore Rides badge">
+        <div class="story__shine" aria-hidden="true"></div>
+      </div>
+      <div class="story__quote">
+        <p>“Every owner's ride should be proud.”</p>
+        <span>— Musa Haseeb Minhas, Founder</span>
+      </div>
+    </div>
+
+    <div class="story__text reveal">
+      <p class="story__lead">
+        Everybody remembers the first car they were proud of.
+      </p>
+      <p>
+        Maybe you saved two summers for it. Maybe it was handed down with somebody
+        else's dent already in the door. It doesn't matter what it cost — there was
+        a day you parked it, walked away, and turned back for one more look.
+      </p>
+      <p>
+        Then life gets in. The commute, the spilled coffee, the kids' cleats, the
+        dog, the job site. Nothing dramatic happens; it just accumulates. And one
+        day a friend asks for a ride and you're apologizing before they've got the
+        door open — sweeping a jacket off the passenger seat, hoping they don't
+        look down.
+      </p>
+      <p>
+        That's the part I actually care about. Not the dirt. The way people quietly
+        stop seeing the car they were once proud of. You pay for it every month.
+        You should be glad to hand somebody the keys.
+      </p>
+      <p>
+        I started doing this on my own car for exactly that reason. The first time
+        I finished it properly I sat in it for ten minutes and just looked. Same
+        car, same mileage, same everything — and I drove differently all that week.
+        Sat up straighter. Took the long way home.
+      </p>
+      <p>
+        Then I did a friend's. Watching him walk a slow lap around it, grinning like
+        he'd bought it that morning — that's when it stopped being a hobby.
+      </p>
+      <p>
+        I named it <b>Falcore Rides</b> because pride is the thing I'm really
+        handing back; clean is just how it gets delivered.
+      </p>
+
+      <!-- EDIT ME: what the name is made of -->
+      <div class="namecard">
+        <dl class="def">
+          <dt>Falcon <span>(noun)</span></dt>
+          <dd class="def__say">/ˈfal-kən/</dd>
+          <dd>A bird built for speed and precision. It notices the one thing
+              everything else misses.</dd>
+          <dt>Core <span>(noun)</span></dt>
+          <dd class="def__say">/kôr/</dd>
+          <dd>The part at the center that everything else is built around.</dd>
+        </dl>
+        <p class="namecard__note">
+          Put the two together and you have the standard I hold every car to:
+          nothing missed, nothing rushed.
+        </p>
+      </div>
+
+      <p>
+        And I priced it the way I wish someone had priced it for me, back when I had
+        a car I loved and no money to look after it.
+        <span class="hl">Every price is on this page. No "call for a quote." No
+        surprise upcharge when I show up.</span>
+      </p>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============================== SERVICES ============================== -->
+<!--
+  ============================================================
+  EDIT ME — SERVICES AND PRICES
+
+  Every price on the site lives in the five buttons below, one
+  per vehicle size:
+
+    data-interior  price of the Interior Full Detail
+    data-full      price of the Full Detail
+    data-hrs-*     roughly how long each one takes
+
+  Change a number there and the cards update themselves — the
+  prices are not written anywhere else. The button carrying
+  `aria-pressed="true"` is the one shown when the page loads.
+  ============================================================
+-->
+<section class="section packages" id="packages">
+  <div class="section__head reveal">
+    <p class="eyebrow">Services &amp; prices</p>
+    <h2 class="section__title">Two services. <span class="accent">Done properly.</span></h2>
+    <p class="section__sub">
+      No confusing menu, no upsells at the door. Inside only, or inside and out —
+      that's it. Pick your vehicle and both prices update, so you know the number
+      before you call.
+    </p>
+  </div>
+
+  <div class="size-switch reveal" role="group" aria-label="Choose your vehicle size">
+    <span class="size-switch__label" id="sizeLabel">Your vehicle</span>
+    <div class="size-switch__options" aria-labelledby="sizeLabel">
+      <button type="button" class="size-btn" aria-pressed="false"
+              data-size="Coupe"      data-interior="60"  data-full="100" data-hrs-interior="1.5" data-hrs-full="3.5">Coupe</button>
+      <button type="button" class="size-btn" aria-pressed="true"
+              data-size="Sedan"      data-interior="75"  data-full="120" data-hrs-interior="2"   data-hrs-full="4">Sedan</button>
+      <button type="button" class="size-btn" aria-pressed="false"
+              data-size="Small SUV"  data-interior="91"  data-full="140" data-hrs-interior="2.5" data-hrs-full="4.5">Small SUV</button>
+      <button type="button" class="size-btn" aria-pressed="false"
+              data-size="SUV"        data-interior="106" data-full="160" data-hrs-interior="3"   data-hrs-full="5">SUV</button>
+      <button type="button" class="size-btn" aria-pressed="false"
+              data-size="3-Row SUV"  data-interior="106" data-full="180" data-hrs-interior="3.5" data-hrs-full="5.5">3-Row SUV</button>
+    </div>
+  </div>
+
+  <div class="cards cards--pair">
+
+    <article class="card reveal" data-tilt>
+      <div class="card__inner">
+        <header class="card__head">
+          <p class="card__kicker">Inside only</p>
+          <h3 class="card__name">Interior Full Detail</h3>
+          <p class="card__price"><span>$</span><b data-price="interior">75</b></p>
+          <p class="card__meta" data-meta="interior">Sedan · &asymp; 2 hours</p>
+        </header>
+        <ul class="card__list">
+          <li>Full vacuum &mdash; seats, carpet, trunk, every crevice</li>
+          <li>Seats and carpet shampooed and extracted</li>
+          <li>Leather cleaned and conditioned</li>
+          <li>Dash, console and door panels cleaned and dressed</li>
+          <li>Air vents, cup holders and door jambs detailed</li>
+          <li>Floor mats deep cleaned</li>
+          <li>Streak-free interior glass</li>
+          <li>Odor neutralized before I hand the keys back</li>
+        </ul>
+        <a class="btn btn--ghost card__btn" href="#book">Book interior detail</a>
+      </div>
+    </article>
+
+    <article class="card card--featured reveal" data-tilt>
+      <div class="card__inner">
+        <div class="card__flag">Most booked</div>
+        <header class="card__head">
+          <p class="card__kicker">Inside and out</p>
+          <h3 class="card__name">Full Detail</h3>
+          <p class="card__price"><span>$</span><b data-price="full">120</b></p>
+          <p class="card__meta" data-meta="full">Sedan · &asymp; 4 hours</p>
+        </header>
+        <ul class="card__list">
+          <li>Everything in the Interior Full Detail</li>
+          <li>pH-neutral hand wash, two-bucket method</li>
+          <li>Wheels, tires and wheel wells degreased</li>
+          <li>Bug and tar removal</li>
+          <li>Clay bar decontamination &mdash; paint left smooth as glass</li>
+          <li>Hand-applied wax and paint sealant</li>
+          <li>Tire shine and trim dressing</li>
+          <li>Hand dried &mdash; no swirl marks, no tunnel wash</li>
+        </ul>
+        <a class="btn btn--primary card__btn" href="#book">Book full detail</a>
+      </div>
+    </article>
+
+  </div>
+
+  <p class="pricing__foot reveal">
+    Not sure which one you're driving? Send me the year, make and model and I'll
+    confirm the exact price before anything is booked. If a vehicle needs genuinely
+    excessive work — heavy pet damage, mould, construction dust — I'll quote you the
+    number <b>before</b> I start, never after.
+  </p>
+</section>
+
+<!-- ============================== PROCESS ============================== -->
+<section class="section process" id="process">
+  <div class="section__head reveal">
+    <p class="eyebrow">How it works</p>
+    <h2 class="section__title">Four steps, <span class="accent">zero hassle</span></h2>
+  </div>
+
+  <ol class="steps">
+    <li class="step reveal">
+      <div class="step__num">01</div>
+      <h3>You book</h3>
+      <p>Text, call, or send the form below with your car and what you want. I reply with a firm price and a time — usually within the hour.</p>
+    </li>
+    <li class="step reveal">
+      <div class="step__num">02</div>
+      <h3>I pull up</h3>
+      <p>Fully mobile. Own water, own power, own everything. Your driveway, your work parking lot, wherever the car sits.</p>
+    </li>
+    <li class="step reveal">
+      <div class="step__num">03</div>
+      <h3>Hands on the paint</h3>
+      <p>No tunnel washes, no spinning brushes, no shortcuts. Clean towels for every car, and I walk the panels before I call it done.</p>
+    </li>
+    <li class="step reveal">
+      <div class="step__num">04</div>
+      <h3>You inspect it</h3>
+      <p>We walk around it together. If you find something I missed, I fix it right there — that's the whole guarantee.</p>
+    </li>
+  </ol>
+</section>
+
+<!-- ============================== BOOK ============================== -->
+<!--
+  ============================================================
+  EDIT ME — CONTACT DETAILS
+  Replace the phone number, email, service area and hours below
+  with your real ones. The form uses a mailto: link so it works
+  on a plain static host with no backend — swap the address in
+  the form's data-email attribute.
+  ============================================================
+-->
+<section class="section book" id="book">
+  <div class="book__grid">
+    <div class="book__info reveal">
+      <p class="eyebrow">Book a detail</p>
+      <h2 class="section__title">Let's get it <span class="accent">shining</span></h2>
+      <p class="book__blurb">
+        Tell me what you're driving and what's bothering you about it. I'll come back
+        with an exact price before anything is booked.
+      </p>
+
+      <ul class="book__contacts">
+        <li>
+          <svg viewBox="0 0 24 24"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.2.4 2.4.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.4 0 .8-.2 1z"/></svg>
+          <span><b>Call or text</b><a href="tel:+19055106144">905-510-6144</a></span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2m0 3.4V18h16V7.4l-8 5z"/></svg>
+          <span><b>Email</b><a href="mailto:musa.haseeb2012@gmail.com">musa.haseeb2012@gmail.com</a></span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7m0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5"/></svg>
+          <span><b>Service area</b>Oakville &amp; surrounding areas<em>Travelling as far as Toronto</em></span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20m0 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16m1 2.5h-2v6.1l4.6 2.8 1-1.7-3.6-2.2z"/></svg>
+          <span><b>Hours</b>
+            <span class="hrs">Mon, Thu, Fri &middot; 4pm&ndash;8:30pm</span>
+            <span class="hrs">Sat &amp; Sun &middot; 11am&ndash;8pm</span>
+            <em>Closed Tue &amp; Wed</em>
+          </span>
+        </li>
+      </ul>
+    </div>
+
+    <form class="book__form reveal" id="bookForm" data-email="musa.haseeb2012@gmail.com" novalidate>
+      <div class="field">
+        <label for="f-name">Your name</label>
+        <input id="f-name" name="name" type="text" autocomplete="name" required placeholder="Alex Rivera">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="f-phone">Phone</label>
+          <input id="f-phone" name="phone" type="tel" autocomplete="tel" required placeholder="905-555-0123">
+        </div>
+        <div class="field">
+          <label for="f-vehicle">Vehicle</label>
+          <input id="f-vehicle" name="vehicle" type="text" required placeholder="2019 Honda Civic">
+        </div>
+      </div>
+      <div class="field">
+        <label for="f-size">Vehicle size</label>
+        <select id="f-size" name="size">
+          <option>Coupe</option>
+          <option selected>Sedan</option>
+          <option>Small SUV</option>
+          <option>SUV</option>
+          <option>3-Row SUV</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-service">Service you want</label>
+        <select id="f-service" name="service">
+          <option selected>Full Detail — inside and out</option>
+          <option>Interior Full Detail — inside only</option>
+          <option>Not sure yet — tell me what it needs</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-notes">Anything I should know?</label>
+        <textarea id="f-notes" name="notes" rows="4" placeholder="Dog rides in the back, there's a coffee stain on the passenger seat, and the headlights are cloudy."></textarea>
+      </div>
+      <button class="btn btn--primary btn--lg btn--block" type="submit">Send my request</button>
+      <p class="form__note" id="formNote">Opens your email app with the details filled in. No spam, no mailing list.</p>
+    </form>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================== FOOTER ============================== -->
+<footer class="footer">
+  <div class="footer__top">
+    <img class="footer__logo" src="assets/logo.png" alt="Falcore Rides">
+    <div class="footer__cols">
+      <div>
+        <h4>Services</h4>
+        <a href="#packages">Interior Full Detail</a>
+        <a href="#packages">Full Detail</a>
+        <a href="#packages">Prices by vehicle</a>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <a href="#story">Our story</a>
+        <a href="#packages">Prices</a>
+        <a href="#process">How it works</a>
+        <a href="#book">Contact</a>
+      </div>
+      <div>
+        <h4>Get in touch</h4>
+        <a href="tel:+19055106144">905-510-6144</a>
+        <a href="mailto:musa.haseeb2012@gmail.com">musa.haseeb2012@gmail.com</a>
+        <a href="#book">Book a detail</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer__bar">
+    <p>&copy; <span id="year">2026</span> Falcore Rides · Cleaner • Shinier • Better</p>
+  </div>
+</footer>
+
+<a class="fab" href="#book" aria-label="Book a detail">
+  <svg viewBox="0 0 24 24"><path d="M3 17h2a3 3 0 0 0 6 0h4a3 3 0 0 0 6 0h1v-5l-3-4h-4V5H3z"/></svg>
+  <span>Book</span>
+</a>
+
+<script type="module" src="js/scene.js"></script>
+<script src="js/firebase-config.js" defer></script>
+<script src="js/site.js" defer></script>
+</body>
+</html>
