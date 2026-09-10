@@ -51,6 +51,23 @@
                     <input type="number" id="year" name="year" placeholder="e.g. 2019" min="1980" required>
                 </div>
 
+                <div class="field span-3">
+                    <label for="listing-photo">Listing Photo (optional)</label>
+                    <div class="photo-upload">
+                        <div class="photo-dropzone" id="photo-dropzone">
+                            <span class="photo-icon" aria-hidden="true">📷</span>
+                            <span>Tap to add a photo of the listing</span>
+                            <input type="file" id="listing-photo" name="listing-photo" accept="image/*" class="photo-input">
+                        </div>
+                        <div class="photo-preview-wrap" id="photo-preview-wrap" hidden>
+                            <img id="photo-preview" alt="">
+                            <button type="button" id="remove-photo-btn" class="btn-clear">Remove photo</button>
+                        </div>
+                    </div>
+                    <small class="hint">Just for your reference in the results and comparison table — the
+                        value estimate still comes from the details you enter, not the photo.</small>
+                </div>
+
                 <div class="used-fields">
                     <div class="field">
                         <label for="mileage">Mileage</label>
@@ -111,6 +128,10 @@
         <div class="sr-only" id="sr-status" aria-live="polite" aria-atomic="true"></div>
 
         <section id="results" tabindex="-1">
+            <div class="result-photo-wrap" id="result-photo-wrap" hidden>
+                <img id="result-photo" alt="">
+            </div>
+
             <div class="results-grid">
                 <div class="card result-card">
                     <h2>Quality Score</h2>
@@ -365,9 +386,19 @@
                     tr.appendChild(typeTd);
 
                     const carTd = document.createElement('td');
+                    const carCell = document.createElement('div');
+                    carCell.className = 'car-cell';
+                    if (entry.photo) {
+                        const thumb = document.createElement('img');
+                        thumb.className = 'car-thumb';
+                        thumb.src = entry.photo;
+                        thumb.alt = '';
+                        carCell.appendChild(thumb);
+                    }
+                    const carText = document.createElement('div');
                     const carNameDiv = document.createElement('div');
                     carNameDiv.textContent = carLabel;
-                    carTd.appendChild(carNameDiv);
+                    carText.appendChild(carNameDiv);
                     if (entry === bestQuality || entry === bestValue) {
                         const badgeRow = document.createElement('div');
                         badgeRow.className = 'mini-badge-row';
@@ -383,8 +414,10 @@
                             b.textContent = 'Best Value';
                             badgeRow.appendChild(b);
                         }
-                        carTd.appendChild(badgeRow);
+                        carText.appendChild(badgeRow);
                     }
+                    carCell.appendChild(carText);
+                    carTd.appendChild(carCell);
                     tr.appendChild(carTd);
 
                     const priceTd = document.createElement('td');
@@ -433,6 +466,78 @@
                 comparisonList.push(entry);
                 renderComparison();
             }
+
+            // ---------- Listing photo ----------
+            // The photo is only ever read and resized in the browser (never
+            // uploaded anywhere) and is purely for visual reference — it
+            // doesn't feed into the quality score or value estimate, which
+            // come entirely from the details entered above.
+
+            const photoInput = document.getElementById('listing-photo');
+            const photoDropzone = document.getElementById('photo-dropzone');
+            const photoPreviewWrap = document.getElementById('photo-preview-wrap');
+            const photoPreviewImg = document.getElementById('photo-preview');
+            const removePhotoBtn = document.getElementById('remove-photo-btn');
+            const resultPhotoWrap = document.getElementById('result-photo-wrap');
+            const resultPhoto = document.getElementById('result-photo');
+            let currentPhotoDataUrl = null;
+
+            function resizeImageFile(file, maxDim) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onerror = () => reject(reader.error);
+                    reader.onload = () => {
+                        const img = new Image();
+                        img.onerror = reject;
+                        img.onload = () => {
+                            let { width, height } = img;
+                            if (width > height && width > maxDim) {
+                                height = Math.round(height * (maxDim / width));
+                                width = maxDim;
+                            } else if (height >= width && height > maxDim) {
+                                width = Math.round(width * (maxDim / height));
+                                height = maxDim;
+                            }
+                            const canvas = document.createElement('canvas');
+                            canvas.width = width;
+                            canvas.height = height;
+                            canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                            resolve(canvas.toDataURL('image/jpeg', 0.82));
+                        };
+                        img.src = reader.result;
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            function setPhoto(dataUrl) {
+                currentPhotoDataUrl = dataUrl;
+                photoPreviewImg.src = dataUrl;
+                photoDropzone.hidden = true;
+                photoPreviewWrap.hidden = false;
+            }
+
+            function clearPhoto() {
+                currentPhotoDataUrl = null;
+                photoInput.value = '';
+                photoPreviewImg.src = '';
+                photoDropzone.hidden = false;
+                photoPreviewWrap.hidden = true;
+            }
+
+            photoInput.addEventListener('change', () => {
+                const file = photoInput.files && photoInput.files[0];
+                if (!file) return;
+                if (!file.type.startsWith('image/')) {
+                    photoInput.value = '';
+                    return showError('Please choose an image file for the listing photo.');
+                }
+                resizeImageFile(file, 480).then(setPhoto).catch(() => {
+                    showError('Could not load that image. Please try a different photo.');
+                });
+            });
+
+            removePhotoBtn.addEventListener('click', clearPhoto);
 
             function fmtMoney(n) {
                 return '$' + Math.round(n).toLocaleString('en-US');
@@ -507,6 +612,14 @@
                 document.getElementById('ask-value-label').textContent =
                     carType === 'used' ? 'Asking Price' : 'Negotiated Price';
 
+                if (currentPhotoDataUrl) {
+                    resultPhoto.src = currentPhotoDataUrl;
+                    resultPhotoWrap.hidden = false;
+                } else {
+                    resultPhoto.src = '';
+                    resultPhotoWrap.hidden = true;
+                }
+
                 renderGauge(quality.total);
                 document.getElementById('score-grade').textContent = 'Grade ' + grade;
                 document.getElementById('verdict-text').textContent = verdict;
@@ -558,7 +671,7 @@
                     `Results: quality score ${quality.total} out of 100, grade ${grade}. ${verdict} `
                     + `Estimated value ${fmtMoney(estimatedValue)}, price ${fmtMoney(price)} — ${compare.verdict}.`;
 
-                addToComparison({ carType, make, model, year, price, estimatedValue, quality, grade, compare });
+                addToComparison({ carType, make, model, year, price, estimatedValue, quality, grade, compare, photo: currentPhotoDataUrl });
             });
         })();
     </script>

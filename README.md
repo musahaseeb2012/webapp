@@ -24,6 +24,11 @@ side.
   comparison table so you can weigh several listings side by side, with the
   best quality score and best value automatically highlighted. Rows can be
   removed individually or cleared all at once.
+- **Listing photo (optional)** — attach a photo of the listing (or take one
+  on a phone/tablet) and it shows up in the results and comparison table for
+  visual reference. It's resized and processed entirely in the browser —
+  never uploaded anywhere — and it doesn't feed into the score or valuation;
+  those always come from the details you enter.
 - **Common issues to watch for** — known problem areas for the make/model,
   pulled from a curated reference dataset.
 - **Buying checklist** — pre-purchase inspection, vehicle history report,
@@ -54,12 +59,13 @@ side.
 2. Enter the make (a dropdown of recognized makes appears as you type) and,
    optionally, the model — if it's in the reference dataset, the estimate
    gets more precise.
-3. Fill in the rest: for a used car, year/mileage/condition/title/asking
+3. Optionally attach a photo of the listing.
+4. Fill in the rest: for a used car, year/mileage/condition/title/asking
    price; for a new car, year/MSRP/incentives/negotiated price.
-4. Click "Check This Car" to see the quality score, common issues, and how
-   the price compares to the estimated value. The car is also added to the
-   **Your Comparison** table below, so you can check several and compare them
-   side by side.
+5. Click "Check This Car" to see the quality score, common issues, and how
+   the price compares to the estimated value. The car (and its photo, if you
+   added one) is also added to the **Your Comparison** table below, so you
+   can check several and compare them side by side.
 
 ## Files
 
