@@ -296,6 +296,37 @@ input::placeholder { color: #5b6c8c; }
     font-size: 0.75rem;
 }
 
+.ocr-status {
+    margin: 10px 0 0;
+    padding: 10px 14px;
+    border-radius: 9px;
+    font-size: 0.82rem;
+    line-height: 1.4;
+}
+
+.ocr-status.loading {
+    background: rgba(62, 166, 255, 0.1);
+    border: 1px solid rgba(62, 166, 255, 0.3);
+    color: var(--accent);
+}
+
+.ocr-status.success {
+    background: rgba(41, 211, 162, 0.1);
+    border: 1px solid rgba(41, 211, 162, 0.3);
+    color: var(--accent-2);
+}
+
+.ocr-status.warn {
+    background: rgba(255, 182, 72, 0.1);
+    border: 1px solid rgba(255, 182, 72, 0.3);
+    color: var(--warn);
+}
+
+input.auto-filled, select.auto-filled {
+    border-color: var(--accent-2);
+    box-shadow: 0 0 0 3px rgba(41, 211, 162, 0.15);
+}
+
 .combobox-field {
     position: relative;
 }

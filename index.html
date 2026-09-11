@@ -56,7 +56,7 @@
                     <div class="photo-upload">
                         <div class="photo-dropzone" id="photo-dropzone">
                             <span class="photo-icon" aria-hidden="true">📷</span>
-                            <span>Tap to add a photo of the listing</span>
+                            <span>Tap to add a photo of the listing — we'll try to read the details off it</span>
                             <input type="file" id="listing-photo" name="listing-photo" accept="image/*" class="photo-input">
                         </div>
                         <div class="photo-preview-wrap" id="photo-preview-wrap" hidden>
@@ -64,8 +64,10 @@
                             <button type="button" id="remove-photo-btn" class="btn-clear">Remove photo</button>
                         </div>
                     </div>
-                    <small class="hint">Just for your reference in the results and comparison table — the
-                        value estimate still comes from the details you enter, not the photo.</small>
+                    <p class="ocr-status" id="ocr-status" hidden aria-live="polite"></p>
+                    <small class="hint">Works best on a screenshot of the listing (price/mileage/year visible
+                        as text) rather than a plain photo of just the car. Always shown here for reference —
+                        double-check any auto-filled fields before checking the car.</small>
                 </div>
 
                 <div class="used-fields">
@@ -224,6 +226,7 @@
 
     <script src="car-data.js"></script>
     <script src="car-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <script>
         (function () {
             const form = document.getElementById('checker-form');
@@ -469,9 +472,12 @@
 
             // ---------- Listing photo ----------
             // The photo is only ever read and resized in the browser (never
-            // uploaded anywhere) and is purely for visual reference — it
-            // doesn't feed into the quality score or value estimate, which
-            // come entirely from the details entered above.
+            // uploaded anywhere). It doesn't feed the quality score or value
+            // estimate directly — those are always computed from whatever is
+            // in the form fields. What it DOES do is try to read text off the
+            // photo (OCR, via Tesseract.js) and auto-fill those same fields,
+            // same as if you'd typed them — so the math never depends on the
+            // photo itself, only on the (possibly photo-derived) field values.
 
             const photoInput = document.getElementById('listing-photo');
             const photoDropzone = document.getElementById('photo-dropzone');
@@ -480,6 +486,7 @@
             const removePhotoBtn = document.getElementById('remove-photo-btn');
             const resultPhotoWrap = document.getElementById('result-photo-wrap');
             const resultPhoto = document.getElementById('result-photo');
+            const ocrStatus = document.getElementById('ocr-status');
             let currentPhotoDataUrl = null;
 
             function resizeImageFile(file, maxDim) {
@@ -523,6 +530,9 @@
                 photoPreviewImg.src = '';
                 photoDropzone.hidden = false;
                 photoPreviewWrap.hidden = true;
+                ocrStatus.hidden = true;
+                ocrStatus.textContent = '';
+                ocrStatus.className = 'ocr-status';
             }
 
             photoInput.addEventListener('change', () => {
@@ -532,12 +542,163 @@
                     photoInput.value = '';
                     return showError('Please choose an image file for the listing photo.');
                 }
-                resizeImageFile(file, 480).then(setPhoto).catch(() => {
+                Promise.all([
+                    resizeImageFile(file, 480),   // stored/displayed thumbnail
+                    resizeImageFile(file, 1400)   // higher-res copy, OCR only, not kept
+                ]).then(([displayUrl, ocrUrl]) => {
+                    setPhoto(displayUrl);
+                    extractDetailsFromPhoto(ocrUrl);
+                }).catch(() => {
                     showError('Could not load that image. Please try a different photo.');
                 });
             });
 
             removePhotoBtn.addEventListener('click', clearPhoto);
+
+            function markAutoFilled(input) {
+                if (!input) return;
+                input.classList.add('auto-filled');
+                const clear = () => {
+                    input.classList.remove('auto-filled');
+                    input.removeEventListener('input', clear);
+                };
+                input.addEventListener('input', clear);
+            }
+
+            function parseListingText(text) {
+                const normalized = text.replace(/\s+/g, ' ');
+                const result = { year: null, make: null, model: null, mileage: null, price: null, isNew: false };
+
+                const yearMatch = normalized.match(/\b(19[8-9]\d|20[0-4]\d)\b/);
+                if (yearMatch) result.year = parseInt(yearMatch[1], 10);
+
+                let bestMakeIndex = Infinity;
+                Object.keys(CAR_DATA.makes).forEach((makeKey) => {
+                    const re = new RegExp('\\b' + makeKey.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+                    const m = normalized.match(re);
+                    if (m && m.index < bestMakeIndex) {
+                        bestMakeIndex = m.index;
+                        result.make = makeKey;
+                    }
+                });
+
+                if (result.make) {
+                    const prefix = result.make.toLowerCase() + ' ';
+                    let bestModelIndex = Infinity;
+                    Object.keys(CAR_DATA.models)
+                        .filter((k) => k.startsWith(prefix))
+                        .forEach((modelKey) => {
+                            const modelPart = modelKey.slice(prefix.length);
+                            const re = new RegExp('\\b' + modelPart.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
+                            const m = normalized.match(re);
+                            if (m && m.index < bestModelIndex) {
+                                bestModelIndex = m.index;
+                                result.model = modelPart;
+                            }
+                        });
+                }
+
+                // "mileage" is deliberately not a suffix alternative here — it's a
+                // label that precedes a number (handled by the fallback below), and
+                // treating it as a suffix let it wrongly attach to an unrelated
+                // number immediately before it (e.g. a price right before "Mileage:").
+                let mileageMatch = normalized.match(/(\d{1,3}(?:,\d{3})+|\d{4,6})\s*(?:mi\.?\b|miles\b)/i);
+                if (!mileageMatch) mileageMatch = normalized.match(/mileage[:\s]+(\d{1,3}(?:,\d{3})*)/i);
+                if (mileageMatch) result.mileage = parseInt(mileageMatch[1].replace(/,/g, ''), 10);
+
+                const priceMatches = [...normalized.matchAll(/\$\s?(\d{1,3}(?:,\d{3})+|\d{4,7})(?!\s*\/\s*(?:mo|month))/gi)];
+                const prices = priceMatches
+                    .map((m) => parseInt(m[1].replace(/,/g, ''), 10))
+                    .filter((n) => n >= 1000 && n <= 300000);
+                if (prices.length) result.price = prices[0];
+
+                result.isNew = /\bMSRP\b/i.test(normalized) && !mileageMatch;
+
+                return result;
+            }
+
+            function applyParsedFields(parsed) {
+                const foundParts = [];
+
+                if (parsed.isNew) setCarType('new');
+
+                if (parsed.year) {
+                    const yearField = document.getElementById('year');
+                    yearField.value = parsed.year;
+                    markAutoFilled(yearField);
+                }
+                const modelDisplay = parsed.model ? parsed.model.replace(/\b\w/g, (c) => c.toUpperCase()) : '';
+
+                if (parsed.make) {
+                    const makeField = document.getElementById('make');
+                    makeField.value = parsed.make;
+                    markAutoFilled(makeField);
+                    foundParts.push(String(parsed.year || '') + ' ' + parsed.make + (modelDisplay ? ' ' + modelDisplay : ''));
+                } else if (parsed.year) {
+                    foundParts.push(String(parsed.year));
+                }
+                if (parsed.model) {
+                    const modelField = document.getElementById('model');
+                    modelField.value = modelDisplay;
+                    markAutoFilled(modelField);
+                }
+
+                if (carType === 'used') {
+                    if (parsed.mileage) {
+                        const mileageField = document.getElementById('mileage');
+                        mileageField.value = parsed.mileage;
+                        markAutoFilled(mileageField);
+                        foundParts.push(parsed.mileage.toLocaleString('en-US') + ' mi');
+                    }
+                    if (parsed.price) {
+                        const priceField = document.getElementById('price');
+                        priceField.value = parsed.price;
+                        markAutoFilled(priceField);
+                        foundParts.push('$' + parsed.price.toLocaleString('en-US'));
+                    }
+                } else if (parsed.price) {
+                    const msrpField = document.getElementById('msrp');
+                    msrpField.value = parsed.price;
+                    markAutoFilled(msrpField);
+                    foundParts.push('$' + parsed.price.toLocaleString('en-US') + ' MSRP');
+                }
+
+                ocrStatus.hidden = false;
+                if (foundParts.length) {
+                    ocrStatus.textContent = 'Auto-filled from photo: ' + foundParts.join(' · ')
+                        + '. Please double-check before checking the car.';
+                    ocrStatus.className = 'ocr-status success';
+                } else {
+                    ocrStatus.textContent = "Couldn't find car details in that photo — please fill in the fields manually.";
+                    ocrStatus.className = 'ocr-status warn';
+                }
+            }
+
+            function extractDetailsFromPhoto(ocrDataUrl) {
+                if (typeof Tesseract === 'undefined') {
+                    ocrStatus.hidden = false;
+                    ocrStatus.textContent = 'Photo auto-fill isn’t available right now — please fill in the details manually.';
+                    ocrStatus.className = 'ocr-status warn';
+                    return;
+                }
+
+                ocrStatus.hidden = false;
+                ocrStatus.textContent = 'Reading photo… this can take a few seconds.';
+                ocrStatus.className = 'ocr-status loading';
+
+                Tesseract.recognize(ocrDataUrl, 'eng', {
+                    logger: (m) => {
+                        if (m.status === 'recognizing text' && ocrStatus.className === 'ocr-status loading') {
+                            ocrStatus.textContent = `Reading photo… ${Math.round((m.progress || 0) * 100)}%`;
+                        }
+                    }
+                }).then(({ data: { text } }) => {
+                    applyParsedFields(parseListingText(text || ''));
+                }).catch(() => {
+                    ocrStatus.textContent = "Couldn't read that photo automatically — please fill in the fields manually.";
+                    ocrStatus.className = 'ocr-status warn';
+                });
+            }
 
             function fmtMoney(n) {
                 return '$' + Math.round(n).toLocaleString('en-US');

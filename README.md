@@ -28,7 +28,19 @@ side.
   on a phone/tablet) and it shows up in the results and comparison table for
   visual reference. It's resized and processed entirely in the browser —
   never uploaded anywhere — and it doesn't feed into the score or valuation;
-  those always come from the details you enter.
+  those always come from the (possibly photo-derived) details in the form
+  fields.
+- **Auto-fill from photo** — on selecting a photo, [Tesseract.js](https://github.com/naptha/tesseract.js)
+  (in-browser OCR, loaded from a CDN) reads any visible text and tries to
+  pull out make/model/year/mileage/price (and switches to New Car if it spots
+  an MSRP), filling the matching fields with a highlight so you can see what
+  came from the photo. This works by reading printed text — it needs a
+  listing screenshot (Craigslist/Marketplace/dealer site/a window price
+  sticker), not a plain photo of just the car — and needs network access to
+  load the OCR library, so it isn't available offline or wherever that CDN is
+  blocked; the fields are always reviewable/editable regardless. If auto-fill
+  finds nothing (or isn't available), you just fill in the fields yourself,
+  same as always.
 - **Common issues to watch for** — known problem areas for the make/model,
   pulled from a curated reference dataset.
 - **Buying checklist** — pre-purchase inspection, vehicle history report,
@@ -59,7 +71,8 @@ side.
 2. Enter the make (a dropdown of recognized makes appears as you type) and,
    optionally, the model — if it's in the reference dataset, the estimate
    gets more precise.
-3. Optionally attach a photo of the listing.
+3. Optionally attach a photo of the listing — a listing screenshot works best;
+   the app will try to auto-fill the fields below from any text it finds.
 4. Fill in the rest: for a used car, year/mileage/condition/title/asking
    price; for a new car, year/MSRP/incentives/negotiated price.
 5. Click "Check This Car" to see the quality score, common issues, and how
