@@ -43,7 +43,14 @@ A simple and elegant to-do list web application built with vanilla HTML, CSS, an
 ## Jarvis — AI Assistant
 
 An AI you can hold a conversation with, in a gold-and-red command-console theme.
-Open it at `http://localhost:3000/jarvis` (or from the **Jarvis** tile on the hub menu).
+
+**Easiest way to run it: open `jarvis-standalone.html`.** That is one self-contained
+file — double-click it, email it to yourself, put it on your phone. No server, no
+other files, works offline.
+
+You can also run it through the server at `http://localhost:3000/jarvis`, or click
+the **Jarvis** tile on the hub menu. Note that `jarvis.html` needs `jarvis.css` and
+`jarvis.js` sitting beside it; the standalone file does not.
 
 ### Talking to Jarvis
 
@@ -82,9 +89,17 @@ server and is never sent to the browser.
 
 ### Jarvis files
 
-- `jarvis.html` - Chat interface
+- `jarvis-standalone.html` - **The whole app in one file.** Open this one.
+- `jarvis.html` - Chat interface (needs the two files below alongside it)
 - `jarvis.css` - Gold and red theme
 - `jarvis.js` - Conversation engine, speech input/output, persistence
+- `build-jarvis.sh` - Rebuilds `jarvis-standalone.html` after editing the three above
+
+After changing `jarvis.css` or `jarvis.js`, regenerate the single file:
+
+```bash
+./build-jarvis.sh
+```
 
 ## Files
 
