@@ -93,25 +93,30 @@ let html = read('index.html');
 // Every replacement goes through a function. Passing the payload as a string
 // would let `$&`, `` $` `` and `$'` inside minified three.js or the CSS expand
 // into replacement patterns and quietly duplicate chunks of the page.
-const swap = (needle, payload) => {
-  if (!html.includes(needle)) throw new Error(`index.html no longer contains: ${needle}`);
-  html = html.replace(needle, () => payload);
+// The tags carry a ?v= cache-busting stamp (see bump-cache.js) that changes on
+// every release, so match them by pattern rather than by exact text.
+const swap = (pattern, payload) => {
+  const re = pattern instanceof RegExp ? pattern : new RegExp(escapeRe(pattern));
+  if (!re.test(html)) throw new Error(`index.html no longer contains: ${pattern}`);
+  html = html.replace(re, () => payload);
 };
+
+function escapeRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
 html = html.replace(/<script type="importmap">[\s\S]*?<\/script>\s*/, '');
 
-swap('<link rel="stylesheet" href="css/styles.css">',
+swap(/<link rel="stylesheet" href="css\/styles\.css(?:\?v=[^"]*)?">/,
      `<style>\n${read('css', 'styles.css')}\n</style>`);
 
-swap('<script type="module" src="js/scene.js"></script>',
+swap(/<script type="module" src="js\/scene\.js(?:\?v=[^"]*)?"><\/script>/,
      `<script type="module">\n${bundleThree()}\n${
        ADDONS.map(a => stripModuleSyntax(read('vendor', 'three', ...a))).join('\n')
      }\n${stripModuleSyntax(read('js', 'scene.js'))}\n</script>`);
 
-swap('<script src="js/firebase-config.js" defer></script>',
+swap(/<script src="js\/firebase-config\.js(?:\?v=[^"]*)?" defer><\/script>/,
      `<script>\n${read('js', 'firebase-config.js')}\n</script>`);
 
-swap('<script src="js/site.js" defer></script>',
+swap(/<script src="js\/site\.js(?:\?v=[^"]*)?" defer><\/script>/,
      `<script>\n${read('js', 'site.js')}\n</script>`);
 
 html = html.replaceAll('assets/logo-512.png', () => dataUri512)

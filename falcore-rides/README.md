@@ -11,6 +11,7 @@ falcore-rides/
 ├── js/site.js          menu, scroll reveals, card tilt, booking form
 ├── assets/             the logo (background removed, web-sized)
 ├── vendor/three/       three.js, vendored — no CDN, works offline
+├── bump-cache.js           re-stamps css/js URLs so browsers refetch them
 ├── build-single-file.js            bundles everything into one .html
 ├── falcore-rides-standalone.html  ← generated, don't edit by hand
 │
@@ -40,6 +41,25 @@ so every push to it republishes automatically — there's nothing to run.
 Firebase Hosting is set up too but not deployed; that route would give the
 shorter `car-detail-business.web.app` address and would also push the Firestore
 rules on every deploy. See **Deploying from a phone or tablet** below.
+
+## After editing CSS or JS: bump the cache
+
+```bash
+node bump-cache.js
+```
+
+Safari — especially a page added to an iPad Home Screen — will keep serving a
+stylesheet or script it fetched days ago while happily taking the new HTML. The
+result is markup and behaviour that disagree: a button that's in the page but
+never lights up, a style that doesn't apply, a feature that deployed but stayed
+invisible.
+
+This stamps a fresh `?v=` on every local `css/` and `js/` reference. A changed
+URL is a different file as far as the cache is concerned, so the browser
+refetches. Run it after any CSS or JS edit, before committing.
+
+`vendor/` is left alone on purpose — three.js is pinned and never changes, so it
+may as well stay cached.
 
 ## Running it
 
