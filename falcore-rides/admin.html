@@ -22,6 +22,10 @@
   </a>
   <span class="admin__title">Bookings</span>
   <div class="admin__bar-actions">
+    <button type="button" class="btn btn--ghost admin__alerts" id="alertsBtn" hidden
+            aria-pressed="false" title="Get notified when a booking arrives">
+      <span aria-hidden="true">🔔</span> <span id="alertsLabel">Alerts off</span>
+    </button>
     <button type="button" class="btn btn--ghost admin__refresh" id="refreshBtn" hidden>Refresh</button>
     <button type="button" class="btn btn--ghost admin__signout" id="signOutBtn" hidden>Sign out</button>
   </div>
@@ -62,6 +66,7 @@
       </div>
     </div>
 
+    <div class="newbanner" id="newBanner" role="status" aria-live="polite" hidden></div>
     <p class="board__status" id="boardStatus">Loading bookings…</p>
     <ul class="bookings" id="bookings"></ul>
   </section>

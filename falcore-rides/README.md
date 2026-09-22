@@ -239,6 +239,33 @@ the actual cause.
 
 ### Getting told about new bookings
 
+**On the dashboard, while it's open.** Tap **🔔 Alerts off** in the top bar to
+turn them on. From then on the page checks for new bookings every 45 seconds
+and, when one lands:
+
+- a banner appears at the top of the board
+- the new card is outlined in yellow
+- the tab title shows a count — `(1) Bookings — Falcore Rides`
+- a system notification pops up
+- a short chime plays
+
+Returning to the tab clears all of it. The setting is remembered per browser.
+
+The honest limit: **a web page can only alert you while it is open.** There is
+no server here pushing to a closed browser. Leave the dashboard in a tab, or
+add it to your Home Screen and leave it running, and it works. Close it and
+nothing reaches you.
+
+On iPhone and iPad, Safari only offers notification permission to sites added
+to the Home Screen (Share → Add to Home Screen). Without that you still get the
+banner, the highlight, the title count and the chime — just not the system
+popup.
+
+Polling costs about 1,900 Firestore reads a day if you leave it open all day,
+against a free allowance of 50,000.
+
+### Getting emailed about new bookings
+
 `functions/` holds a Cloud Function that emails you the moment a request lands,
 so you don't have to keep the dashboard open.
 

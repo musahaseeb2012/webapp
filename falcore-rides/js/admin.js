@@ -29,12 +29,24 @@
     status:     document.getElementById('boardStatus'),
     counts:     document.getElementById('counts'),
     signOut:    document.getElementById('signOutBtn'),
-    refresh:    document.getElementById('refreshBtn')
+    refresh:    document.getElementById('refreshBtn'),
+    alerts:     document.getElementById('alertsBtn'),
+    alertsLbl:  document.getElementById('alertsLabel'),
+    banner:     document.getElementById('newBanner')
   };
 
   var session = { idToken: null, refreshToken: null, expiresAt: 0, email: null };
   var bookings = [];
   var filter = 'new';
+
+  var POLL_MS = 45000;            // ~1,900 reads/day if left open all day
+  var ALERTS_KEY = 'falcore.admin.alerts';
+  var knownIds = null;            // null until the first load, so opening the
+                                  // page doesn't announce every existing booking
+  var freshIds = {};              // arrived since you last looked
+  var pollTimer = null;
+  var audioCtx = null;
+  var baseTitle = document.title;
 
   /* ------------------------------------------------------------- helpers */
 
@@ -188,6 +200,10 @@
   }
 
   function forgetSession() {
+    if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+    knownIds = null;
+    freshIds = {};
+    document.title = baseTitle;
     session = { idToken: null, refreshToken: null, expiresAt: 0, email: null };
     try { localStorage.removeItem(STORE_KEY); } catch (e) { /* ignore */ }
   }
@@ -208,11 +224,112 @@
     return refreshSession(session.refreshToken).then(run);
   }
 
+  /* ------------------------------------------------------------- alerts */
+
+  // A web page can only alert you while it is open — there is no server here
+  // pushing to a closed browser. Kept open in a tab (or added to the Home
+  // Screen on an iPad), this polls and tells you the moment one lands.
+
+  function alertsOn() {
+    try { return localStorage.getItem(ALERTS_KEY) === 'on'; } catch (e) { return false; }
+  }
+
+  function setAlerts(on) {
+    try { localStorage.setItem(ALERTS_KEY, on ? 'on' : 'off'); } catch (e) { /* ignore */ }
+    el.alerts.setAttribute('aria-pressed', String(on));
+    el.alertsLbl.textContent = on ? 'Alerts on' : 'Alerts off';
+  }
+
+  // Two rising notes, synthesised — no audio file to load or lose.
+  function chime() {
+    try {
+      var Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+      if (!audioCtx) audioCtx = new Ctx();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      [[880, 0], [1245, 0.14]].forEach(function (pair) {
+        var osc = audioCtx.createOscillator();
+        var gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.type = 'sine';
+        osc.frequency.value = pair[0];
+        var t = audioCtx.currentTime + pair[1];
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.exponentialRampToValueAtTime(0.22, t + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.3);
+        osc.start(t);
+        osc.stop(t + 0.32);
+      });
+    } catch (e) { /* a silent failure here is fine */ }
+  }
+
+  function systemNotify(arrivals) {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+    try {
+      var one = arrivals.length === 1 ? arrivals[0] : null;
+      new Notification(
+        one ? 'New detail booked' : arrivals.length + ' new bookings',
+        {
+          body: one
+            ? one.name + ' — ' + (one.vehicle || 'vehicle') +
+              (one.service ? '\n' + one.service : '')
+            : 'Open the dashboard to see them.',
+          icon: 'assets/logo-512.png',
+          badge: 'assets/logo-512.png',
+          tag: 'falcore-booking',
+          renotify: true
+        }
+      ).onclick = function () { window.focus(); this.close(); };
+    } catch (e) { /* some browsers throw without a service worker */ }
+  }
+
+  function showBanner(arrivals) {
+    var one = arrivals.length === 1 ? arrivals[0] : null;
+    el.banner.hidden = false;
+    el.banner.innerHTML =
+      '<span>🔔 <b>' + (one ? 'New detail booked' : arrivals.length + ' new bookings') +
+      '</b>' + (one ? ' — ' + escapeHtml(one.name) + ', ' +
+                      escapeHtml(one.vehicle || 'vehicle') : '') + '</span>' +
+      '<button type="button" aria-label="Dismiss">&times;</button>';
+    el.banner.querySelector('button').addEventListener('click', clearFresh);
+  }
+
+  function announce(arrivals) {
+    if (!arrivals.length) return;
+    arrivals.forEach(function (b) { freshIds[b._name] = true; });
+
+    showBanner(arrivals);
+    document.title = '(' + Object.keys(freshIds).length + ') ' + baseTitle;
+
+    if (alertsOn()) {
+      chime();
+      systemNotify(arrivals);
+    }
+  }
+
+  function clearFresh() {
+    freshIds = {};
+    el.banner.hidden = true;
+    document.title = baseTitle;
+    render();
+  }
+
+  function startPolling() {
+    if (pollTimer) clearInterval(pollTimer);
+    pollTimer = setInterval(function () {
+      if (session.refreshToken) loadBookings({ quiet: true });
+    }, POLL_MS);
+  }
+
   /* ------------------------------------------------------------ bookings */
 
-  function loadBookings() {
-    el.status.hidden = false;
-    el.status.textContent = 'Loading bookings…';
+  function loadBookings(opts) {
+    var quiet = !!(opts && opts.quiet);   // a background poll shouldn't blank the list
+    if (!quiet) {
+      el.status.hidden = false;
+      el.status.textContent = 'Loading bookings…';
+    }
 
     var url = docsUrl('/' + encodeURIComponent(cfg.collection)) +
               '?pageSize=200&orderBy=' + encodeURIComponent('submittedAt desc');
@@ -230,9 +347,24 @@
           b.status = b.status || 'new';
           return b;
         });
+
+        // Anything whose id wasn't in the previous load is new. knownIds is
+        // null on the very first load, so opening the page stays silent.
+        var seen = knownIds;
+        var arrivals = seen
+          ? bookings.filter(function (b) { return !seen[b._name]; })
+          : [];
+
+        knownIds = {};
+        bookings.forEach(function (b) { knownIds[b._name] = true; });
+
+        // announce() marks the arrivals fresh, so it has to run before the
+        // cards are drawn or the highlight lands a render too late.
+        announce(arrivals);
         render();
       });
     }).catch(function (err) {
+      if (quiet) return;            // keep what's on screen; try again next poll
       el.list.innerHTML = '';
       el.status.hidden = false;
 
@@ -307,9 +439,11 @@
     el.status.hidden = true;
     el.list.innerHTML = shown.map(function (b, i) {
       var done = b.status === 'done';
+      var fresh = !!freshIds[b._name];
       var tel = String(b.phone || '').replace(/[^\d+]/g, '');
       return '' +
-      '<li class="booking' + (done ? ' is-done' : '') + '" data-index="' + i + '">' +
+      '<li class="booking' + (done ? ' is-done' : '') + (fresh ? ' is-fresh' : '') +
+          '" data-index="' + i + '">' +
         '<div class="booking__head">' +
           '<h2 class="booking__name">' + escapeHtml(b.name) + '</h2>' +
           '<span class="booking__when">' + escapeHtml(whenText(b.submittedAt, b._createTime)) + '</span>' +
@@ -356,7 +490,10 @@
     el.board.hidden = false;
     el.signOut.hidden = false;
     el.refresh.hidden = false;
+    el.alerts.hidden = false;
+    setAlerts(alertsOn());
     loadBookings();
+    startPolling();
   }
 
   function showLogin(message, isError) {
@@ -364,6 +501,7 @@
     el.board.hidden = true;
     el.signOut.hidden = true;
     el.refresh.hidden = true;
+    el.alerts.hidden = true;
     if (message) {
       el.loginNote.textContent = message;
       el.loginNote.classList.toggle('is-err', !!isError);
@@ -411,7 +549,25 @@
     showLogin('Signed out.', false);
   });
 
-  el.refresh.addEventListener('click', loadBookings);
+  el.refresh.addEventListener('click', function () { loadBookings(); });
+
+  el.alerts.addEventListener('click', function () {
+    if (alertsOn()) { setAlerts(false); return; }
+
+    // Ask for permission from inside the click — browsers refuse otherwise.
+    // Safari on iOS only offers this once the site is on the Home Screen.
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission().then(function () { setAlerts(true); chime(); });
+    } else {
+      setAlerts(true);
+      chime();                      // also unlocks audio for later alerts
+    }
+  });
+
+  // Coming back to the tab means you've seen them.
+  window.addEventListener('focus', function () {
+    if (Object.keys(freshIds).length) clearFresh();
+  });
 
   document.querySelectorAll('.board__filters .chip').forEach(function (chip) {
     chip.addEventListener('click', function () {

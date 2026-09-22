@@ -131,6 +131,40 @@ body.admin .reveal{ opacity:1; transform:none; }
   font-size:.9em;
 }
 
+/* ============================ NEW-BOOKING BANNER ============================ */
+
+.newbanner{
+  display:flex; align-items:center; gap:.8rem;
+  margin-bottom:1.1rem;
+  padding:1rem 1.2rem;
+  border-radius:var(--r);
+  border:1px solid rgba(255,210,30,.55);
+  background:linear-gradient(120deg, rgba(255,210,30,.2), rgba(22,163,74,.16));
+  color:var(--cream);
+  font-weight:600;
+  animation:newIn .45s cubic-bezier(.2,.8,.3,1.2) both;
+}
+@keyframes newIn{ from{ opacity:0; transform:translateY(-10px); } }
+.newbanner b{ color:var(--yellow); }
+.newbanner button{
+  margin-left:auto;
+  background:none; border:0; cursor:pointer;
+  color:var(--muted-2); font:700 1.1rem/1 var(--body);
+  padding:.2rem .4rem;
+}
+.newbanner button:hover{ color:var(--cream); }
+
+/* A booking that arrived while you were looking at something else. */
+.booking.is-fresh{
+  border-color:rgba(255,210,30,.65);
+  box-shadow:0 0 0 1px rgba(255,210,30,.25), 0 14px 34px -22px rgba(255,177,0,.8);
+}
+
+.admin__alerts[aria-pressed="true"]{
+  border-color:rgba(255,210,30,.6);
+  color:var(--yellow);
+}
+
 /* ============================ BOOKINGS ============================ */
 
 .bookings{
