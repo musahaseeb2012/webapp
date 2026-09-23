@@ -177,6 +177,58 @@ h1 {
 
 #trouble:empty { display: none; }
 
+/* ---------- Fallback: the phone's own dictation ---------- */
+
+.dictate {
+    width: 100%;
+    max-width: 24em;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dictate p {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--gold-dim);
+    text-align: center;
+}
+
+.dictate strong { color: var(--gold); }
+
+.dictate-row { display: flex; gap: 8px; }
+
+.dictate input {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 12px 14px;
+    border: 1px solid rgba(255, 210, 31, 0.35);
+    border-radius: 3px;
+    background: #140d07;
+    color: #fff;
+    font-size: 16px;
+}
+
+.dictate input:focus { outline: none; border-color: var(--gold); }
+
+.dictate button {
+    flex: 0 0 auto;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 3px;
+    background: linear-gradient(135deg, var(--gold), var(--red));
+    color: #1a0a00;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
 /* ---------- Minimal controls ---------- */
 
 footer {
@@ -294,6 +346,16 @@ footer button:hover, footer a:hover { color: var(--gold); }
         <div id="state" aria-live="polite">Tap to talk</div>
         <div id="trouble" aria-live="assertive"></div>
     </div>
+
+    <form class="dictate" id="dictate" hidden>
+        <p>Your browser will not listen directly. Tap the box, then press the
+           <strong>microphone key on your own keyboard</strong> and speak —
+           Jarvis still answers out loud.</p>
+        <div class="dictate-row">
+            <input type="text" id="dictateInput" placeholder="Tap, then use your keyboard mic" autocomplete="off">
+            <button type="submit">Ask</button>
+        </div>
+    </form>
 </div>
 
 <footer>
@@ -487,6 +549,45 @@ footer button:hover, footer a:hover { color: var(--gold); }
     var Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     var recog = null;
     var listening = false;
+    var heard = false;
+    var watchdog = null;
+    var deafStrikes = 0;
+
+    var dictateForm = document.getElementById('dictate');
+    var dictateInput = document.getElementById('dictateInput');
+
+    // Some browsers — iOS Safari in particular — start listening happily and
+    // then never deliver a result and never raise an error. Without this the
+    // orb sits on "Listening" forever and looks simply dead. After two such
+    // rounds, fall back to the keyboard's own dictation key, which works
+    // everywhere.
+    function offerDictation(message) {
+        talking = false;
+        stopWatchdog();
+        setState('error', 'Tap to talk');
+        trouble(message);
+        dictateForm.hidden = false;
+    }
+
+    function startWatchdog() {
+        stopWatchdog();
+        watchdog = window.setTimeout(function () {
+            if (!listening || heard) return;
+            try { recog.stop(); } catch (e) {}
+            deafStrikes++;
+            if (deafStrikes >= 2) {
+                offerDictation('I could not hear anything. This browser says it is listening but never sends me any words — common on iPhone.');
+            } else {
+                talking = false;
+                setState('error', 'Tap to talk');
+                trouble('I did not catch anything. Tap and speak clearly, close to the phone.');
+            }
+        }, 12000);
+    }
+
+    function stopWatchdog() {
+        if (watchdog) { window.clearTimeout(watchdog); watchdog = null; }
+    }
 
     var TROUBLE = {
         'not-allowed': 'Microphone permission was refused. Allow it for this site in your browser settings, then tap again.',
@@ -506,8 +607,10 @@ footer button:hover, footer a:hover { color: var(--gold); }
 
         recog.onstart = function () {
             listening = true;
+            heard = false;
             trouble('');
             setState('listening', 'Listening');
+            startWatchdog();
         };
 
         // The transcript is never shown — it goes straight to the brain.
@@ -518,12 +621,22 @@ footer button:hover, footer a:hover { color: var(--gold); }
                 else core.style.transform = 'scale(1.1)';   // react to your voice
             }
             final = final.trim();
-            if (final) ask(final);
+            if (final) {
+                heard = true;
+                deafStrikes = 0;
+                stopWatchdog();
+                ask(final);
+            }
         };
 
         recog.onerror = function (event) {
             var err = (event && event.error) || 'unknown';
+            stopWatchdog();
             if (err === 'aborted') return;
+            if (err === 'not-allowed' || err === 'service-not-allowed') {
+                offerDictation(TROUBLE[err]);
+                return;
+            }
             if (err === 'no-speech') {
                 // Ordinary in a conversation: just open the mic again.
                 if (talking && !busy) window.setTimeout(listen, 200);
@@ -537,15 +650,14 @@ footer button:hover, footer a:hover { color: var(--gold); }
 
         recog.onend = function () {
             listening = false;
+            stopWatchdog();
             if (talking && !busy && !speaking) setState('idle', 'Tap to talk');
         };
     }
 
     function listen() {
         if (!recog) {
-            talking = false;
-            setState('error', 'Tap to talk');
-            trouble('This browser cannot listen — it has no speech recognition. Safari, Chrome or Edge can. Text mode still works.');
+            offerDictation('This browser cannot listen on its own — it has no speech recognition.');
             return;
         }
         if (listening || busy) return;
@@ -553,9 +665,7 @@ footer button:hover, footer a:hover { color: var(--gold); }
         try {
             recog.start();
         } catch (e) {
-            talking = false;
-            setState('error', 'Tap to talk');
-            trouble('The browser would not open the microphone. Tap the reactor again.');
+            offerDictation('The browser would not open the microphone.');
         }
     }
 
@@ -645,7 +755,7 @@ footer button:hover, footer a:hover { color: var(--gold); }
             say(reply, function () {
                 // Hand the floor straight back — no tapping between turns.
                 if (talking) listen();
-                else setState('idle', 'Tap to talk');
+                else setState('idle', dictateForm.hidden ? 'Tap to talk' : 'Ask another');
             });
         });
     }
@@ -653,6 +763,17 @@ footer button:hover, footer a:hover { color: var(--gold); }
     /* =========================================================
        CONTROLS
        ========================================================= */
+
+    dictateForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        unlock();
+        var said = dictateInput.value.trim();
+        if (!said) return;
+        dictateInput.value = '';
+        dictateInput.blur();
+        trouble('');
+        ask(said);
+    });
 
     orb.addEventListener('click', function () {
         unlock();
@@ -741,7 +862,9 @@ footer button:hover, footer a:hover { color: var(--gold); }
     if (Object.prototype.toString.call(stored) === '[object Array]') turns = stored.slice(-20);
 
     if (!Recognition) {
-        trouble('This browser cannot listen — it has no speech recognition. Safari, Chrome or Edge can. Text mode still works.');
+        setState('error', 'Use your keyboard mic');
+        trouble('This browser cannot listen on its own — it has no speech recognition.');
+        dictateForm.hidden = false;
     }
 }());
 </script>
