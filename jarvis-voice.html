@@ -322,6 +322,31 @@ footer button:hover, footer a:hover { color: var(--gold); }
     text-decoration: underline;
 }
 
+.model-pick {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.model-btn {
+    flex: 1 1 0;
+    padding: 10px 8px;
+    border: 1px solid rgba(255, 210, 31, 0.3);
+    border-radius: 3px;
+    background: transparent;
+    color: var(--gold-dim);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.model-btn.on {
+    border-color: var(--gold);
+    background: rgba(255, 210, 31, 0.14);
+    color: var(--gold);
+}
+
 .sheet .close {
     display: block;
     margin: 14px auto 0;
@@ -373,6 +398,10 @@ footer button:hover, footer a:hover { color: var(--gold); }
 
 <div class="sheet" id="sheet">
     <p id="sheetText"></p>
+    <div class="model-pick" id="modelPick" hidden>
+        <button data-model="fast" class="model-btn">Fast — Haiku</button>
+        <button data-model="smart" class="model-btn">Smart — Opus</button>
+    </div>
     <p id="keyLink" hidden>Get a key at
         <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a>
         — a paid developer account, billed per message. Tap the link rather than typing the
@@ -434,8 +463,17 @@ footer button:hover, footer a:hover { color: var(--gold); }
         stateEl.textContent = label;
     }
 
-    function trouble(message) {
+    var troubleIsAboutSound = false;
+
+    function trouble(message, aboutSound) {
         troubleEl.textContent = message || '';
+        troubleIsAboutSound = !!message && !!aboutSound;
+    }
+
+    // Sound started, so only a sound warning is now stale. Anything else on
+    // screen (a rejected key, an empty balance) still needs reading.
+    function clearSoundTrouble() {
+        if (troubleIsAboutSound) trouble('');
     }
 
     /* =========================================================
@@ -540,7 +578,7 @@ footer button:hover, footer a:hover { color: var(--gold); }
         u.onstart = function () {
             soundProven = true;
             clearSoundWatch();
-            trouble('');
+            clearSoundTrouble();
         };
         u.onboundary = function () {
             core.style.transform = core.style.transform === 'scale(1.16)' ? 'scale(1)' : 'scale(1.16)';
@@ -573,7 +611,7 @@ footer button:hover, footer a:hover { color: var(--gold); }
         soundWatch = window.setTimeout(function () {
             if (soundProven) return;
             trouble('I am answering, but no sound is coming out. On an iPad: turn the volume up, ' +
-                'and check Control Centre — the mute switch silences web speech. Then tap "Test voice" below.');
+                'and check Control Centre — the mute switch silences web speech. Then tap "Test voice" below.', true);
         }, 2500);
     }
 
@@ -666,7 +704,7 @@ footer button:hover, footer a:hover { color: var(--gold); }
         recog.onstart = function () {
             listening = true;
             heard = false;
-            trouble('');
+            clearSoundTrouble();
             setState('listening', 'Listening');
             startWatchdog();
         };
@@ -762,11 +800,66 @@ footer button:hover, footer a:hover { color: var(--gold); }
             'Open the Brain panel to connect one.';
     }
 
-    function think(text) {
+    // Claude Haiku answers almost immediately and does not think first, which is
+    // what a spoken conversation needs. Opus is far more capable but pauses to
+    // think before it speaks.
+    var MODELS = {
+        fast: { id: 'claude-haiku-4-5', label: 'Fast (Haiku)' },
+        smart: { id: 'claude-opus-5', label: 'Smart (Opus)' }
+    };
+
+    function modelChoice() {
+        var stored = readStore('jarvisModel', 'fast');
+        return MODELS[stored] ? stored : 'fast';
+    }
+
+    // Say what actually went wrong. Reporting every failure as a refused key
+    // hid the real causes — an empty credit balance most of all.
+    function explainApiError(status, body) {
+        var detail = '';
+        try {
+            var parsed = JSON.parse(body);
+            detail = (parsed.error && parsed.error.message) || '';
+        } catch (e) {
+            detail = (body || '').slice(0, 160);
+        }
+
+        if (status === 401) {
+            return 'That key was rejected as invalid. Check it was copied whole, starting with sk-ant.';
+        }
+        if (status === 403) {
+            return 'That key is not permitted to use this model.';
+        }
+        if (status === 429) {
+            return 'The API is rate limiting you. Wait a moment and ask again.';
+        }
+        if (status === 400 && /credit|balance|billing/i.test(detail)) {
+            return 'Your Anthropic account has no credit. Add billing in the console — a key alone is not enough.';
+        }
+        if (status === 404) {
+            return 'That model is not available on your account.';
+        }
+        if (status >= 500) {
+            return 'Anthropic had a server error. Try again shortly.';
+        }
+        return detail || ('The API returned status ' + status + '.');
+    }
+
+    // Streaming, so he starts speaking after the first sentence instead of
+    // waiting for the whole answer to be written.
+    function think(text, onSentence) {
         var key = apiKey();
         if (!key) return Promise.resolve(offline(text));
 
         var recent = turns.slice(-10);
+        var body = {
+            model: MODELS[modelChoice()].id,
+            max_tokens: 400,
+            system: PERSONA,
+            stream: true,
+            messages: recent.concat([{ role: 'user', content: text }])
+        };
+
         return fetch('https://api.anthropic.com/v1/messages', {
             method: 'POST',
             headers: {
@@ -775,25 +868,78 @@ footer button:hover, footer a:hover { color: var(--gold); }
                 'anthropic-version': '2023-06-01',
                 'anthropic-dangerous-direct-browser-access': 'true'
             },
-            body: JSON.stringify({
-                model: 'claude-sonnet-5',
-                max_tokens: 512,
-                system: PERSONA,
-                messages: recent.concat([{ role: 'user', content: text }])
-            })
+            body: JSON.stringify(body)
         }).then(function (r) {
-            if (!r.ok) throw new Error('the key was refused');
-            return r.json();
-        }).then(function (data) {
-            var reply = (data.content || [])
-                .filter(function (b) { return b.type === 'text'; })
-                .map(function (b) { return b.text; })
-                .join(' ')
-                .trim();
-            if (!reply) throw new Error('nothing came back');
+            if (!r.ok) {
+                return r.text().then(function (t) {
+                    throw new Error(explainApiError(r.status, t));
+                });
+            }
+            if (!r.body || !r.body.getReader) {
+                // No streaming in this browser; fall back to the whole answer.
+                return r.json().then(function (data) {
+                    return (data.content || [])
+                        .filter(function (b) { return b.type === 'text'; })
+                        .map(function (b) { return b.text; }).join(' ').trim();
+                });
+            }
+
+            var reader = r.body.getReader();
+            var decoder = new TextDecoder();
+            var buffer = '';
+            var full = '';
+            var spokenTo = 0;
+
+            function flushSentences(done) {
+                if (!onSentence) return;
+                var upto = done ? full.length : Math.max(
+                    full.lastIndexOf('.'), full.lastIndexOf('!'),
+                    full.lastIndexOf('?'), full.lastIndexOf('\u2026')
+                ) + 1;
+                if (upto > spokenTo) {
+                    onSentence(full.slice(spokenTo, upto));
+                    spokenTo = upto;
+                }
+            }
+
+            function pumpStream() {
+                return reader.read().then(function (chunk) {
+                    if (chunk.done) {
+                        flushSentences(true);
+                        return full.trim();
+                    }
+                    buffer += decoder.decode(chunk.value, { stream: true });
+                    var lines = buffer.split('\n');
+                    buffer = lines.pop();
+                    for (var i = 0; i < lines.length; i++) {
+                        var line = lines[i].trim();
+                        if (line.indexOf('data:') !== 0) continue;
+                        var payload = line.slice(5).trim();
+                        if (!payload || payload === '[DONE]') continue;
+                        try {
+                            var evt = JSON.parse(payload);
+                            if (evt.type === 'content_block_delta' && evt.delta &&
+                                evt.delta.type === 'text_delta') {
+                                full += evt.delta.text;
+                                flushSentences(false);
+                            } else if (evt.type === 'error') {
+                                throw new Error((evt.error && evt.error.message) || 'stream error');
+                            }
+                        } catch (e) {
+                            if (e instanceof SyntaxError) continue;   // partial JSON
+                            throw e;
+                        }
+                    }
+                    return pumpStream();
+                });
+            }
+
+            return pumpStream();
+        }).then(function (reply) {
+            if (!reply) throw new Error('Nothing came back from the model.');
             return reply;
         }).catch(function (e) {
-            return 'I could not reach my language model — ' + e.message + '. ' + offline(text);
+            return { failed: true, message: e.message, fallback: offline(text) };
         });
     }
 
@@ -804,17 +950,46 @@ footer button:hover, footer a:hover { color: var(--gold); }
 
         turns.push({ role: 'user', content: text });
 
-        think(text).then(function (reply) {
-            turns.push({ role: 'assistant', content: reply });
-            if (turns.length > 20) turns = turns.slice(-20);
-            writeStore(HISTORY, turns);
+        var started = false;
+
+        // Speak each sentence the moment it is finished, rather than waiting
+        // for the whole answer.
+        function speakSentence(sentence) {
+            if (!sentence.trim()) return;
+            started = true;
+            setState('speaking', 'Speaking');
+            queue = queue.concat(pieces(sentence));
+            pump();
+        }
+
+        think(text, speakSentence).then(function (result) {
             busy = false;
 
-            say(reply, function () {
-                // Hand the floor straight back — no tapping between turns.
+            var spoken = typeof result === 'string' ? result : null;
+
+            if (result && result.failed) {
+                trouble(result.message);
+                spoken = result.fallback;
+                started = false;
+                hush();
+            }
+
+            turns.push({ role: 'assistant', content: spoken });
+            if (turns.length > 20) turns = turns.slice(-20);
+            writeStore(HISTORY, turns);
+
+            function afterwards() {
                 if (talking) listen();
                 else setState('idle', dictateForm.hidden ? 'Tap to talk' : 'Ask another');
-            });
+            }
+
+            if (started) {
+                // Already speaking as it streamed; just wait for the queue.
+                onDrain = afterwards;
+                if (!speaking && !queue.length) afterwards();
+            } else {
+                say(spoken, afterwards);
+            }
         });
     }
 
@@ -854,10 +1029,31 @@ footer button:hover, footer a:hover { color: var(--gold); }
 
     var keyLink = document.getElementById('keyLink');
 
+    var modelPick = document.getElementById('modelPick');
+
+    function paintModelChoice() {
+        var current = modelChoice();
+        Array.prototype.forEach.call(modelPick.children, function (b) {
+            b.classList.toggle('on', b.dataset.model === current);
+        });
+    }
+
+    modelPick.addEventListener('click', function (e) {
+        var btn = e.target.closest('.model-btn');
+        if (!btn) return;
+        writeStore('jarvisModel', btn.dataset.model);
+        paintModelChoice();
+        sheetText.textContent = btn.dataset.model === 'fast'
+            ? 'Fast selected. Haiku answers in about a second — best for talking.'
+            : 'Smart selected. Opus is far more capable but pauses to think, so replies take longer.';
+    });
+
     function openSheet(text, showKeyRow) {
         sheetText.textContent = text;
         keyRow.style.display = showKeyRow ? 'flex' : 'none';
         keyLink.hidden = !showKeyRow;
+        modelPick.hidden = !showKeyRow;
+        if (showKeyRow) paintModelChoice();
         sheet.classList.add('open');
     }
 
@@ -907,7 +1103,7 @@ footer button:hover, footer a:hover { color: var(--gold); }
         try {
             synth.resume();
             synth.speak(u);
-            u.onstart = function () { soundProven = true; clearSoundWatch(); trouble(''); };
+            u.onstart = function () { soundProven = true; clearSoundWatch(); clearSoundTrouble(); };
             setState('speaking', 'Testing');
             u.onend = function () { setState('idle', dictateForm.hidden ? 'Tap to talk' : 'Ask another'); };
             watchForSilence();
@@ -931,7 +1127,7 @@ footer button:hover, footer a:hover { color: var(--gold); }
             'Sound actually heard: ' + (soundProven ? 'yes' : 'not yet'),
             'Apple device rules applied: ' + (isApple ? 'yes' : 'no'),
             'Language: ' + (recog ? recog.lang : 'n/a'),
-            'Model: ' + (apiKey() ? 'connected' : 'built-in brain'),
+            'Model: ' + (apiKey() ? MODELS[modelChoice()].id : 'built-in brain'),
             '',
             navigator.userAgent
         ].join('\n');
