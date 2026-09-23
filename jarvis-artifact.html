@@ -1,0 +1,777 @@
+<title>J.A.R.V.I.S.</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  /* A deliberately single-theme page: a gold-and-red console that holds its
+     own look on either host ground. Every color is painted explicitly. */
+  :root {
+    color-scheme: dark;
+
+    --gold: #ffd21f;
+    --gold-dim: #c9a227;
+    --gold-faint: rgba(255, 210, 31, 0.14);
+    --red: #e01839;
+    --red-dim: #8e0f24;
+    --red-faint: rgba(224, 24, 57, 0.16);
+
+    --ground: #0b0705;
+    --panel: #120c08;
+    --raised: #1b1209;
+    --edge: rgba(255, 210, 31, 0.22);
+    --edge-strong: rgba(255, 210, 31, 0.55);
+
+    --ink: #f6e9c9;
+    --ink-dim: #b8a67e;
+    --ink-faint: #7d6f52;
+
+    --display: 'Chakra Petch', 'Trebuchet MS', sans-serif;
+    --body: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    background-image:
+      radial-gradient(ellipse 80% 60% at 12% 0%, rgba(255, 210, 31, 0.10), transparent 60%),
+      radial-gradient(ellipse 70% 60% at 100% 100%, rgba(224, 24, 57, 0.14), transparent 60%);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 15px;
+    line-height: 1.6;
+    display: flex;
+    justify-content: center;
+    padding: 0 16px;
+  }
+
+  .console {
+    width: 100%;
+    max-width: 780px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-height: 0;
+  }
+
+  /* ---------- Header ---------- */
+  header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 4px 14px;
+    border-bottom: 1px solid var(--edge);
+  }
+
+  .reactor {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    flex: 0 0 auto;
+  }
+  .reactor i {
+    position: absolute;
+    border-radius: 50%;
+    display: block;
+  }
+  .ring-outer {
+    inset: 0;
+    border: 2px solid var(--edge-strong);
+    border-top-color: var(--red);
+  }
+  .ring-inner {
+    inset: 7px;
+    border: 1px dashed rgba(224, 24, 57, 0.7);
+    border-bottom-color: var(--gold);
+  }
+  .core {
+    inset: 14px;
+    background: radial-gradient(circle, #fff6d0 0%, var(--gold) 45%, var(--red) 100%);
+    box-shadow: 0 0 14px rgba(255, 210, 31, 0.8), 0 0 26px rgba(224, 24, 57, 0.6);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .ring-outer { animation: spin 5s linear infinite; }
+    .ring-inner { animation: spin 3.5s linear infinite reverse; }
+    .speaking .core { animation: throb 0.75s ease-in-out infinite; }
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes throb {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+  }
+
+  .titles { flex: 1 1 auto; min-width: 0; }
+
+  h1 {
+    margin: 0;
+    font-family: var(--display);
+    font-size: clamp(1.4rem, 6vw, 1.9rem);
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    line-height: 1;
+    color: var(--gold);
+    text-shadow: 0 0 18px rgba(255, 210, 31, 0.45);
+  }
+
+  .expansion {
+    margin: 6px 0 0;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .readout {
+    flex: 0 0 auto;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    text-align: right;
+  }
+  .lamp {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 8px var(--gold);
+    flex: 0 0 auto;
+  }
+  .lamp.busy { background: var(--red); box-shadow: 0 0 8px var(--red); }
+  @media (prefers-reduced-motion: no-preference) {
+    .lamp { animation: blink 2.4s ease-in-out infinite; }
+  }
+  @keyframes blink { 50% { opacity: 0.35; } }
+
+  /* ---------- Transcript ---------- */
+  .transcript {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 20px 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold-dim) transparent;
+  }
+  .transcript::-webkit-scrollbar { width: 7px; }
+  .transcript::-webkit-scrollbar-thumb {
+    background: linear-gradient(var(--gold-dim), var(--red-dim));
+    border-radius: 4px;
+  }
+
+  .turn {
+    max-width: 82%;
+    padding: 12px 16px;
+    border-radius: 4px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .turn .who {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  .turn.jarvis {
+    align-self: flex-start;
+    background: var(--panel);
+    border: 1px solid var(--edge);
+    border-left: 3px solid var(--gold);
+    color: var(--ink);
+  }
+  .turn.jarvis .who { color: var(--gold); }
+  .turn.you {
+    align-self: flex-end;
+    background: var(--red-faint);
+    border: 1px solid rgba(224, 24, 57, 0.5);
+    border-right: 3px solid var(--red);
+    color: #ffe4e8;
+  }
+  .turn.you .who { color: #ff8095; text-align: right; }
+  .turn.pending { color: var(--ink-faint); font-style: italic; }
+  .turn .note {
+    display: block;
+    margin-top: 8px;
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    color: var(--red);
+    font-style: normal;
+  }
+
+  /* ---------- Suggestion chips ---------- */
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    padding: 10px 0 12px;
+    border-top: 1px solid var(--edge);
+  }
+  .chip {
+    font-family: var(--mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    background: transparent;
+    border: 1px solid var(--edge);
+    border-radius: 2px;
+    padding: 6px 11px;
+    cursor: pointer;
+    transition: color 0.18s, border-color 0.18s, background 0.18s;
+  }
+  .chip:hover:not(:disabled) {
+    color: var(--gold);
+    border-color: var(--edge-strong);
+    background: var(--gold-faint);
+  }
+  .chip:disabled { opacity: 0.4; cursor: default; }
+
+  /* ---------- Composer ---------- */
+  .composer {
+    display: flex;
+    gap: 8px;
+    padding-bottom: 10px;
+  }
+  #entry {
+    flex: 1 1 auto;
+    min-width: 0;
+    background: var(--raised);
+    border: 1px solid var(--edge);
+    border-radius: 3px;
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 16px;
+    padding: 13px 15px;
+  }
+  #entry::placeholder { color: var(--ink-faint); }
+  #entry:focus-visible {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 1px var(--gold), 0 0 18px rgba(255, 210, 31, 0.2);
+  }
+
+  .act {
+    flex: 0 0 auto;
+    font-family: var(--display);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 3px;
+    padding: 13px 22px;
+    cursor: pointer;
+    color: #1a0a00;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--red) 160%);
+    transition: filter 0.18s, transform 0.18s;
+  }
+  .act:hover:not(:disabled) { filter: brightness(1.15); transform: translateY(-1px); }
+  .act:disabled { opacity: 0.4; cursor: default; }
+  .act.stop {
+    background: transparent;
+    color: var(--red);
+    border: 1px solid var(--red);
+  }
+  .act.stop:hover { background: var(--red-faint); filter: none; }
+
+  :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  /* ---------- Footer ---------- */
+  footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 2px calc(12px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--edge);
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    color: var(--gold-dim);
+  }
+  .switch input { position: absolute; opacity: 0; pointer-events: none; }
+  .track {
+    width: 34px;
+    height: 16px;
+    border-radius: 8px;
+    border: 1px solid var(--edge);
+    background: var(--raised);
+    position: relative;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .track::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--ink-faint);
+    transition: transform 0.2s, background 0.2s;
+  }
+  .switch input:checked + .track {
+    border-color: var(--gold);
+    background: var(--gold-faint);
+  }
+  .switch input:checked + .track::after {
+    transform: translateX(18px);
+    background: var(--gold);
+  }
+  .switch input:focus-visible + .track { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  #reset {
+    background: none;
+    border: none;
+    font: inherit;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 0;
+  }
+  #reset:hover { color: var(--red); }
+
+  @media (max-width: 460px) {
+    header { gap: 10px; padding-top: 14px; }
+    .reactor { width: 34px; height: 34px; }
+    .core { inset: 11px; }
+    .ring-inner { inset: 6px; }
+    .expansion { font-size: 0.55rem; letter-spacing: 0.1em; }
+    .readout span:last-child { display: none; }
+    .turn { max-width: 92%; }
+    .act { padding: 13px 16px; }
+  }
+</style>
+
+<div class="console">
+  <header>
+    <div class="reactor" id="reactor">
+      <i class="ring-outer"></i><i class="ring-inner"></i><i class="core"></i>
+    </div>
+    <div class="titles">
+      <h1>JARVIS</h1>
+      <p class="expansion">Just A Rather Very Intelligent System</p>
+    </div>
+    <div class="readout">
+      <span class="lamp" id="lamp"></span><span id="mode">Booting</span>
+    </div>
+  </header>
+
+  <div class="transcript" id="transcript" aria-live="polite"></div>
+
+  <div class="chips" id="chips">
+    <button class="chip" data-say="What can you do?">Abilities</button>
+    <button class="chip" data-say="Explain how a jet engine works, briefly.">Explain something</button>
+    <button class="chip" data-say="Help me plan my day. Ask me what I need to get done.">Plan my day</button>
+    <button class="chip" data-say="Tell me a joke.">Joke</button>
+  </div>
+
+  <div class="composer">
+    <input id="entry" type="text" autocomplete="off" placeholder="Speak to Jarvis..." aria-label="Message to Jarvis">
+    <button class="act" id="send">Send</button>
+    <button class="act stop" id="stop" hidden>Stop</button>
+  </div>
+
+  <footer>
+    <label class="switch">
+      <input type="checkbox" id="voice">
+      <span class="track"></span>
+      <span>Voice</span>
+    </label>
+    <button id="reset">New session</button>
+  </footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var transcript = document.getElementById('transcript');
+  var entry = document.getElementById('entry');
+  var sendBtn = document.getElementById('send');
+  var stopBtn = document.getElementById('stop');
+  var resetBtn = document.getElementById('reset');
+  var voiceBox = document.getElementById('voice');
+  var lamp = document.getElementById('lamp');
+  var mode = document.getElementById('mode');
+  var reactor = document.getElementById('reactor');
+  var chips = document.getElementById('chips');
+
+  var STORE = 'jarvis.turns.v1';
+  var VOICE = 'jarvis.voice.v1';
+
+  var turns = [];           // {role:'user'|'assistant', content}
+  var askClaude = null;     // the sample capability, once resolved
+  var controller = null;
+  var busy = false;
+
+  // Standing instructions. Kept as the first user turn on every call.
+  var BRIEF = [
+    'You are Jarvis, a personal AI assistant: the calm, dryly witty',
+    'British butler-engineer. Composed, precise, warm without fawning.',
+    'Address the user as "sir" unless they give you their name, then use it.',
+    'Keep replies conversational and tight, usually one to four sentences,',
+    'longer only when the question truly needs it. Never invent facts; say',
+    'plainly when you do not know. Do not use markdown formatting, headers or',
+    'bullet symbols unless asked for a list: you are speaking aloud.'
+  ].join(' ');
+
+  /* ---------- storage (never trust it) ---------- */
+
+  function load(key, fallback) {
+    try {
+      var raw = window.localStorage.getItem(key);
+      return raw === null ? fallback : JSON.parse(raw);
+    } catch (e) {
+      return fallback;
+    }
+  }
+
+  function save(key, value) {
+    try {
+      window.localStorage.setItem(key, JSON.stringify(value));
+    } catch (e) {
+      /* private window, blocked storage, quota — the page works without it */
+    }
+  }
+
+  function drop(key) {
+    try { window.localStorage.removeItem(key); } catch (e) {}
+  }
+
+  /* ---------- rendering ---------- */
+
+  function bubble(role, text, pending) {
+    var el = document.createElement('div');
+    el.className = 'turn ' + (role === 'assistant' ? 'jarvis' : 'you') + (pending ? ' pending' : '');
+    var who = document.createElement('span');
+    who.className = 'who';
+    who.textContent = role === 'assistant' ? 'Jarvis' : 'You';
+    var body = document.createElement('span');
+    body.className = 'body';
+    body.textContent = text;
+    el.appendChild(who);
+    el.appendChild(body);
+    transcript.appendChild(el);
+    transcript.scrollTop = transcript.scrollHeight;
+    return el;
+  }
+
+  function setBody(el, text) {
+    el.querySelector('.body').textContent = text;
+    var nearBottom = transcript.scrollHeight - transcript.scrollTop - transcript.clientHeight < 120;
+    if (nearBottom) transcript.scrollTop = transcript.scrollHeight;
+  }
+
+  function annotate(el, message) {
+    var note = document.createElement('span');
+    note.className = 'note';
+    note.textContent = message;
+    el.appendChild(note);
+  }
+
+  function setBusy(state, label) {
+    busy = state;
+    lamp.classList.toggle('busy', state);
+    mode.textContent = label;
+    sendBtn.disabled = state;
+    stopBtn.hidden = !state;
+    Array.prototype.forEach.call(chips.children, function (c) { c.disabled = state; });
+  }
+
+  /* ---------- speech out ---------- */
+
+  function speak(text) {
+    if (!voiceBox.checked || !('speechSynthesis' in window)) return;
+    try {
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.rate = 1.02;
+      u.pitch = 0.85;
+      var voices = window.speechSynthesis.getVoices() || [];
+      var pickd = null;
+      for (var i = 0; i < voices.length; i++) {
+        if (/en-GB/i.test(voices[i].lang)) { pickd = voices[i]; break; }
+      }
+      if (pickd) u.voice = pickd;
+      u.onstart = function () { reactor.classList.add('speaking'); };
+      u.onend = u.onerror = function () { reactor.classList.remove('speaking'); };
+      window.speechSynthesis.speak(u);
+    } catch (e) {
+      /* synthesis is a nicety — never let it break a reply */
+    }
+  }
+
+  /* ---------- the offline brain (used when Claude is unavailable) ---------- */
+
+  var JOKES = [
+    'I told the server a joke about UDP. I have no idea whether it got it.',
+    'Why did the developer go broke? He used up all his cache.',
+    'There are only 10 kinds of people in the world: those who understand binary, and those who do not.'
+  ];
+
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+
+  function arithmetic(expression) {
+    var cleaned = String(expression)
+      .replace(/\bx\b/gi, '*').replace(/×/g, '*').replace(/÷/g, '/')
+      .replace(/[^0-9+\-*/().%^ ]/g, '').replace(/\^/g, '**').trim();
+    if (!cleaned || !/\d/.test(cleaned) || !/[+\-*/%]/.test(cleaned)) return null;
+    try {
+      var n = Function('"use strict"; return (' + cleaned + ')')();
+      return (typeof n === 'number' && isFinite(n)) ? Math.round(n * 1e10) / 1e10 : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function offlineReply(text) {
+    var t = text.trim();
+    if (/^(hi|hey|hello|yo|greetings|good (morning|afternoon|evening))\b/i.test(t)) {
+      var h = new Date().getHours();
+      return (h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening') +
+        ', sir. Running on my offline reasoning at the moment, but at your service.';
+    }
+    if (/(who|what) are you|your name/i.test(t)) {
+      return 'I am Jarvis — Just A Rather Very Intelligent System.';
+    }
+    if (/what can you do|your abilities|^help$/i.test(t)) {
+      return 'Normally I think with a full Claude model behind me. That is unavailable in this view, ' +
+        'so I am down to the basics: arithmetic, the time and date, a joke, and polite conversation.';
+    }
+    if (/what(?:'s| is)? the time|what time is it/i.test(t)) {
+      return 'It is ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) + ', sir.';
+    }
+    if (/date|what day is it/i.test(t)) {
+      return 'Today is ' + new Date().toLocaleDateString([], {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+      }) + '.';
+    }
+    if (/joke|make me laugh/i.test(t)) return pick(JOKES);
+    if (/flip a coin|heads or tails/i.test(t)) {
+      return 'The coin lands on ' + pick(['heads', 'tails']) + '.';
+    }
+    var sum = arithmetic(t.replace(/^(what(?:'s| is)|calculate|compute)\s+/i, ''));
+    if (sum !== null) return 'That comes to ' + sum + '.';
+    return 'I cannot reach my full reasoning in this view, sir, so I will not pretend to an answer. ' +
+      'Arithmetic, the time and date, and light conversation are still within reach.';
+  }
+
+  /* ---------- error copy ---------- */
+
+  function copyFor(code) {
+    switch (code) {
+      case 'not_granted':
+      case 'sampling_disabled':
+      case 'not_declared':
+      case 'capability_disabled':
+        return 'Running on offline reasoning from here.';
+      case 'rate_limited':
+        return 'Usage limit reached — give it a moment, then ask again.';
+      case 'session_expired':
+        return 'Your session expired. Sign in again and I will pick up where we left off.';
+      case 'refused':
+        return 'I could not answer that one. Try putting it differently.';
+      case 'prompt_too_large':
+        return 'That conversation grew too long for one thought. Start a new session.';
+      case 'empty_completion':
+        return 'Nothing came back. Ask me again, more simply.';
+      default:
+        return 'The link dropped mid-thought. Try again.';
+    }
+  }
+
+  var PERMANENT = {
+    not_granted: 1, sampling_disabled: 1, not_declared: 1,
+    capability_disabled: 1, capability_removed: 1
+  };
+
+  /* ---------- the exchange ---------- */
+
+  function send(text) {
+    if (busy || !text) return;
+
+    entry.value = '';
+    bubble('user', text);
+    turns.push({ role: 'user', content: text });
+
+    // Offline path: no model in this view.
+    if (!askClaude) {
+      var answer = offlineReply(text);
+      bubble('assistant', answer);
+      turns.push({ role: 'assistant', content: answer });
+      save(STORE, turns.slice(-60));
+      speak(answer);
+      return;
+    }
+
+    var el = bubble('assistant', 'Thinking...', true);
+    var streamed = false;
+    setBusy(true, 'Thinking');
+
+    controller = new AbortController();
+
+    // Keep the brief, then as much recent history as fits comfortably.
+    var input = [{ role: 'user', content: BRIEF }].concat(turns.slice(-16));
+
+    askClaude(input, {
+      cache: false,
+      signal: controller.signal,
+      onText: function (u) {
+        if (!streamed) {
+          streamed = true;
+          el.classList.remove('pending');
+          setBusy(true, 'Replying');
+        }
+        setBody(el, u.text);
+      }
+    }).then(function (result) {
+      setBody(el, result.text);
+      el.classList.remove('pending');
+      if (result.truncated) annotate(el, 'Cut short — ask for less at a time.');
+      turns.push({ role: 'assistant', content: result.text });
+      save(STORE, turns.slice(-60));
+      speak(result.text);
+      setBusy(false, 'Online');
+    }).catch(function (e) {
+      var code = e && e.code ? e.code : 'upstream_error';
+
+      if (code === 'cancelled') {
+        if (e.text) {
+          setBody(el, e.text);
+          el.classList.remove('pending');
+          annotate(el, 'Stopped.');
+          turns.push({ role: 'assistant', content: e.text });
+          save(STORE, turns.slice(-60));
+        } else {
+          el.remove();
+          turns.pop(); // drop the user turn that got no answer
+        }
+        setBusy(false, 'Online');
+        return;
+      }
+
+      if (PERMANENT[code]) {
+        // Fall back to the offline brain for the rest of this view.
+        askClaude = null;
+        var answer = offlineReply(text);
+        setBody(el, answer);
+        el.classList.remove('pending');
+        annotate(el, copyFor(code));
+        turns.push({ role: 'assistant', content: answer });
+        save(STORE, turns.slice(-60));
+        speak(answer);
+        setBusy(false, 'Offline brain');
+        return;
+      }
+
+      if (e && e.text) {
+        setBody(el, e.text);
+        el.classList.remove('pending');
+        annotate(el, copyFor(code));
+        turns.push({ role: 'assistant', content: e.text });
+        save(STORE, turns.slice(-60));
+      } else {
+        setBody(el, copyFor(code));
+        el.classList.remove('pending');
+        turns.pop();
+      }
+      setBusy(false, 'Online');
+    });
+  }
+
+  /* ---------- wiring ---------- */
+
+  sendBtn.addEventListener('click', function () { send(entry.value.trim()); });
+
+  entry.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); send(entry.value.trim()); }
+  });
+
+  stopBtn.addEventListener('click', function () {
+    if (controller) controller.abort();
+  });
+
+  chips.addEventListener('click', function (e) {
+    var chip = e.target.closest('.chip');
+    if (chip && !chip.disabled) send(chip.dataset.say);
+  });
+
+  resetBtn.addEventListener('click', function () {
+    if (controller && busy) controller.abort();
+    turns = [];
+    transcript.textContent = '';
+    drop(STORE);
+    try { window.speechSynthesis.cancel(); } catch (e) {}
+    greet();
+    entry.focus();
+  });
+
+  voiceBox.addEventListener('change', function () {
+    save(VOICE, voiceBox.checked);
+    if (!voiceBox.checked) {
+      try { window.speechSynthesis.cancel(); } catch (e) {}
+    }
+  });
+
+  function greet() {
+    var h = new Date().getHours();
+    var part = h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+    bubble('assistant', part + ', sir. Jarvis here. Ask me anything — or pick one of the ' +
+      'prompts below to get us started.');
+  }
+
+  /* ---------- boot ---------- */
+
+  voiceBox.checked = load(VOICE, false) === true;
+
+  var stored = load(STORE, []);
+  if (Object.prototype.toString.call(stored) === '[object Array]' && stored.length) {
+    for (var i = 0; i < stored.length; i++) {
+      var t = stored[i];
+      if (t && (t.role === 'user' || t.role === 'assistant') && typeof t.content === 'string') {
+        turns.push(t);
+        bubble(t.role, t.content);
+      }
+    }
+  }
+  if (!turns.length) greet();
+
+  entry.focus();
+
+  // The model link resolves after the page is already usable.
+  if (window.claude && typeof window.claude.use === 'function') {
+    window.claude.use('sample').then(function (fn) {
+      askClaude = fn || null;
+      mode.textContent = askClaude ? 'Online' : 'Offline brain';
+    }).catch(function () {
+      askClaude = null;
+      mode.textContent = 'Offline brain';
+    });
+  } else {
+    mode.textContent = 'Offline brain';
+  }
+}());
+</script>

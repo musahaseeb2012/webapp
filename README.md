@@ -87,9 +87,18 @@ brain automatically if the endpoint is unavailable, so it never breaks. Override
 model with `JARVIS_MODEL` (defaults to `claude-sonnet-5`). The key stays on the
 server and is never sent to the browser.
 
+### Hosted version (a real model, no setup)
+
+`jarvis-artifact.html` is a variant published to claude.ai as a private Artifact.
+It reaches a real Claude model through the viewer's own account, so no API key and
+no server are involved — it just answers. Nothing in it works outside claude.ai
+(it depends on `window.claude`), and the microphone is blocked in that sandbox, so
+voice input is text-only there. Voice output still works.
+
 ### Jarvis files
 
 - `jarvis-standalone.html` - **The whole app in one file.** Open this one.
+- `jarvis-artifact.html` - Source of the claude.ai Artifact (real model; claude.ai only)
 - `jarvis.html` - Chat interface (needs the two files below alongside it)
 - `jarvis.css` - Gold and red theme
 - `jarvis.js` - Conversation engine, speech input/output, persistence
