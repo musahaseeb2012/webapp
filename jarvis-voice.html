@@ -317,6 +317,11 @@ footer button:hover, footer a:hover { color: var(--gold); }
     color: #ff8095;
 }
 
+.sheet a {
+    color: var(--gold);
+    text-decoration: underline;
+}
+
 .sheet .close {
     display: block;
     margin: 14px auto 0;
@@ -368,6 +373,10 @@ footer button:hover, footer a:hover { color: var(--gold); }
 
 <div class="sheet" id="sheet">
     <p id="sheetText"></p>
+    <p id="keyLink" hidden>Get a key at
+        <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a>
+        — a paid developer account, billed per message. Tap the link rather than typing the
+        address, or your browser will search for it instead of opening it.</p>
     <div class="sheet-row" id="keyRow">
         <input type="password" id="keyInput" placeholder="sk-ant-..." autocomplete="off">
         <button id="keySave">Save</button>
@@ -843,9 +852,12 @@ footer button:hover, footer a:hover { color: var(--gold); }
 
     /* ---------- sheet: key + diagnostics ---------- */
 
+    var keyLink = document.getElementById('keyLink');
+
     function openSheet(text, showKeyRow) {
         sheetText.textContent = text;
         keyRow.style.display = showKeyRow ? 'flex' : 'none';
+        keyLink.hidden = !showKeyRow;
         sheet.classList.add('open');
     }
 
