@@ -655,45 +655,148 @@ function addMessage(role, text) {
     updateCount();
 }
 
-/* ---------- Speech output ---------- */
+/* ===========================================================
+   VOICE OUT
+   speechSynthesis is quirky: the voice list loads late, and
+   Chrome cuts off long utterances. So pick the voice once it
+   is really there, and speak in sentence-sized pieces.
+   =========================================================== */
 
-function speak(text) {
-    if (!voiceToggle.checked || !('speechSynthesis' in window)) return;
+const synth = window.speechSynthesis || null;
 
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1.02;
-    utterance.pitch = 0.85;
+const speech = {
+    voice: null,
+    queue: [],
+    speaking: false,
+    onDrain: null
+};
 
-    const voices = window.speechSynthesis.getVoices();
-    // Prefer a calm British male voice — the classic Jarvis timbre.
-    const preferred = voices.find(v => /en-GB/i.test(v.lang) && /male|daniel|george|arthur/i.test(v.name))
-        || voices.find(v => /en-GB/i.test(v.lang))
-        || voices.find(v => /en[-_]/i.test(v.lang));
-    if (preferred) utterance.voice = preferred;
+function chooseVoice() {
+    if (!synth) return;
+    const voices = synth.getVoices() || [];
+    if (!voices.length) return;
 
+    // The classic Jarvis timbre: a calm British male. Degrade gracefully.
+    const preferences = [
+        v => /en[-_]GB/i.test(v.lang) && /daniel|arthur|george|oliver|male/i.test(v.name),
+        v => /en[-_]GB/i.test(v.lang) && !/female|hazel|kate|serena|fiona/i.test(v.name),
+        v => /en[-_]GB/i.test(v.lang),
+        v => /en[-_]AU|en[-_]IE/i.test(v.lang),
+        v => /^en([-_]|$)/i.test(v.lang)
+    ];
+    for (const matches of preferences) {
+        const hit = voices.find(matches);
+        if (hit) { speech.voice = hit; return; }
+    }
+    speech.voice = voices[0];
+}
+
+if (synth) {
+    chooseVoice();
+    synth.addEventListener('voiceschanged', chooseVoice);
+}
+
+// Bullets, markdown and symbols are for the eye — strip them before the
+// synthesiser reads a reply out literally.
+function forSpeech(text) {
+    return String(text)
+        .replace(/[\u2022\u00b7\u25aa\u25cf\u2023\u2043]/g, ' ')  // bullet glyphs
+        .replace(/[*_`#~|]/g, ' ')                                   // markdown furniture
+        .replace(/\s*\n\s*/g, '. ')                                  // line breaks become pauses
+        .replace(/\.{2,}/g, '.')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+}
+
+// Split into pieces a synthesiser handles reliably: sentence boundaries
+// first, then hard-wrap anything still overlong.
+function speechPieces(text) {
+    const sentences = forSpeech(text).match(/[^.!?\u2026]+[.!?\u2026]*\s*/g) || [];
+    const out = [];
+    for (let sentence of sentences) {
+        let s = sentence.trim();
+        if (!s) continue;
+        while (s.length > 220) {
+            let cut = s.lastIndexOf(' ', 220);
+            if (cut < 60) cut = 220;
+            out.push(s.slice(0, cut));
+            s = s.slice(cut).trim();
+        }
+        if (s) out.push(s);
+    }
+    return out;
+}
+
+function pumpSpeech() {
+    if (!synth || speech.speaking) return;
+
+    if (!speech.queue.length) {
+        reactor.classList.remove('speaking');
+        const done = speech.onDrain;
+        speech.onDrain = null;
+        if (done) done();
+        return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(speech.queue.shift());
+    if (speech.voice) utterance.voice = speech.voice;
+    utterance.rate = 1.03;
+    utterance.pitch = 0.82;
+
+    speech.speaking = true;
     utterance.onstart = () => reactor.classList.add('speaking');
-    utterance.onend = () => reactor.classList.remove('speaking');
-    utterance.onerror = () => reactor.classList.remove('speaking');
+    utterance.onend = utterance.onerror = () => {
+        speech.speaking = false;
+        pumpSpeech();
+    };
 
-    window.speechSynthesis.speak(utterance);
+    try {
+        synth.speak(utterance);
+    } catch (e) {
+        speech.speaking = false;
+        pumpSpeech();
+    }
 }
 
-if ('speechSynthesis' in window) {
-    // Voice list loads asynchronously in most browsers.
-    window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+function speak(text, whenDone) {
+    if (!synth || !voiceToggle.checked || !text) {
+        if (whenDone) whenDone();
+        return;
+    }
+    const chunks = speechPieces(text);
+    if (!chunks.length) {
+        if (whenDone) whenDone();
+        return;
+    }
+    speech.queue = speech.queue.concat(chunks);
+    speech.onDrain = whenDone || null;
+    pumpSpeech();
 }
 
-/* ---------- Speech input ---------- */
+function hush() {
+    speech.queue = [];
+    speech.onDrain = null;
+    speech.speaking = false;
+    if (synth) { try { synth.cancel(); } catch (e) {} }
+    reactor.classList.remove('speaking');
+}
+
+/* ===========================================================
+   VOICE IN
+   Tapping the mic opens a hands-free exchange: Jarvis listens,
+   answers aloud, then listens again until you stop him.
+   =========================================================== */
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition = null;
 let listening = false;
+let handsFree = false;
 
 if (SpeechRecognition) {
     recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
+    recognition.lang = 'en-GB';
     recognition.interimResults = false;
+    recognition.continuous = false;
     recognition.maxAlternatives = 1;
 
     recognition.onstart = () => {
@@ -703,14 +806,26 @@ if (SpeechRecognition) {
     };
 
     recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        chatInput.value = transcript;
-        handleSend();
+        let said = '';
+        try { said = event.results[0][0].transcript; } catch (e) {}
+        said = (said || '').trim();
+        if (said) {
+            chatInput.value = said;
+            handleSend();
+        }
     };
 
-    recognition.onerror = () => {
-        setStatus('Mic error', false);
-        setTimeout(() => setStatus('Online', false), 2000);
+    recognition.onerror = (event) => {
+        const err = event && event.error;
+        if (err === 'no-speech' || err === 'aborted') return;  // ordinary, stay quiet
+        handsFree = false;
+        if (err === 'not-allowed' || err === 'service-not-allowed') {
+            setStatus('Mic blocked', false);
+            micBtn.title = 'Microphone permission was denied';
+        } else {
+            setStatus('Mic error', false);
+        }
+        setTimeout(() => setStatus('Online', false), 2500);
     };
 
     recognition.onend = () => {
@@ -724,13 +839,31 @@ if (SpeechRecognition) {
     micBtn.style.opacity = '0.4';
 }
 
+function startListening() {
+    if (!recognition || listening) return;
+    hush();
+    try { recognition.start(); } catch (e) { /* already starting */ }
+}
+
+function stopListening() {
+    if (!recognition || !listening) return;
+    try { recognition.stop(); } catch (e) {}
+}
+
+// Once Jarvis has finished speaking, hand the floor back to the user.
+function afterSpeaking() {
+    if (handsFree) setTimeout(startListening, 260);
+}
+
 micBtn.addEventListener('click', () => {
     if (!recognition) return;
-    if (listening) {
-        recognition.stop();
+    if (handsFree || listening) {
+        handsFree = false;
+        stopListening();
+        hush();
     } else {
-        window.speechSynthesis && window.speechSynthesis.cancel();
-        try { recognition.start(); } catch (e) { /* already starting */ }
+        handsFree = true;
+        startListening();
     }
 });
 
@@ -1108,6 +1241,8 @@ async function handleSend() {
 
     chatInput.value = '';
     sendBtn.disabled = true;
+    stopListening();
+    hush();
     addMessage('user', text);
 
     typingIndicator.classList.add('visible');
@@ -1131,15 +1266,17 @@ async function handleSend() {
     chatInput.focus();
 
     addMessage('jarvis', reply);
-    speak(reply);
+    speak(reply, afterSpeaking);
 }
 
 function resetConversation() {
+    handsFree = false;
+    stopListening();
     conversation = [];
     TIMERS.splice(0).forEach(clearTimeout);
     chatLog.innerHTML = '';
     localStorage.removeItem(STORAGE_KEY);
-    window.speechSynthesis && window.speechSynthesis.cancel();
+    hush();
     updateCount();
     greet();
 }
@@ -1165,7 +1302,7 @@ clearChatBtn.addEventListener('click', resetConversation);
 
 voiceToggle.addEventListener('change', () => {
     localStorage.setItem(VOICE_KEY, voiceToggle.checked);
-    if (!voiceToggle.checked && window.speechSynthesis) window.speechSynthesis.cancel();
+    if (!voiceToggle.checked) { handsFree = false; hush(); }
 });
 
 document.querySelectorAll('.quick-actions .filter-btn').forEach(btn => {

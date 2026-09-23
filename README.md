@@ -54,10 +54,19 @@ the **Jarvis** tile on the hub menu. Note that `jarvis.html` needs `jarvis.css` 
 
 ### Talking to Jarvis
 
-- **Type** in the input bar and hit Enter, or
-- **Tap the microphone** and speak — Jarvis transcribes you and replies out loud
-  (Web Speech API; voice input needs Chrome, Edge, or Safari)
-- Toggle **Voice Reply** off at the bottom if you would rather he stayed quiet
+Voice is on by default — he answers out loud.
+
+- **Tap the microphone** to start a hands-free exchange: he listens, answers
+  aloud, then reopens the mic for your next question, and keeps going until you
+  tap it again. Voice input needs Chrome, Edge, or Safari.
+- **Or type** and hit Enter; he still answers out loud.
+- Toggle **Voice** off at the bottom if you would rather he stayed quiet.
+
+The speech layer works around the two things that usually break browser TTS: the
+voice list loads asynchronously (so the voice is chosen on `voiceschanged`, not
+at startup) and long utterances get cut off (so replies are spoken in
+sentence-sized pieces). Bullets and markdown are stripped before speaking, since
+a synthesiser reads them out literally.
 
 ### What he handles out of the box
 

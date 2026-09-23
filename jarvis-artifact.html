@@ -54,7 +54,6 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    gap: 0;
     min-height: 0;
   }
 
@@ -92,17 +91,14 @@
     inset: 14px;
     background: radial-gradient(circle, #fff6d0 0%, var(--gold) 45%, var(--red) 100%);
     box-shadow: 0 0 14px rgba(255, 210, 31, 0.8), 0 0 26px rgba(224, 24, 57, 0.6);
+    transition: transform 0.12s ease-out;
   }
   @media (prefers-reduced-motion: no-preference) {
     .ring-outer { animation: spin 5s linear infinite; }
     .ring-inner { animation: spin 3.5s linear infinite reverse; }
-    .speaking .core { animation: throb 0.75s ease-in-out infinite; }
+    .listening .ring-outer { border-top-color: var(--gold); animation-duration: 1.4s; }
   }
   @keyframes spin { to { transform: rotate(360deg); } }
-  @keyframes throb {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.3); }
-  }
 
   .titles { flex: 1 1 auto; min-width: 0; }
 
@@ -136,7 +132,6 @@
     display: flex;
     align-items: center;
     gap: 7px;
-    text-align: right;
   }
   .lamp {
     width: 8px;
@@ -178,7 +173,9 @@
     overflow-wrap: anywhere;
   }
   .turn .who {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 8px;
     font-family: var(--mono);
     font-size: 0.58rem;
     letter-spacing: 0.16em;
@@ -200,8 +197,8 @@
     border-right: 3px solid var(--red);
     color: #ffe4e8;
   }
-  .turn.you .who { color: #ff8095; text-align: right; }
-  .turn.pending { color: var(--ink-faint); font-style: italic; }
+  .turn.you .who { color: #ff8095; justify-content: flex-end; }
+  .turn.pending .body { color: var(--ink-faint); font-style: italic; }
   .turn .note {
     display: block;
     margin-top: 8px;
@@ -209,8 +206,21 @@
     font-size: 0.6rem;
     letter-spacing: 0.08em;
     color: var(--red);
-    font-style: normal;
   }
+
+  .replay {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: auto;
+    cursor: pointer;
+    color: var(--gold-dim);
+    font-size: 0.75rem;
+    line-height: 1;
+    opacity: 0.6;
+    transition: opacity 0.18s, color 0.18s;
+  }
+  .replay:hover { opacity: 1; color: var(--gold); }
 
   /* ---------- Suggestion chips ---------- */
   .chips {
@@ -245,6 +255,7 @@
     display: flex;
     gap: 8px;
     padding-bottom: 10px;
+    align-items: stretch;
   }
   #entry {
     flex: 1 1 auto;
@@ -288,6 +299,33 @@
   }
   .act.stop:hover { background: var(--red-faint); filter: none; }
 
+  #mic {
+    flex: 0 0 auto;
+    width: 48px;
+    background: transparent;
+    border: 1px solid var(--edge);
+    border-radius: 3px;
+    cursor: pointer;
+    color: var(--gold-dim);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.18s, border-color 0.18s, background 0.18s;
+  }
+  #mic svg { width: 19px; height: 19px; display: block; }
+  #mic:hover { color: var(--gold); border-color: var(--edge-strong); }
+  #mic.live {
+    color: var(--red);
+    border-color: var(--red);
+    background: var(--red-faint);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    #mic.live { animation: hot 1.2s ease-in-out infinite; }
+  }
+  @keyframes hot {
+    50% { box-shadow: 0 0 16px rgba(224, 24, 57, 0.7); }
+  }
+
   :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
   /* ---------- Footer ---------- */
@@ -320,6 +358,7 @@
     background: var(--raised);
     position: relative;
     transition: background 0.2s, border-color 0.2s;
+    flex: 0 0 auto;
   }
   .track::after {
     content: '';
@@ -359,16 +398,17 @@
     .core { inset: 11px; }
     .ring-inner { inset: 6px; }
     .expansion { font-size: 0.55rem; letter-spacing: 0.1em; }
-    .readout span:last-child { display: none; }
+    .readout #mode { display: none; }
     .turn { max-width: 92%; }
-    .act { padding: 13px 16px; }
+    .act { padding: 13px 15px; font-size: 0.72rem; }
+    #mic { width: 44px; }
   }
 </style>
 
 <div class="console">
   <header>
     <div class="reactor" id="reactor">
-      <i class="ring-outer"></i><i class="ring-inner"></i><i class="core"></i>
+      <i class="ring-outer"></i><i class="ring-inner"></i><i class="core" id="core"></i>
     </div>
     <div class="titles">
       <h1>JARVIS</h1>
@@ -389,6 +429,14 @@
   </div>
 
   <div class="composer">
+    <button id="mic" title="Hold a spoken conversation" aria-label="Talk to Jarvis">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+        <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+        <line x1="12" y1="19" x2="12" y2="23"></line>
+      </svg>
+    </button>
     <input id="entry" type="text" autocomplete="off" placeholder="Speak to Jarvis..." aria-label="Message to Jarvis">
     <button class="act" id="send">Send</button>
     <button class="act stop" id="stop" hidden>Stop</button>
@@ -396,7 +444,7 @@
 
   <footer>
     <label class="switch">
-      <input type="checkbox" id="voice">
+      <input type="checkbox" id="voice" checked>
       <span class="track"></span>
       <span>Voice</span>
     </label>
@@ -412,71 +460,324 @@
   var entry = document.getElementById('entry');
   var sendBtn = document.getElementById('send');
   var stopBtn = document.getElementById('stop');
+  var micBtn = document.getElementById('mic');
   var resetBtn = document.getElementById('reset');
   var voiceBox = document.getElementById('voice');
   var lamp = document.getElementById('lamp');
   var mode = document.getElementById('mode');
   var reactor = document.getElementById('reactor');
+  var core = document.getElementById('core');
   var chips = document.getElementById('chips');
 
   var STORE = 'jarvis.turns.v1';
-  var VOICE = 'jarvis.voice.v1';
+  var VOICE = 'jarvis.voice.v2';
 
-  var turns = [];           // {role:'user'|'assistant', content}
-  var askClaude = null;     // the sample capability, once resolved
+  var turns = [];
+  var askClaude = null;
   var controller = null;
   var busy = false;
 
-  // Standing instructions. Kept as the first user turn on every call.
   var BRIEF = [
     'You are Jarvis, a personal AI assistant: the calm, dryly witty',
     'British butler-engineer. Composed, precise, warm without fawning.',
     'Address the user as "sir" unless they give you their name, then use it.',
-    'Keep replies conversational and tight, usually one to four sentences,',
-    'longer only when the question truly needs it. Never invent facts; say',
-    'plainly when you do not know. Do not use markdown formatting, headers or',
-    'bullet symbols unless asked for a list: you are speaking aloud.'
+    'Your replies are READ ALOUD, so write for the ear: plain sentences, no',
+    'markdown, no headings, no bullet characters, no emoji, no code blocks.',
+    'Keep it to one to four sentences unless asked for more. Never invent',
+    'facts; say plainly when you do not know.'
   ].join(' ');
 
-  /* ---------- storage (never trust it) ---------- */
+  /* ---------- storage ---------- */
 
   function load(key, fallback) {
     try {
       var raw = window.localStorage.getItem(key);
       return raw === null ? fallback : JSON.parse(raw);
-    } catch (e) {
-      return fallback;
-    }
+    } catch (e) { return fallback; }
   }
-
   function save(key, value) {
-    try {
-      window.localStorage.setItem(key, JSON.stringify(value));
-    } catch (e) {
-      /* private window, blocked storage, quota — the page works without it */
-    }
+    try { window.localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
   }
-
   function drop(key) {
     try { window.localStorage.removeItem(key); } catch (e) {}
   }
+
+  /* =========================================================
+     VOICE OUT
+     speechSynthesis is quirky: voices load late, and Chrome
+     cuts off long utterances. So pick the voice once it is
+     really there, and speak in sentence-sized pieces.
+     ========================================================= */
+
+  var synth = window.speechSynthesis || null;
+
+  var speech = {
+    voice: null,
+    queue: [],
+    active: null,
+    speaking: false,
+    onDrain: null
+  };
+
+  function chooseVoice() {
+    if (!synth) return;
+    var voices = synth.getVoices() || [];
+    if (!voices.length) return;
+
+    // The classic Jarvis timbre: a calm British male. Fall back gracefully.
+    var order = [
+      function (v) { return /en[-_]GB/i.test(v.lang) && /daniel|arthur|george|oliver|male/i.test(v.name); },
+      function (v) { return /en[-_]GB/i.test(v.lang) && !/female|hazel|kate|serena|fiona/i.test(v.name); },
+      function (v) { return /en[-_]GB/i.test(v.lang); },
+      function (v) { return /en[-_]AU|en[-_]IE/i.test(v.lang); },
+      function (v) { return /^en([-_]|$)/i.test(v.lang); }
+    ];
+    for (var i = 0; i < order.length; i++) {
+      for (var j = 0; j < voices.length; j++) {
+        if (order[i](voices[j])) { speech.voice = voices[j]; return; }
+      }
+    }
+    speech.voice = voices[0];
+  }
+
+  if (synth) {
+    chooseVoice();
+    // Most browsers populate the list asynchronously, some more than once.
+    synth.addEventListener('voiceschanged', chooseVoice);
+  }
+
+  // Bullets, markdown and symbols are for the eye — strip them before the
+  // synthesiser reads a reply out literally.
+  function forSpeech(text) {
+    return String(text)
+      .replace(/[•·▪●‣⁃]/g, ' ')  // bullet glyphs
+      .replace(/[*_`#~|]/g, ' ')                                // markdown furniture
+      .replace(/\s*\n\s*/g, '. ')                               // line breaks become pauses
+      .replace(/\.{2,}/g, '.')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+  }
+
+  // Split into pieces a synthesiser handles reliably: sentence boundaries
+  // first, then hard-wrap anything still overlong.
+  function pieces(text) {
+    var sentences = forSpeech(text).match(/[^.!?…]+[.!?…]*\s*/g) || [];
+    var out = [];
+    for (var i = 0; i < sentences.length; i++) {
+      var s = sentences[i].trim();
+      if (!s) continue;
+      while (s.length > 220) {
+        var cut = s.lastIndexOf(' ', 220);
+        if (cut < 60) cut = 220;
+        out.push(s.slice(0, cut));
+        s = s.slice(cut).trim();
+      }
+      if (s) out.push(s);
+    }
+    return out;
+  }
+
+  function pump() {
+    if (!synth || speech.speaking) return;
+    if (!speech.queue.length) {
+      reactor.classList.remove('speaking');
+      core.style.transform = '';
+      var done = speech.onDrain;
+      speech.onDrain = null;
+      if (done) done();
+      return;
+    }
+
+    var chunk = speech.queue.shift();
+    var u = new SpeechSynthesisUtterance(chunk);
+    if (speech.voice) u.voice = speech.voice;
+    u.rate = 1.03;
+    u.pitch = 0.82;
+
+    speech.speaking = true;
+    speech.active = u;
+
+    u.onstart = function () {
+      reactor.classList.add('speaking');
+      core.style.transform = 'scale(1.25)';
+    };
+    u.onboundary = function () {
+      // A cheap pulse in time with the words.
+      core.style.transform = core.style.transform === 'scale(1.25)' ? 'scale(1.1)' : 'scale(1.25)';
+    };
+    u.onend = function () {
+      speech.speaking = false;
+      speech.active = null;
+      pump();
+    };
+    u.onerror = function () {
+      speech.speaking = false;
+      speech.active = null;
+      pump();
+    };
+
+    try {
+      synth.speak(u);
+    } catch (e) {
+      speech.speaking = false;
+      pump();
+    }
+  }
+
+  function say(text, whenDone) {
+    if (!synth || !voiceBox.checked || !text) {
+      if (whenDone) whenDone();
+      return;
+    }
+    var chunks = pieces(text);
+    if (!chunks.length) {
+      if (whenDone) whenDone();
+      return;
+    }
+    speech.queue = speech.queue.concat(chunks);
+    speech.onDrain = whenDone || null;
+    pump();
+  }
+
+  function hush() {
+    speech.queue = [];
+    speech.onDrain = null;
+    speech.speaking = false;
+    speech.active = null;
+    if (synth) { try { synth.cancel(); } catch (e) {} }
+    reactor.classList.remove('speaking');
+    core.style.transform = '';
+  }
+
+  /* =========================================================
+     VOICE IN
+     Speech recognition needs the microphone, which some
+     embedders refuse outright. Offer it, and retire the
+     button cleanly the moment it is denied.
+     ========================================================= */
+
+  var Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var recog = null;
+  var listening = false;
+  var conversation = false;   // hands-free: listen, answer, listen again
+  var micRetired = false;
+
+  function retireMic(reason) {
+    micRetired = true;
+    conversation = false;
+    listening = false;
+    micBtn.hidden = true;
+    micBtn.classList.remove('live');
+    reactor.classList.remove('listening');
+    if (reason) systemLine(reason);
+  }
+
+  if (!Recognition || !synth) {
+    micBtn.hidden = true;
+  } else {
+    recog = new Recognition();
+    recog.lang = 'en-GB';
+    recog.interimResults = false;
+    recog.continuous = false;
+    recog.maxAlternatives = 1;
+
+    recog.onstart = function () {
+      listening = true;
+      micBtn.classList.add('live');
+      reactor.classList.add('listening');
+      mode.textContent = 'Listening';
+    };
+
+    recog.onresult = function (event) {
+      var said = '';
+      try { said = event.results[0][0].transcript; } catch (e) {}
+      said = (said || '').trim();
+      if (said) send(said);
+    };
+
+    recog.onerror = function (event) {
+      var err = event && event.error;
+      if (err === 'not-allowed' || err === 'service-not-allowed') {
+        retireMic('Voice input is blocked here — the microphone is not available in this view. Typing still works, and Jarvis still speaks his replies.');
+        return;
+      }
+      if (err === 'no-speech' || err === 'aborted') return;   // ordinary, stay quiet
+      conversation = false;
+    };
+
+    recog.onend = function () {
+      listening = false;
+      micBtn.classList.remove('live');
+      reactor.classList.remove('listening');
+      if (mode.textContent === 'Listening') mode.textContent = askClaude ? 'Online' : 'Offline brain';
+    };
+  }
+
+  function startListening() {
+    if (!recog || micRetired || listening || busy) return;
+    hush();
+    try {
+      recog.start();
+    } catch (e) {
+      /* already starting — harmless */
+    }
+  }
+
+  function stopListening() {
+    if (!recog || !listening) return;
+    try { recog.stop(); } catch (e) {}
+  }
+
+  micBtn.addEventListener('click', function () {
+    if (micRetired) return;
+    if (conversation || listening) {
+      conversation = false;
+      stopListening();
+      hush();
+    } else {
+      conversation = true;   // keep the exchange going until stopped
+      startListening();
+    }
+  });
 
   /* ---------- rendering ---------- */
 
   function bubble(role, text, pending) {
     var el = document.createElement('div');
     el.className = 'turn ' + (role === 'assistant' ? 'jarvis' : 'you') + (pending ? ' pending' : '');
+
     var who = document.createElement('span');
     who.className = 'who';
-    who.textContent = role === 'assistant' ? 'Jarvis' : 'You';
+    var name = document.createElement('span');
+    name.textContent = role === 'assistant' ? 'Jarvis' : 'You';
+    who.appendChild(name);
+
     var body = document.createElement('span');
     body.className = 'body';
     body.textContent = text;
+
     el.appendChild(who);
     el.appendChild(body);
     transcript.appendChild(el);
     transcript.scrollTop = transcript.scrollHeight;
     return el;
+  }
+
+  function addReplay(el) {
+    if (!synth || el.querySelector('.replay')) return;
+    var btn = document.createElement('button');
+    btn.className = 'replay';
+    btn.type = 'button';
+    btn.title = 'Say it again';
+    btn.setAttribute('aria-label', 'Say it again');
+    btn.textContent = '▶';
+    btn.addEventListener('click', function () {
+      hush();
+      voiceBox.checked = true;
+      save(VOICE, true);
+      say(el.querySelector('.body').textContent);
+    });
+    el.querySelector('.who').appendChild(btn);
   }
 
   function setBody(el, text) {
@@ -492,6 +793,11 @@
     el.appendChild(note);
   }
 
+  function systemLine(message) {
+    var el = bubble('assistant', message);
+    el.classList.add('pending');
+  }
+
   function setBusy(state, label) {
     busy = state;
     lamp.classList.toggle('busy', state);
@@ -501,35 +807,19 @@
     Array.prototype.forEach.call(chips.children, function (c) { c.disabled = state; });
   }
 
-  /* ---------- speech out ---------- */
-
-  function speak(text) {
-    if (!voiceBox.checked || !('speechSynthesis' in window)) return;
-    try {
-      window.speechSynthesis.cancel();
-      var u = new SpeechSynthesisUtterance(text);
-      u.rate = 1.02;
-      u.pitch = 0.85;
-      var voices = window.speechSynthesis.getVoices() || [];
-      var pickd = null;
-      for (var i = 0; i < voices.length; i++) {
-        if (/en-GB/i.test(voices[i].lang)) { pickd = voices[i]; break; }
-      }
-      if (pickd) u.voice = pickd;
-      u.onstart = function () { reactor.classList.add('speaking'); };
-      u.onend = u.onerror = function () { reactor.classList.remove('speaking'); };
-      window.speechSynthesis.speak(u);
-    } catch (e) {
-      /* synthesis is a nicety — never let it break a reply */
+  // Once Jarvis has finished speaking, hand the floor back to the user.
+  function afterSpeaking() {
+    if (conversation && !micRetired) {
+      window.setTimeout(startListening, 260);
     }
   }
 
-  /* ---------- the offline brain (used when Claude is unavailable) ---------- */
+  /* ---------- offline brain ---------- */
 
   var JOKES = [
     'I told the server a joke about UDP. I have no idea whether it got it.',
     'Why did the developer go broke? He used up all his cache.',
-    'There are only 10 kinds of people in the world: those who understand binary, and those who do not.'
+    'There are only ten kinds of people in the world: those who understand binary, and those who do not.'
   ];
 
   function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
@@ -542,9 +832,7 @@
     try {
       var n = Function('"use strict"; return (' + cleaned + ')')();
       return (typeof n === 'number' && isFinite(n)) ? Math.round(n * 1e10) / 1e10 : null;
-    } catch (e) {
-      return null;
-    }
+    } catch (e) { return null; }
   }
 
   function offlineReply(text) {
@@ -554,12 +842,10 @@
       return (h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening') +
         ', sir. Running on my offline reasoning at the moment, but at your service.';
     }
-    if (/(who|what) are you|your name/i.test(t)) {
-      return 'I am Jarvis — Just A Rather Very Intelligent System.';
-    }
+    if (/(who|what) are you|your name/i.test(t)) return 'I am Jarvis. Just A Rather Very Intelligent System.';
     if (/what can you do|your abilities|^help$/i.test(t)) {
-      return 'Normally I think with a full Claude model behind me. That is unavailable in this view, ' +
-        'so I am down to the basics: arithmetic, the time and date, a joke, and polite conversation.';
+      return 'Normally a full Claude model does my thinking. That is unavailable in this view, so I am down to ' +
+        'the basics: arithmetic, the time and date, a joke, and polite conversation.';
     }
     if (/what(?:'s| is)? the time|what time is it/i.test(t)) {
       return 'It is ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) + ', sir.';
@@ -570,9 +856,7 @@
       }) + '.';
     }
     if (/joke|make me laugh/i.test(t)) return pick(JOKES);
-    if (/flip a coin|heads or tails/i.test(t)) {
-      return 'The coin lands on ' + pick(['heads', 'tails']) + '.';
-    }
+    if (/flip a coin|heads or tails/i.test(t)) return 'The coin lands on ' + pick(['heads', 'tails']) + '.';
     var sum = arithmetic(t.replace(/^(what(?:'s| is)|calculate|compute)\s+/i, ''));
     if (sum !== null) return 'That comes to ' + sum + '.';
     return 'I cannot reach my full reasoning in this view, sir, so I will not pretend to an answer. ' +
@@ -595,7 +879,7 @@
       case 'refused':
         return 'I could not answer that one. Try putting it differently.';
       case 'prompt_too_large':
-        return 'That conversation grew too long for one thought. Start a new session.';
+        return 'This conversation grew too long for one thought. Start a new session.';
       case 'empty_completion':
         return 'Nothing came back. Ask me again, more simply.';
       default:
@@ -610,30 +894,44 @@
 
   /* ---------- the exchange ---------- */
 
+  function finish(el, text, spokenAlready) {
+    el.classList.remove('pending');
+    addReplay(el);
+    turns.push({ role: 'assistant', content: text });
+    save(STORE, turns.slice(-60));
+    if (spokenAlready) {
+      // The tail was queued as it streamed; just wait for the queue to drain.
+      speech.onDrain = afterSpeaking;
+      if (!speech.speaking && !speech.queue.length) afterSpeaking();
+    } else {
+      say(text, afterSpeaking);
+    }
+  }
+
   function send(text) {
     if (busy || !text) return;
+
+    stopListening();
+    hush();
 
     entry.value = '';
     bubble('user', text);
     turns.push({ role: 'user', content: text });
 
-    // Offline path: no model in this view.
     if (!askClaude) {
       var answer = offlineReply(text);
-      bubble('assistant', answer);
-      turns.push({ role: 'assistant', content: answer });
-      save(STORE, turns.slice(-60));
-      speak(answer);
+      var offlineEl = bubble('assistant', answer);
+      finish(offlineEl, answer, false);
       return;
     }
 
     var el = bubble('assistant', 'Thinking...', true);
     var streamed = false;
-    setBusy(true, 'Thinking');
+    var spokenUpTo = 0;   // how much of the reply has been handed to the voice
 
+    setBusy(true, 'Thinking');
     controller = new AbortController();
 
-    // Keep the brief, then as much recent history as fits comfortably.
     var input = [{ role: 'user', content: BRIEF }].concat(turns.slice(-16));
 
     askClaude(input, {
@@ -646,53 +944,70 @@
           setBusy(true, 'Replying');
         }
         setBody(el, u.text);
+
+        // Speak each finished sentence as it arrives, so he starts talking
+        // while the rest is still being written — the way Siri does.
+        if (voiceBox.checked && synth) {
+          var settled = u.text.slice(0, u.text.lastIndexOf(' '));
+          var boundary = Math.max(
+            settled.lastIndexOf('.'), settled.lastIndexOf('!'),
+            settled.lastIndexOf('?'), settled.lastIndexOf('…')
+          );
+          if (boundary > spokenUpTo) {
+            var segment = u.text.slice(spokenUpTo, boundary + 1);
+            spokenUpTo = boundary + 1;
+            speech.queue = speech.queue.concat(pieces(segment));
+            pump();
+          }
+        }
       }
     }).then(function (result) {
       setBody(el, result.text);
-      el.classList.remove('pending');
       if (result.truncated) annotate(el, 'Cut short — ask for less at a time.');
-      turns.push({ role: 'assistant', content: result.text });
-      save(STORE, turns.slice(-60));
-      speak(result.text);
+
+      var tail = result.text.slice(spokenUpTo).trim();
+      if (voiceBox.checked && synth && spokenUpTo > 0) {
+        if (tail) { speech.queue = speech.queue.concat(pieces(tail)); pump(); }
+        finish(el, result.text, true);
+      } else {
+        finish(el, result.text, false);
+      }
       setBusy(false, 'Online');
     }).catch(function (e) {
       var code = e && e.code ? e.code : 'upstream_error';
+      hush();
 
       if (code === 'cancelled') {
         if (e.text) {
           setBody(el, e.text);
           el.classList.remove('pending');
           annotate(el, 'Stopped.');
+          addReplay(el);
           turns.push({ role: 'assistant', content: e.text });
           save(STORE, turns.slice(-60));
         } else {
           el.remove();
-          turns.pop(); // drop the user turn that got no answer
+          turns.pop();
         }
+        conversation = false;
         setBusy(false, 'Online');
         return;
       }
 
       if (PERMANENT[code]) {
-        // Fall back to the offline brain for the rest of this view.
         askClaude = null;
         var answer = offlineReply(text);
         setBody(el, answer);
-        el.classList.remove('pending');
         annotate(el, copyFor(code));
-        turns.push({ role: 'assistant', content: answer });
-        save(STORE, turns.slice(-60));
-        speak(answer);
+        finish(el, answer, false);
         setBusy(false, 'Offline brain');
         return;
       }
 
       if (e && e.text) {
         setBody(el, e.text);
-        el.classList.remove('pending');
         annotate(el, copyFor(code));
-        turns.push({ role: 'assistant', content: e.text });
-        save(STORE, turns.slice(-60));
+        finish(el, e.text, false);
       } else {
         setBody(el, copyFor(code));
         el.classList.remove('pending');
@@ -711,7 +1026,9 @@
   });
 
   stopBtn.addEventListener('click', function () {
+    conversation = false;
     if (controller) controller.abort();
+    hush();
   });
 
   chips.addEventListener('click', function (e) {
@@ -720,32 +1037,34 @@
   });
 
   resetBtn.addEventListener('click', function () {
+    conversation = false;
     if (controller && busy) controller.abort();
+    stopListening();
+    hush();
     turns = [];
     transcript.textContent = '';
     drop(STORE);
-    try { window.speechSynthesis.cancel(); } catch (e) {}
     greet();
     entry.focus();
   });
 
   voiceBox.addEventListener('change', function () {
     save(VOICE, voiceBox.checked);
-    if (!voiceBox.checked) {
-      try { window.speechSynthesis.cancel(); } catch (e) {}
-    }
+    if (!voiceBox.checked) { conversation = false; hush(); }
   });
 
   function greet() {
     var h = new Date().getHours();
     var part = h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
-    bubble('assistant', part + ', sir. Jarvis here. Ask me anything — or pick one of the ' +
-      'prompts below to get us started.');
+    var hint = (Recognition && synth)
+      ? ' Tap the microphone and we can simply talk.'
+      : ' Type to me and I will answer aloud.';
+    bubble('assistant', part + ', sir. Jarvis here.' + hint);
   }
 
   /* ---------- boot ---------- */
 
-  voiceBox.checked = load(VOICE, false) === true;
+  voiceBox.checked = load(VOICE, true) !== false;
 
   var stored = load(STORE, []);
   if (Object.prototype.toString.call(stored) === '[object Array]' && stored.length) {
@@ -753,7 +1072,8 @@
       var t = stored[i];
       if (t && (t.role === 'user' || t.role === 'assistant') && typeof t.content === 'string') {
         turns.push(t);
-        bubble(t.role, t.content);
+        var el = bubble(t.role, t.content);
+        if (t.role === 'assistant') addReplay(el);
       }
     }
   }
@@ -761,7 +1081,6 @@
 
   entry.focus();
 
-  // The model link resolves after the page is already usable.
   if (window.claude && typeof window.claude.use === 'function') {
     window.claude.use('sample').then(function (fn) {
       askClaude = fn || null;
