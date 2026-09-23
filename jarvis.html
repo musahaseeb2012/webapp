@@ -49,12 +49,27 @@
             <button id="sendBtn">Send</button>
         </div>
 
+        <div id="keyPanel" class="key-panel">
+            <p class="key-explain">
+                Paste an Anthropic API key to give Jarvis a real language model. It is stored
+                only in this browser and sent only to Anthropic. Without one he runs on his
+                built-in offline brain.
+            </p>
+            <div class="key-row">
+                <input type="password" id="keyInput" placeholder="sk-ant-..." autocomplete="off" />
+                <button id="keySave" class="key-btn">Save</button>
+                <button id="keyClear" class="key-btn ghost">Clear</button>
+            </div>
+            <p class="key-status" id="keyStatus"></p>
+        </div>
+
         <div class="footer-bar">
             <label class="toggle">
                 <input type="checkbox" id="voiceToggle" checked />
                 <span class="toggle-track"><span class="toggle-thumb"></span></span>
                 <span class="toggle-label">Voice Reply</span>
             </label>
+            <button id="keyToggle" class="key-toggle" title="Connect a language model">⚙ Brain</button>
             <span id="msgCount" class="msg-count">0 exchanges</span>
         </div>
     </div>

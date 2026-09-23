@@ -504,3 +504,83 @@ h1 {
     .icon-btn { width: 44px; font-size: 17px; }
     .toggle-label, .msg-count { font-size: 0.62rem; letter-spacing: 1px; }
 }
+
+/* ---------- Optional model key ---------- */
+.key-panel {
+    display: none;
+    padding: 14px 16px;
+    margin-top: 12px;
+    background: rgba(26, 20, 0, 0.6);
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    border-radius: 10px;
+}
+
+.key-panel.open { display: block; }
+
+.key-explain {
+    color: var(--gold-deep);
+    font-size: 0.78rem;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.key-row { display: flex; gap: 8px; }
+
+#keyInput {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 10px 14px;
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    border-radius: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    font-size: 14px;
+}
+
+#keyInput:focus {
+    outline: none;
+    border-color: var(--gold);
+}
+
+.key-btn {
+    flex: 0 0 auto;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--red) 100%);
+    color: #1a0000;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.key-btn.ghost {
+    background: transparent;
+    border: 2px solid rgba(220, 20, 60, 0.5);
+    color: var(--red);
+}
+
+.key-status {
+    margin-top: 8px;
+    font-size: 0.72rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--gold-deep);
+    min-height: 1em;
+}
+
+.key-toggle {
+    background: none;
+    border: none;
+    color: var(--gold-deep);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 0;
+}
+
+.key-toggle:hover { color: var(--gold); }

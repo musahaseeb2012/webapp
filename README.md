@@ -113,8 +113,12 @@ Rebuild and republish after changing `jarvis.css` or `jarvis.js`:
 # then copy site/ into the gh-pages branch's jarvis/ folder and push
 ```
 
-This build talks to no server, so it runs the offline brain. For a real model,
-use the Artifact below.
+This build talks to no server, so it runs the offline brain by default. To give
+it a real model, open **⚙ Brain** at the bottom of the page and paste an
+Anthropic API key: the page then calls the API directly from your browser. The
+key is kept in that browser's `localStorage` and sent only to Anthropic — but it
+is stored unencrypted, so use a key you can revoke, and clear it with the same
+panel when you are done.
 
 ### Hosted version (a real model, no setup)
 

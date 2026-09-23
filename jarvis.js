@@ -16,10 +16,17 @@ const statusDot = document.getElementById('statusDot');
 const statusText = document.getElementById('statusText');
 const reactor = document.getElementById('reactor');
 const msgCount = document.getElementById('msgCount');
+const keyPanel = document.getElementById('keyPanel');
+const keyInput = document.getElementById('keyInput');
+const keySave = document.getElementById('keySave');
+const keyClear = document.getElementById('keyClear');
+const keyStatus = document.getElementById('keyStatus');
+const keyToggle = document.getElementById('keyToggle');
 
 const STORAGE_KEY = 'jarvisConversation';
 const MEMORY_KEY = 'jarvisMemory';
 const VOICE_KEY = 'jarvisVoiceEnabled';
+const API_KEY = 'jarvisApiKey';
 
 let conversation = [];
 let memory = { name: null, facts: [], topics: [] };
@@ -634,6 +641,62 @@ function fallback(text) {
    so the app always works standing alone.
    =========================================================== */
 
+function storedKey() {
+    try { return localStorage.getItem(API_KEY) || ''; } catch (e) { return ''; }
+}
+
+// A static build has no server to proxy through, so it calls Anthropic straight
+// from the browser. The key stays in this browser and goes nowhere else.
+async function directBrain(text) {
+    const key = storedKey();
+    if (!key) throw new Error('no key');
+
+    const history = conversation.slice(-12).map(m => ({
+        role: m.role === 'jarvis' ? 'assistant' : 'user',
+        content: m.text
+    }));
+    if (history.length && history[history.length - 1].role === 'user'
+        && history[history.length - 1].content === text) {
+        history.pop();
+    }
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+            'content-type': 'application/json',
+            'x-api-key': key,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+            model: 'claude-sonnet-5',
+            max_tokens: 1024,
+            system: DIRECT_SYSTEM + (memory.name ? ` The user's name is ${memory.name}.` : ''),
+            messages: history.concat([{ role: 'user', content: text }])
+        })
+    });
+
+    if (!response.ok) {
+        const detail = await response.text();
+        throw new Error('anthropic ' + response.status + ': ' + detail.slice(0, 160));
+    }
+
+    const data = await response.json();
+    const reply = (data.content || [])
+        .filter(b => b.type === 'text')
+        .map(b => b.text)
+        .join('\n')
+        .trim();
+    if (!reply) throw new Error('empty reply');
+    return reply;
+}
+
+const DIRECT_SYSTEM = 'You are Jarvis, a personal AI assistant: the calm, dryly witty British ' +
+    'butler-engineer. Composed, precise, warm without fawning. Address the user as "sir" unless ' +
+    'they give you their name, then use it. Your replies are read aloud, so write for the ear: ' +
+    'plain sentences, no markdown, no headings, no bullet characters, no emoji. Keep it to one ' +
+    'to four sentences unless more is genuinely needed. Never invent facts.';
+
 async function remoteBrain(text) {
     const history = conversation.slice(-12).map(m => ({
         role: m.role === 'jarvis' ? 'assistant' : 'user',
@@ -654,6 +717,16 @@ async function remoteBrain(text) {
 }
 
 async function think(text) {
+    if (storedKey()) {
+        try {
+            return await directBrain(text);
+        } catch (e) {
+            setStatus('Key error', false);
+            setTimeout(() => setStatus('Online', false), 2600);
+            return `That key was refused, ${addressee()} — ${e.message}. Falling back to my own reasoning.\n\n` + localBrain(text);
+        }
+    }
+
     if (remoteBrainAvailable !== false) {
         try {
             const reply = await remoteBrain(text);
@@ -747,7 +820,44 @@ document.querySelectorAll('.quick-actions .filter-btn').forEach(btn => {
 
 /* ---------- Boot ---------- */
 
+function refreshKeyStatus() {
+    const key = storedKey();
+    keyStatus.textContent = key
+        ? 'Connected — Jarvis is thinking with a live model.'
+        : 'Not connected — running the offline brain.';
+    keyInput.value = '';
+    keyInput.placeholder = key ? '•••• stored in this browser' : 'sk-ant-...';
+}
+
+keyToggle.addEventListener('click', () => {
+    keyPanel.classList.toggle('open');
+    if (keyPanel.classList.contains('open')) {
+        refreshKeyStatus();
+        keyInput.focus();
+    }
+});
+
+keySave.addEventListener('click', () => {
+    const value = keyInput.value.trim();
+    if (!value) return;
+    try {
+        localStorage.setItem(API_KEY, value);
+        remoteBrainAvailable = false;   // the key takes precedence from here
+        refreshKeyStatus();
+        setStatus('Model linked', false);
+        setTimeout(() => setStatus('Online', false), 2200);
+    } catch (e) {
+        keyStatus.textContent = 'This browser refused to store the key.';
+    }
+});
+
+keyClear.addEventListener('click', () => {
+    try { localStorage.removeItem(API_KEY); } catch (e) {}
+    refreshKeyStatus();
+});
+
 loadState();
+refreshKeyStatus();
 
 if (conversation.length) {
     conversation.forEach(m => renderMessage(m.role, m.text, false));
