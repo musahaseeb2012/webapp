@@ -76,6 +76,7 @@ function renderMessage(role, text, animate = true) {
     el.appendChild(body);
     chatLog.appendChild(el);
     chatLog.scrollTop = chatLog.scrollHeight;
+    return el;
 }
 
 function updateCount() {
@@ -231,58 +232,112 @@ const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecogni
 let recognition = null;
 let listening = false;
 let handsFree = false;
+let heardSomething = false;
+
+// A note from the system rather than from Jarvis: shown, but never added to the
+// conversation history the model sees.
+function voiceNote(text) {
+    const el = renderMessage('jarvis', text);
+    return el;
+}
+
+// Voice input fails in a dozen quiet ways on phones. Say which one out loud,
+// in the transcript, where it cannot be missed — a tooltip is invisible on touch.
+const RECOGNITION_TROUBLE = {
+    'not-allowed': 'Microphone permission was refused. Allow the microphone for this site in your browser settings, then tap the mic again.',
+    'service-not-allowed': 'The browser blocked speech recognition. On iPhone, check Settings › Safari and make sure Dictation is enabled; then tap the mic again.',
+    'audio-capture': 'No microphone was found. Check that nothing else is using it, then tap the mic again.',
+    'network': 'Speech recognition needs a network connection and could not reach it. Check your connection and tap the mic again.',
+    'language-not-supported': 'This device has no recognition for that language. Tap the mic again — I will try your device language instead.',
+    'no-speech': 'I did not catch anything. Tap the mic and speak a little closer.'
+};
 
 if (SpeechRecognition) {
     recognition = new SpeechRecognition();
-    recognition.lang = 'en-GB';
-    recognition.interimResults = false;
+    // A device that lacks en-GB recognition errors outright, so follow the
+    // device's own language and only prefer en-GB when it is an English device.
+    const deviceLang = navigator.language || 'en-US';
+    recognition.lang = /^en\b/i.test(deviceLang) ? deviceLang : 'en-GB';
+    recognition.interimResults = true;   // so you can see it hearing you
     recognition.continuous = false;
     recognition.maxAlternatives = 1;
 
     recognition.onstart = () => {
         listening = true;
+        heardSomething = false;
         micBtn.classList.add('listening');
+        chatInput.placeholder = 'Listening — speak now...';
         setStatus('Listening', true);
     };
 
     recognition.onresult = (event) => {
-        let said = '';
-        try { said = event.results[0][0].transcript; } catch (e) {}
-        said = (said || '').trim();
-        if (said) {
-            chatInput.value = said;
+        let interim = '';
+        let final = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            const result = event.results[i];
+            if (result.isFinal) final += result[0].transcript;
+            else interim += result[0].transcript;
+        }
+
+        if (interim) {
+            heardSomething = true;
+            chatInput.value = interim;   // live feedback: you can see it working
+        }
+
+        final = final.trim();
+        if (final) {
+            heardSomething = true;
+            chatInput.value = final;
             handleSend();
         }
     };
 
     recognition.onerror = (event) => {
-        const err = event && event.error;
-        if (err === 'no-speech' || err === 'aborted') return;  // ordinary, stay quiet
-        handsFree = false;
-        if (err === 'not-allowed' || err === 'service-not-allowed') {
-            setStatus('Mic blocked', false);
-            micBtn.title = 'Microphone permission was denied';
-        } else {
-            setStatus('Mic error', false);
+        const err = (event && event.error) || 'unknown';
+        if (err === 'aborted') return;   // we stopped it ourselves
+
+        if (err === 'language-not-supported') {
+            recognition.lang = 'en-US';  // retry on the safest option next tap
         }
-        setTimeout(() => setStatus('Online', false), 2500);
+
+        // A silent listen during a hands-free exchange is normal; don't nag.
+        if (err === 'no-speech' && !handsFree) {
+            voiceNote(RECOGNITION_TROUBLE['no-speech']);
+        } else if (err !== 'no-speech') {
+            handsFree = false;
+            voiceNote(RECOGNITION_TROUBLE[err] || `Voice input stopped with the error "${err}". Tap the mic to try again.`);
+        }
+
+        setStatus('Online', false);
     };
 
     recognition.onend = () => {
         listening = false;
         micBtn.classList.remove('listening');
+        chatInput.placeholder = 'Speak to Jarvis...';
         if (statusText.textContent === 'Listening') setStatus('Online', false);
     };
-} else {
-    micBtn.disabled = true;
-    micBtn.title = 'Voice input is not supported in this browser';
-    micBtn.style.opacity = '0.4';
 }
 
-function startListening() {
-    if (!recognition || listening) return;
+function startListening(afterReply) {
+    if (!recognition) {
+        voiceNote('This browser cannot do voice input — it has no speech recognition. ' +
+            'Chrome, Edge or Safari can. You can still type to me, and I will answer out loud.');
+        return;
+    }
+    if (listening) return;
+
     hush();
-    try { recognition.start(); } catch (e) { /* already starting */ }
+    try {
+        recognition.start();
+    } catch (e) {
+        // Browsers often refuse to open the mic without a fresh tap. Say so
+        // rather than leaving a dead button. Never fail silently here.
+        handsFree = false;
+        voiceNote(afterReply
+            ? 'Tap the mic when you want to speak again — this browser will not reopen it on its own.'
+            : 'This browser would not start voice input just now. Tap the mic once more, and if it keeps refusing, reload the page.');
+    }
 }
 
 function stopListening() {
@@ -292,11 +347,15 @@ function stopListening() {
 
 // Once Jarvis has finished speaking, hand the floor back to the user.
 function afterSpeaking() {
-    if (handsFree) setTimeout(startListening, 260);
+    if (handsFree) setTimeout(() => startListening(true), 300);
 }
 
 micBtn.addEventListener('click', () => {
-    if (!recognition) return;
+    if (!recognition) {
+        // startListening explains why, instead of the tap doing nothing at all.
+        startListening();
+        return;
+    }
     if (handsFree || listening) {
         handsFree = false;
         stopListening();
