@@ -5,15 +5,16 @@
 set -e
 
 OUT="site"
-BUILD_STAMP="$(date -u +%Y%m%d-%H%M)"
+export BUILD_STAMP="$(date -u +%Y%m%d-%H%M)"
 rm -rf "$OUT"
 mkdir -p "$OUT"
 
 ./build-jarvis.sh > /dev/null
 
-# Jarvis is the site's front page, with the tags that let a phone install it
-# to the home screen and run it without browser chrome.
+# The voice-first page is the front door; the text chat stays alongside it.
 python3 - <<'PY'
+import os
+
 meta = '''    <script>window.JARVIS_NO_SERVER = true;</script>
     <meta name="theme-color" content="#0b0705">
     <meta name="mobile-web-app-capable" content="yes">
@@ -23,11 +24,23 @@ meta = '''    <script>window.JARVIS_NO_SERVER = true;</script>
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="apple-touch-icon" href="icon-180.png">
 '''
-html = open('jarvis-standalone.html').read()
+
+stamp = os.environ['BUILD_STAMP']
+
+# index.html — voice only. Talk to it; it talks back; nothing is transcribed
+# on screen.
+voice = open('jarvis-voice.html').read()
+anchor = '<style>'
+assert anchor in voice
+voice = voice.replace(anchor, meta + anchor, 1)
+open('site/index.html', 'w').write(voice.replace('__BUILD__', stamp))
+
+# text.html — the full chat, for when typing is easier.
+text = open('jarvis-standalone.html').read()
 anchor = '    <style>'
-assert anchor in html
-html = html.replace(anchor, meta + anchor, 1)
-open('site/index.html', 'w').write(html)
+assert anchor in text
+text = text.replace(anchor, meta + anchor, 1)
+open('site/text.html', 'w').write(text)
 PY
 
 cp icon-180.png icon-512.png "$OUT"/

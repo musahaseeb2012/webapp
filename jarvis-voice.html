@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>J.A.R.V.I.S.</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%23140000' stroke='%23ffd700' stroke-width='6'/%3E%3Ccircle cx='50' cy='50' r='20' fill='%23dc143c'/%3E%3Ccircle cx='50' cy='50' r='10' fill='%23ffd700'/%3E%3C/svg%3E">
+<style>
+:root {
+    --gold: #ffd21f;
+    --gold-dim: #c9a227;
+    --red: #e01839;
+    --ground: #080503;
+    --ink-faint: #7d6f52;
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; margin: 0; }
+
+body {
+    background: var(--ground);
+    background-image:
+        radial-gradient(ellipse 70% 50% at 50% 12%, rgba(255, 210, 31, 0.10), transparent 60%),
+        radial-gradient(ellipse 70% 50% at 50% 92%, rgba(224, 24, 57, 0.14), transparent 60%);
+    color: var(--gold);
+    font-family: 'Chakra Petch', 'Trebuchet MS', -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: calc(22px + env(safe-area-inset-top, 0px)) 18px calc(18px + env(safe-area-inset-bottom, 0px));
+    overflow: hidden;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+h1 {
+    margin: 0;
+    font-size: clamp(1.5rem, 7vw, 2.1rem);
+    font-weight: 700;
+    letter-spacing: 0.32em;
+    text-indent: 0.32em;
+    color: var(--gold);
+    text-shadow: 0 0 22px rgba(255, 210, 31, 0.45);
+}
+
+.tagline {
+    margin: 8px 0 0;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    text-align: center;
+}
+
+/* ---------- The orb: the entire interface ---------- */
+
+.stage {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 34px;
+    width: 100%;
+    min-height: 0;
+}
+
+#orb {
+    position: relative;
+    width: min(62vw, 240px);
+    height: min(62vw, 240px);
+    border: none;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+    flex: 0 0 auto;
+    border-radius: 50%;
+}
+
+#orb i {
+    position: absolute;
+    display: block;
+    border-radius: 50%;
+}
+
+.halo {
+    inset: -10%;
+    background: radial-gradient(circle, rgba(255, 210, 31, 0.22) 0%, transparent 68%);
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+
+.ring-a {
+    inset: 0;
+    border: 3px solid rgba(255, 210, 31, 0.5);
+    border-top-color: var(--red);
+    animation: spin 6s linear infinite;
+}
+
+.ring-b {
+    inset: 11%;
+    border: 2px dashed rgba(224, 24, 57, 0.6);
+    border-bottom-color: var(--gold);
+    animation: spin 4.5s linear infinite reverse;
+}
+
+.core {
+    inset: 26%;
+    background: radial-gradient(circle, #fff6d0 0%, var(--gold) 42%, var(--red) 100%);
+    box-shadow: 0 0 34px rgba(255, 210, 31, 0.7), 0 0 70px rgba(224, 24, 57, 0.5);
+    transition: transform 0.16s ease-out, box-shadow 0.3s;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Idle: slow and quiet, waiting to be tapped. */
+.state-idle .core { transform: scale(0.88); }
+
+/* Listening: the halo comes up and the rings quicken. */
+.state-listening .halo { opacity: 1; }
+.state-listening .ring-a { animation-duration: 1.6s; border-top-color: var(--gold); }
+.state-listening .ring-b { animation-duration: 1.2s; }
+.state-listening .core {
+    box-shadow: 0 0 46px rgba(255, 210, 31, 0.9), 0 0 96px rgba(224, 24, 57, 0.6);
+}
+
+/* Thinking: rings counter-rotate fast, core dims. */
+.state-thinking .ring-a { animation-duration: 0.9s; }
+.state-thinking .ring-b { animation-duration: 0.7s; }
+.state-thinking .core { transform: scale(0.72); opacity: 0.75; }
+
+/* Speaking: the core pulses with the words. */
+.state-speaking .halo { opacity: 0.7; }
+.state-speaking .ring-a { border-top-color: var(--red); }
+
+.state-error .ring-a { border-color: rgba(224, 24, 57, 0.8); }
+.state-error .core { background: radial-gradient(circle, #ffb3b3 0%, var(--red) 70%); }
+
+@media (prefers-reduced-motion: reduce) {
+    .ring-a, .ring-b { animation: none; }
+    .core { transition: none; }
+}
+
+/* ---------- The only words on screen ---------- */
+
+.readout {
+    text-align: center;
+    min-height: 3.4em;
+    max-width: 22em;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+}
+
+#state {
+    font-size: 0.82rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+}
+
+#trouble {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.82rem;
+    letter-spacing: 0;
+    text-transform: none;
+    line-height: 1.5;
+    color: #ff9aa8;
+}
+
+#trouble:empty { display: none; }
+
+/* ---------- Minimal controls ---------- */
+
+footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 0.58rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+}
+
+footer button, footer a {
+    background: none;
+    border: none;
+    font: inherit;
+    color: var(--ink-faint);
+    cursor: pointer;
+    padding: 6px 2px;
+    text-decoration: none;
+}
+
+footer button:hover, footer a:hover { color: var(--gold); }
+
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+
+/* ---------- Key panel, hidden until asked for ---------- */
+
+.sheet {
+    position: fixed;
+    inset: auto 0 0 0;
+    background: #120c08;
+    border-top: 2px solid rgba(255, 210, 31, 0.35);
+    padding: 20px 18px calc(22px + env(safe-area-inset-bottom, 0px));
+    transform: translateY(100%);
+    transition: transform 0.28s ease;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.sheet.open { transform: translateY(0); }
+
+.sheet p {
+    margin: 0 0 12px;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--gold-dim);
+    letter-spacing: 0;
+    text-transform: none;
+    white-space: pre-wrap;
+}
+
+.sheet-row { display: flex; gap: 8px; }
+
+.sheet input {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 11px 14px;
+    border: 1px solid rgba(255, 210, 31, 0.3);
+    border-radius: 3px;
+    background: #000;
+    color: #fff;
+    font-size: 16px;
+}
+
+.sheet button {
+    flex: 0 0 auto;
+    padding: 11px 15px;
+    border: none;
+    border-radius: 3px;
+    background: linear-gradient(135deg, var(--gold), var(--red));
+    color: #1a0a00;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.sheet button.ghost {
+    background: none;
+    border: 1px solid rgba(224, 24, 57, 0.6);
+    color: #ff8095;
+}
+
+.sheet .close {
+    display: block;
+    margin: 14px auto 0;
+    background: none;
+    border: none;
+    color: var(--ink-faint);
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+</style>
+</head>
+<body class="state-idle">
+
+<div>
+    <h1>JARVIS</h1>
+    <p class="tagline">Tap the reactor. Then just talk.</p>
+</div>
+
+<div class="stage">
+    <button id="orb" aria-label="Tap to start or stop talking to Jarvis">
+        <i class="halo"></i><i class="ring-a"></i><i class="ring-b"></i><i class="core" id="core"></i>
+    </button>
+
+    <div class="readout">
+        <div id="state" aria-live="polite">Tap to talk</div>
+        <div id="trouble" aria-live="assertive"></div>
+    </div>
+</div>
+
+<footer>
+    <button id="brainBtn">⚙ Brain</button>
+    <button id="checkBtn">🩺 Voice check</button>
+    <a href="text.html">⌨ Text mode</a>
+    <span id="build">build —</span>
+</footer>
+
+<div class="sheet" id="sheet">
+    <p id="sheetText"></p>
+    <div class="sheet-row" id="keyRow">
+        <input type="password" id="keyInput" placeholder="sk-ant-..." autocomplete="off">
+        <button id="keySave">Save</button>
+        <button id="keyClear" class="ghost">Clear</button>
+    </div>
+    <button class="close" id="sheetClose">Close</button>
+</div>
+
+<script>
+(function () {
+    'use strict';
+
+    // Replaced at build time; 'dev' means this came straight from source.
+    var BUILD = '__BUILD__'.charAt(0) === '_' ? 'dev' : '__BUILD__';
+
+    var body = document.body;
+    var orb = document.getElementById('orb');
+    var core = document.getElementById('core');
+    var stateEl = document.getElementById('state');
+    var troubleEl = document.getElementById('trouble');
+    var buildEl = document.getElementById('build');
+    var sheet = document.getElementById('sheet');
+    var sheetText = document.getElementById('sheetText');
+    var keyRow = document.getElementById('keyRow');
+    var keyInput = document.getElementById('keyInput');
+
+    buildEl.textContent = 'build ' + BUILD;
+
+    var API_KEY = 'jarvisApiKey';
+    var HISTORY = 'jarvisVoiceTurns';
+
+    var turns = [];          // kept only to give replies continuity
+    var talking = false;     // the conversation is open
+    var busy = false;
+
+    /* ---------- storage, never trusted ---------- */
+
+    function readStore(key, fallback) {
+        try {
+            var raw = localStorage.getItem(key);
+            return raw === null ? fallback : JSON.parse(raw);
+        } catch (e) { return fallback; }
+    }
+    function writeStore(key, value) {
+        try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+    }
+    function apiKey() {
+        try { return localStorage.getItem(API_KEY) || ''; } catch (e) { return ''; }
+    }
+
+    /* ---------- state ---------- */
+
+    function setState(name, label) {
+        body.className = 'state-' + name;
+        stateEl.textContent = label;
+    }
+
+    function trouble(message) {
+        troubleEl.textContent = message || '';
+    }
+
+    /* =========================================================
+       SPEAKING
+       ========================================================= */
+
+    var synth = window.speechSynthesis || null;
+    var voice = null;
+    var queue = [];
+    var speaking = false;
+    var onDrain = null;
+    var unlocked = false;
+
+    function chooseVoice() {
+        if (!synth) return;
+        var voices = synth.getVoices() || [];
+        if (!voices.length) return;
+        var tests = [
+            function (v) { return /en[-_]GB/i.test(v.lang) && /daniel|arthur|george|oliver|male/i.test(v.name); },
+            function (v) { return /en[-_]GB/i.test(v.lang) && !/female|hazel|kate|serena|fiona/i.test(v.name); },
+            function (v) { return /en[-_]GB/i.test(v.lang); },
+            function (v) { return /^en([-_]|$)/i.test(v.lang); }
+        ];
+        for (var i = 0; i < tests.length; i++) {
+            for (var j = 0; j < voices.length; j++) {
+                if (tests[i](voices[j])) { voice = voices[j]; return; }
+            }
+        }
+        voice = voices[0];
+    }
+
+    if (synth) {
+        chooseVoice();
+        synth.addEventListener('voiceschanged', chooseVoice);
+    }
+
+    // iOS only permits speech begun inside a tap. Prime it during the tap so
+    // the replies that arrive seconds later are allowed to play.
+    function unlock() {
+        if (unlocked || !synth) return;
+        try {
+            var primer = new SpeechSynthesisUtterance(' ');
+            primer.volume = 0;
+            synth.speak(primer);
+            unlocked = true;
+        } catch (e) {}
+    }
+
+    function pieces(text) {
+        var cleaned = String(text)
+            .replace(/[•·▪●]/g, ' ')
+            .replace(/[*_`#~|]/g, ' ')
+            .replace(/\s*\n\s*/g, '. ')
+            .replace(/\.{2,}/g, '.')
+            .replace(/\s{2,}/g, ' ')
+            .trim();
+        var sentences = cleaned.match(/[^.!?…]+[.!?…]*\s*/g) || [];
+        var out = [];
+        for (var i = 0; i < sentences.length; i++) {
+            var s = sentences[i].trim();
+            while (s.length > 200) {
+                var cut = s.lastIndexOf(' ', 200);
+                if (cut < 60) cut = 200;
+                out.push(s.slice(0, cut));
+                s = s.slice(cut).trim();
+            }
+            if (s) out.push(s);
+        }
+        return out;
+    }
+
+    function pump() {
+        if (!synth || speaking) return;
+        if (!queue.length) {
+            core.style.transform = '';
+            var done = onDrain;
+            onDrain = null;
+            if (done) done();
+            return;
+        }
+
+        var u = new SpeechSynthesisUtterance(queue.shift());
+        if (voice) u.voice = voice;
+        u.rate = 1.02;
+        u.pitch = 0.82;
+        speaking = true;
+
+        u.onboundary = function () {
+            core.style.transform = core.style.transform === 'scale(1.16)' ? 'scale(1)' : 'scale(1.16)';
+        };
+        u.onend = u.onerror = function () {
+            speaking = false;
+            pump();
+        };
+
+        try { synth.speak(u); } catch (e) { speaking = false; pump(); }
+    }
+
+    function say(text, whenDone) {
+        if (!synth) { if (whenDone) whenDone(); return; }
+        var chunks = pieces(text);
+        if (!chunks.length) { if (whenDone) whenDone(); return; }
+        setState('speaking', 'Speaking');
+        queue = queue.concat(chunks);
+        onDrain = whenDone || null;
+        pump();
+    }
+
+    function hush() {
+        queue = [];
+        onDrain = null;
+        speaking = false;
+        if (synth) { try { synth.cancel(); } catch (e) {} }
+        core.style.transform = '';
+    }
+
+    /* =========================================================
+       LISTENING
+       ========================================================= */
+
+    var Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    var recog = null;
+    var listening = false;
+
+    var TROUBLE = {
+        'not-allowed': 'Microphone permission was refused. Allow it for this site in your browser settings, then tap again.',
+        'service-not-allowed': 'The browser blocked listening. On iPhone: Settings, General, Keyboard, turn on Dictation. Then tap again.',
+        'audio-capture': 'No microphone found. Check nothing else is using it, then tap again.',
+        'network': 'Listening needs a connection and could not reach one.',
+        'language-not-supported': 'This device has no recognition for that language. Tap again and I will try another.'
+    };
+
+    if (Recognition) {
+        recog = new Recognition();
+        var deviceLang = navigator.language || 'en-US';
+        recog.lang = /^en\b/i.test(deviceLang) ? deviceLang : 'en-GB';
+        recog.interimResults = true;
+        recog.continuous = false;
+        recog.maxAlternatives = 1;
+
+        recog.onstart = function () {
+            listening = true;
+            trouble('');
+            setState('listening', 'Listening');
+        };
+
+        // The transcript is never shown — it goes straight to the brain.
+        recog.onresult = function (event) {
+            var final = '';
+            for (var i = event.resultIndex; i < event.results.length; i++) {
+                if (event.results[i].isFinal) final += event.results[i][0].transcript;
+                else core.style.transform = 'scale(1.1)';   // react to your voice
+            }
+            final = final.trim();
+            if (final) ask(final);
+        };
+
+        recog.onerror = function (event) {
+            var err = (event && event.error) || 'unknown';
+            if (err === 'aborted') return;
+            if (err === 'no-speech') {
+                // Ordinary in a conversation: just open the mic again.
+                if (talking && !busy) window.setTimeout(listen, 200);
+                return;
+            }
+            if (err === 'language-not-supported') recog.lang = 'en-US';
+            talking = false;
+            setState('error', 'Tap to talk');
+            trouble(TROUBLE[err] || 'Listening stopped: ' + err + '. Tap to try again.');
+        };
+
+        recog.onend = function () {
+            listening = false;
+            if (talking && !busy && !speaking) setState('idle', 'Tap to talk');
+        };
+    }
+
+    function listen() {
+        if (!recog) {
+            talking = false;
+            setState('error', 'Tap to talk');
+            trouble('This browser cannot listen — it has no speech recognition. Safari, Chrome or Edge can. Text mode still works.');
+            return;
+        }
+        if (listening || busy) return;
+        hush();
+        try {
+            recog.start();
+        } catch (e) {
+            talking = false;
+            setState('error', 'Tap to talk');
+            trouble('The browser would not open the microphone. Tap the reactor again.');
+        }
+    }
+
+    /* =========================================================
+       THINKING
+       ========================================================= */
+
+    var PERSONA = 'You are Jarvis, a personal AI assistant: the calm, dryly witty British ' +
+        'butler-engineer. Composed, precise, warm without fawning. Address the user as "sir" ' +
+        'unless they give you their name. You are being LISTENED TO, never read: reply in plain ' +
+        'spoken sentences, no markdown, no lists, no headings, no emoji, no symbols. Keep it to ' +
+        'one to three sentences unless genuinely asked for more. Never invent facts.';
+
+    function offline(text) {
+        var t = text.toLowerCase();
+        if (/^(hi|hey|hello|good (morning|afternoon|evening))/.test(t)) {
+            var h = new Date().getHours();
+            return (h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening') + ', sir. I am listening.';
+        }
+        if (/who are you|your name/.test(t)) return 'I am Jarvis. Just A Rather Very Intelligent System.';
+        if (/time/.test(t)) return 'It is ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) + '.';
+        if (/date|what day/.test(t)) {
+            return 'Today is ' + new Date().toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' }) + '.';
+        }
+        if (/joke/.test(t)) return 'Why did the developer go broke? He used up all his cache.';
+        if (/coin/.test(t)) return 'It lands on ' + (Math.random() < 0.5 ? 'heads' : 'tails') + '.';
+
+        var sum = t.replace(/[^0-9+\-*/(). ]/g, '').trim();
+        if (sum && /\d/.test(sum) && /[+\-*/]/.test(sum)) {
+            try {
+                var n = Function('"use strict"; return (' + sum + ')')();
+                if (typeof n === 'number' && isFinite(n)) return 'That comes to ' + (Math.round(n * 1e6) / 1e6) + '.';
+            } catch (e) {}
+        }
+        return 'I have no language model connected, sir, so I will not pretend to an answer. ' +
+            'Open the Brain panel to connect one.';
+    }
+
+    function think(text) {
+        var key = apiKey();
+        if (!key) return Promise.resolve(offline(text));
+
+        var recent = turns.slice(-10);
+        return fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json',
+                'x-api-key': key,
+                'anthropic-version': '2023-06-01',
+                'anthropic-dangerous-direct-browser-access': 'true'
+            },
+            body: JSON.stringify({
+                model: 'claude-sonnet-5',
+                max_tokens: 512,
+                system: PERSONA,
+                messages: recent.concat([{ role: 'user', content: text }])
+            })
+        }).then(function (r) {
+            if (!r.ok) throw new Error('the key was refused');
+            return r.json();
+        }).then(function (data) {
+            var reply = (data.content || [])
+                .filter(function (b) { return b.type === 'text'; })
+                .map(function (b) { return b.text; })
+                .join(' ')
+                .trim();
+            if (!reply) throw new Error('nothing came back');
+            return reply;
+        }).catch(function (e) {
+            return 'I could not reach my language model — ' + e.message + '. ' + offline(text);
+        });
+    }
+
+    function ask(text) {
+        busy = true;
+        hush();
+        setState('thinking', 'Thinking');
+
+        turns.push({ role: 'user', content: text });
+
+        think(text).then(function (reply) {
+            turns.push({ role: 'assistant', content: reply });
+            if (turns.length > 20) turns = turns.slice(-20);
+            writeStore(HISTORY, turns);
+            busy = false;
+
+            say(reply, function () {
+                // Hand the floor straight back — no tapping between turns.
+                if (talking) listen();
+                else setState('idle', 'Tap to talk');
+            });
+        });
+    }
+
+    /* =========================================================
+       CONTROLS
+       ========================================================= */
+
+    orb.addEventListener('click', function () {
+        unlock();
+        trouble('');
+
+        if (talking) {
+            talking = false;
+            if (listening) { try { recog.stop(); } catch (e) {} }
+            hush();
+            busy = false;
+            setState('idle', 'Tap to talk');
+            return;
+        }
+
+        talking = true;
+        listen();
+    });
+
+    /* ---------- sheet: key + diagnostics ---------- */
+
+    function openSheet(text, showKeyRow) {
+        sheetText.textContent = text;
+        keyRow.style.display = showKeyRow ? 'flex' : 'none';
+        sheet.classList.add('open');
+    }
+
+    document.getElementById('sheetClose').addEventListener('click', function () {
+        sheet.classList.remove('open');
+    });
+
+    document.getElementById('brainBtn').addEventListener('click', function () {
+        unlock();
+        openSheet(apiKey()
+            ? 'Connected — Jarvis is thinking with a live model. Paste a new key to replace it, or clear it to go back to the built-in brain.'
+            : 'Not connected. Paste an Anthropic API key and Jarvis thinks with a real model. It is kept in this browser only and sent only to Anthropic — unencrypted, so use a key you can revoke.',
+            true);
+        keyInput.value = '';
+    });
+
+    document.getElementById('keySave').addEventListener('click', function () {
+        var value = keyInput.value.trim();
+        if (!value) return;
+        try {
+            localStorage.setItem(API_KEY, value);
+            openSheet('Connected. Tap the reactor and talk.', false);
+        } catch (e) {
+            openSheet('This browser refused to store the key.', true);
+        }
+    });
+
+    document.getElementById('keyClear').addEventListener('click', function () {
+        try { localStorage.removeItem(API_KEY); } catch (e) {}
+        openSheet('Cleared — back to the built-in brain.', false);
+    });
+
+    document.getElementById('checkBtn').addEventListener('click', function () {
+        unlock();
+        var voices = synth ? (synth.getVoices() || []) : [];
+        var report = [
+            'VOICE CHECK — build ' + BUILD,
+            '',
+            'Address: ' + location.protocol + '//' + location.host,
+            'Secure origin: ' + (window.isSecureContext ? 'yes' : 'NO — listening cannot work here'),
+            'Can listen: ' + (Recognition ? 'yes' : 'NO — this browser has no speech recognition'),
+            'Can speak: ' + (synth ? 'yes' : 'NO'),
+            'Voices installed: ' + voices.length + (voice ? ' — using "' + voice.name + '"' : ''),
+            'Speech unlocked: ' + (unlocked ? 'yes' : 'no'),
+            'Language: ' + (recog ? recog.lang : 'n/a'),
+            'Model: ' + (apiKey() ? 'connected' : 'built-in brain'),
+            '',
+            navigator.userAgent
+        ].join('\n');
+
+        openSheet(report, false);
+
+        if (navigator.permissions && navigator.permissions.query) {
+            navigator.permissions.query({ name: 'microphone' }).then(function (s) {
+                sheetText.textContent = report.replace('Speech unlocked:', 'Mic permission: ' + s.state + '\nSpeech unlocked:');
+            }).catch(function () {});
+        }
+    });
+
+    /* ---------- boot ---------- */
+
+    var stored = readStore(HISTORY, []);
+    if (Object.prototype.toString.call(stored) === '[object Array]') turns = stored.slice(-20);
+
+    if (!Recognition) {
+        trouble('This browser cannot listen — it has no speech recognition. Safari, Chrome or Edge can. Text mode still works.');
+    }
+}());
+</script>
+</body>
+</html>

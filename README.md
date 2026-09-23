@@ -98,7 +98,21 @@ server and is never sent to the browser.
 
 ### Live on the web (microphone works here)
 
-**https://musahaseeb2012.github.io/webapp/jarvis/**
+**https://musahaseeb2012.github.io/webapp/jarvis/** — voice only. Tap the
+reactor and talk. Jarvis listens, answers aloud, and reopens the microphone for
+your next question, with nothing transcribed on screen. Tap again to stop.
+
+The browser still transcribes internally — speech recognition is the only way a
+web page can hear anything — but no text is shown, and the reply is written for
+the ear rather than the eye.
+
+The reactor itself is the entire interface: quiet when idle, haloed while
+listening, counter-spinning while thinking, pulsing in time with the words while
+speaking. The only words on screen are a one-word state and, when something
+breaks, a line saying what.
+
+**https://musahaseeb2012.github.io/webapp/jarvis/text.html** — the full text
+chat, for when typing is easier.
 
 Served by GitHub Pages from the `gh-pages` branch, under `jarvis/` so the site
 already at the root is untouched. An `https://` origin is the whole point: a page
@@ -131,6 +145,7 @@ voice input is text-only there. Voice output still works.
 ### Jarvis files
 
 - `jarvis-standalone.html` - **The whole app in one file.** Open this one.
+- `jarvis-voice.html` - Voice-only interface, the site's front page
 - `jarvis-artifact.html` - Source of the claude.ai Artifact (real model; claude.ai only)
 - `jarvis.html` - Chat interface (needs the two files below alongside it)
 - `jarvis.css` - Gold and red theme
