@@ -23,9 +23,11 @@ const VOICE_KEY = 'jarvisVoiceEnabled';
 
 let conversation = [];
 let memory = { name: null, facts: [], topics: [] };
-// null = untested, true/false once known. Opened from disk there is no server
-// to ask, so skip the probe entirely and go straight to the local brain.
-let remoteBrainAvailable = window.location.protocol === 'file:' ? false : null;
+// null = untested, true/false once known. Where there is no server to ask —
+// opened from disk, or served as a static site — skip the probe entirely and
+// go straight to the local brain.
+let remoteBrainAvailable =
+    (window.location.protocol === 'file:' || window.JARVIS_NO_SERVER === true) ? false : null;
 
 /* ---------- Storage ---------- */
 

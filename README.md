@@ -96,6 +96,26 @@ brain automatically if the endpoint is unavailable, so it never breaks. Override
 model with `JARVIS_MODEL` (defaults to `claude-sonnet-5`). The key stays on the
 server and is never sent to the browser.
 
+### Live on the web (microphone works here)
+
+**https://musahaseeb2012.github.io/webapp/jarvis/**
+
+Served by GitHub Pages from the `gh-pages` branch, under `jarvis/` so the site
+already at the root is untouched. An `https://` origin is the whole point: a page
+opened from disk (`file://`) cannot ask for microphone permission, so this is the
+only build where voice input actually works. On a phone, use the browser's
+**Add to Home Screen** and it opens like an app, without browser chrome.
+
+Rebuild and republish after changing `jarvis.css` or `jarvis.js`:
+
+```bash
+./build-pages.sh          # regenerates ./site
+# then copy site/ into the gh-pages branch's jarvis/ folder and push
+```
+
+This build talks to no server, so it runs the offline brain. For a real model,
+use the Artifact below.
+
 ### Hosted version (a real model, no setup)
 
 `jarvis-artifact.html` is a variant published to claude.ai as a private Artifact.
@@ -112,6 +132,8 @@ voice input is text-only there. Voice output still works.
 - `jarvis.css` - Gold and red theme
 - `jarvis.js` - Conversation engine, speech input/output, persistence
 - `build-jarvis.sh` - Rebuilds `jarvis-standalone.html` after editing the three above
+- `build-pages.sh` - Builds `site/`, what GitHub Pages serves at `/jarvis/`
+- `manifest.webmanifest`, `icon-*.png` - Home-screen install metadata for the site
 
 After changing `jarvis.css` or `jarvis.js`, regenerate the single file:
 
