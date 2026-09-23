@@ -15,7 +15,11 @@ const voiceToggle = document.getElementById('voiceToggle');
 const statusDot = document.getElementById('statusDot');
 const statusText = document.getElementById('statusText');
 const reactor = document.getElementById('reactor');
-const msgCount = document.getElementById('msgCount');
+const buildStamp = document.getElementById('buildStamp');
+const voiceCheckBtn = document.getElementById('voiceCheck');
+
+// Replaced at build time. 'dev' means this file was loaded straight from source.
+const BUILD = '__BUILD__'.indexOf('_') === 0 ? 'dev' : '__BUILD__';
 const keyPanel = document.getElementById('keyPanel');
 const keyInput = document.getElementById('keyInput');
 const keySave = document.getElementById('keySave');
@@ -80,8 +84,9 @@ function renderMessage(role, text, animate = true) {
 }
 
 function updateCount() {
-    const exchanges = conversation.filter(m => m.role === 'user').length;
-    msgCount.textContent = exchanges + (exchanges === 1 ? ' exchange' : ' exchanges');
+    // The footer shows the build instead — knowing which version you are
+    // running matters more than the message count when something is stale.
+    if (buildStamp) buildStamp.textContent = 'build ' + BUILD;
 }
 
 function setStatus(text, busy) {
@@ -196,6 +201,23 @@ function pumpSpeech() {
     } catch (e) {
         speech.speaking = false;
         pumpSpeech();
+    }
+}
+
+let speechUnlocked = false;
+
+// Safari on iOS only allows speech that began inside a user gesture. Our
+// replies arrive asynchronously, long after the tap, so the first one is
+// refused unless the engine was primed during the tap itself.
+function unlockSpeech() {
+    if (speechUnlocked || !synth) return;
+    try {
+        const primer = new SpeechSynthesisUtterance(' ');
+        primer.volume = 0;
+        synth.speak(primer);
+        speechUnlocked = true;
+    } catch (e) {
+        /* nothing to unlock */
     }
 }
 
@@ -351,6 +373,7 @@ function afterSpeaking() {
 }
 
 micBtn.addEventListener('click', () => {
+    unlockSpeech();
     if (!recognition) {
         // startListening explains why, instead of the tap doing nothing at all.
         startListening();
@@ -801,6 +824,7 @@ async function think(text) {
 /* ---------- Conversation flow ---------- */
 
 async function handleSend() {
+    unlockSpeech();
     const text = chatInput.value.trim();
     if (!text) return;
 
@@ -856,6 +880,9 @@ function greet() {
 }
 
 /* ---------- Wiring ---------- */
+
+document.addEventListener('click', unlockSpeech, { once: true });
+document.addEventListener('touchend', unlockSpeech, { once: true, passive: true });
 
 sendBtn.addEventListener('click', handleSend);
 
@@ -914,6 +941,38 @@ keyClear.addEventListener('click', () => {
     try { localStorage.removeItem(API_KEY); } catch (e) {}
     refreshKeyStatus();
 });
+
+async function voiceCheck() {
+    unlockSpeech();
+
+    const voices = synth ? (synth.getVoices() || []) : [];
+    let micPermission = 'unknown (this browser will not say)';
+    try {
+        if (navigator.permissions && navigator.permissions.query) {
+            const status = await navigator.permissions.query({ name: 'microphone' });
+            micPermission = status.state;
+        }
+    } catch (e) {
+        micPermission = 'unknown (' + e.name + ')';
+    }
+
+    voiceNote([
+        'VOICE CHECK — build ' + BUILD,
+        '',
+        'Page address: ' + location.protocol + '//' + location.host,
+        'Secure origin: ' + (window.isSecureContext ? 'yes' : 'NO — voice input cannot work here'),
+        'Speech recognition (listening): ' + (SpeechRecognition ? 'supported' : 'NOT SUPPORTED by this browser'),
+        'Microphone permission: ' + micPermission,
+        'Speech synthesis (speaking): ' + (synth ? 'supported' : 'NOT SUPPORTED'),
+        'Voices installed: ' + voices.length + (speech.voice ? ' — using "' + speech.voice.name + '"' : ' — none chosen yet'),
+        'Speech unlocked by a tap: ' + (speechUnlocked ? 'yes' : 'no'),
+        'Recognition language: ' + (recognition ? recognition.lang : 'n/a'),
+        '',
+        'Browser: ' + navigator.userAgent
+    ].join('\n'));
+}
+
+voiceCheckBtn.addEventListener('click', voiceCheck);
 
 loadState();
 refreshKeyStatus();

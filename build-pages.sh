@@ -5,6 +5,7 @@
 set -e
 
 OUT="site"
+BUILD_STAMP="$(date -u +%Y%m%d-%H%M)"
 rm -rf "$OUT"
 mkdir -p "$OUT"
 

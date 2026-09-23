@@ -2,6 +2,7 @@
 # Bundles Jarvis into one self-contained HTML file you can open by
 # double-clicking it — no server, no other files, works offline.
 OUTPUT="jarvis-standalone.html"
+BUILD_STAMP="$(date -u +%Y%m%d-%H%M)"
 
 {
     # Everything from jarvis.html up to the stylesheet link
@@ -17,7 +18,7 @@ OUTPUT="jarvis-standalone.html"
     sed -n '/<body>/,/<\/body>/p' jarvis.html | sed '1d;$d' | grep -v '<script src="jarvis.js">'
 
     echo '    <script>'
-    cat jarvis.js
+    sed "s/__BUILD__/$BUILD_STAMP/g" jarvis.js
     echo '    </script>'
     echo '</body>'
     echo '</html>'
