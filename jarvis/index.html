@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>J.A.R.V.I.S.</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%23140000' stroke='%23ffd700' stroke-width='6'/%3E%3Ccircle cx='50' cy='50' r='20' fill='%23dc143c'/%3E%3Ccircle cx='50' cy='50' r='10' fill='%23ffd700'/%3E%3C/svg%3E">
+    <script>window.JARVIS_NO_SERVER = true;</script>
+    <meta name="theme-color" content="#0b0705">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Jarvis">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="icon-180.png">
+<style>
+:root {
+    --gold: #ffd21f;
+    --gold-dim: #c9a227;
+    --red: #e01839;
+    --ground: #080503;
+    --ink-faint: #7d6f52;
+}
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; margin: 0; }
+
+body {
+    background: var(--ground);
+    background-image:
+        radial-gradient(ellipse 70% 50% at 50% 12%, rgba(255, 210, 31, 0.10), transparent 60%),
+        radial-gradient(ellipse 70% 50% at 50% 92%, rgba(224, 24, 57, 0.14), transparent 60%);
+    color: var(--gold);
+    font-family: 'Chakra Petch', 'Trebuchet MS', -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: calc(22px + env(safe-area-inset-top, 0px)) 18px calc(18px + env(safe-area-inset-bottom, 0px));
+    overflow: hidden;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+h1 {
+    margin: 0;
+    font-size: clamp(1.5rem, 7vw, 2.1rem);
+    font-weight: 700;
+    letter-spacing: 0.32em;
+    text-indent: 0.32em;
+    color: var(--gold);
+    text-shadow: 0 0 22px rgba(255, 210, 31, 0.45);
+}
+
+.tagline {
+    margin: 8px 0 0;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    text-align: center;
+}
+
+/* ---------- The orb: the entire interface ---------- */
+
+.stage {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 34px;
+    width: 100%;
+    min-height: 0;
+}
+
+#orb {
+    position: relative;
+    width: min(62vw, 240px);
+    height: min(62vw, 240px);
+    border: none;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+    flex: 0 0 auto;
+    border-radius: 50%;
+}
+
+#orb i {
+    position: absolute;
+    display: block;
+    border-radius: 50%;
+}
+
+.halo {
+    inset: -10%;
+    background: radial-gradient(circle, rgba(255, 210, 31, 0.22) 0%, transparent 68%);
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+
+.ring-a {
+    inset: 0;
+    border: 3px solid rgba(255, 210, 31, 0.5);
+    border-top-color: var(--red);
+    animation: spin 6s linear infinite;
+}
+
+.ring-b {
+    inset: 11%;
+    border: 2px dashed rgba(224, 24, 57, 0.6);
+    border-bottom-color: var(--gold);
+    animation: spin 4.5s linear infinite reverse;
+}
+
+.core {
+    inset: 26%;
+    background: radial-gradient(circle, #fff6d0 0%, var(--gold) 42%, var(--red) 100%);
+    box-shadow: 0 0 34px rgba(255, 210, 31, 0.7), 0 0 70px rgba(224, 24, 57, 0.5);
+    transition: transform 0.16s ease-out, box-shadow 0.3s;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Idle: slow and quiet, waiting to be tapped. */
+.state-idle .core { transform: scale(0.88); }
+
+/* Listening: the halo comes up and the rings quicken. */
+.state-listening .halo { opacity: 1; }
+.state-listening .ring-a { animation-duration: 1.6s; border-top-color: var(--gold); }
+.state-listening .ring-b { animation-duration: 1.2s; }
+.state-listening .core {
+    box-shadow: 0 0 46px rgba(255, 210, 31, 0.9), 0 0 96px rgba(224, 24, 57, 0.6);
+}
+
+/* Thinking: rings counter-rotate fast, core dims. */
+.state-thinking .ring-a { animation-duration: 0.9s; }
+.state-thinking .ring-b { animation-duration: 0.7s; }
+.state-thinking .core { transform: scale(0.72); opacity: 0.75; }
+
+/* Speaking: the core pulses with the words. */
+.state-speaking .halo { opacity: 0.7; }
+.state-speaking .ring-a { border-top-color: var(--red); }
+
+.state-error .ring-a { border-color: rgba(224, 24, 57, 0.8); }
+.state-error .core { background: radial-gradient(circle, #ffb3b3 0%, var(--red) 70%); }
+
+@media (prefers-reduced-motion: reduce) {
+    .ring-a, .ring-b { animation: none; }
+    .core { transition: none; }
+}
+
+/* ---------- The only words on screen ---------- */
+
+.readout {
+    text-align: center;
+    min-height: 3.4em;
+    max-width: 22em;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+}
+
+#state {
+    font-size: 0.82rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+}
+
+#trouble {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.82rem;
+    letter-spacing: 0;
+    text-transform: none;
+    line-height: 1.5;
+    color: #ff9aa8;
+}
+
+#trouble:empty { display: none; }
+
+/* ---------- Fallback: the phone's own dictation ---------- */
+
+.dictate {
+    width: 100%;
+    max-width: 24em;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dictate p {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--gold-dim);
+    text-align: center;
+}
+
+.dictate strong { color: var(--gold); }
+
+.dictate-row { display: flex; gap: 8px; }
+
+.dictate input {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 12px 14px;
+    border: 1px solid rgba(255, 210, 31, 0.35);
+    border-radius: 3px;
+    background: #140d07;
+    color: #fff;
+    font-size: 16px;
+}
+
+.dictate input:focus { outline: none; border-color: var(--gold); }
+
+.dictate button {
+    flex: 0 0 auto;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 3px;
+    background: linear-gradient(135deg, var(--gold), var(--red));
+    color: #1a0a00;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+/* ---------- Minimal controls ---------- */
+
+footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 0.58rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+}
+
+footer button, footer a {
+    background: none;
+    border: none;
+    font: inherit;
+    color: var(--ink-faint);
+    cursor: pointer;
+    padding: 6px 2px;
+    text-decoration: none;
+}
+
+footer button:hover, footer a:hover { color: var(--gold); }
+
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+
+/* ---------- Key panel, hidden until asked for ---------- */
+
+.sheet {
+    position: fixed;
+    inset: auto 0 0 0;
+    background: #120c08;
+    border-top: 2px solid rgba(255, 210, 31, 0.35);
+    padding: 20px 18px calc(22px + env(safe-area-inset-bottom, 0px));
+    transform: translateY(100%);
+    transition: transform 0.28s ease;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.sheet.open { transform: translateY(0); }
+
+.sheet p {
+    margin: 0 0 12px;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: var(--gold-dim);
+    letter-spacing: 0;
+    text-transform: none;
+    white-space: pre-wrap;
+}
+
+.sheet-row { display: flex; gap: 8px; }
+
+.sheet input {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 11px 14px;
+    border: 1px solid rgba(255, 210, 31, 0.3);
+    border-radius: 3px;
+    background: #000;
+    color: #fff;
+    font-size: 16px;
+}
+
+.sheet button {
+    flex: 0 0 auto;
+    padding: 11px 15px;
+    border: none;
+    border-radius: 3px;
+    background: linear-gradient(135deg, var(--gold), var(--red));
+    color: #1a0a00;
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.sheet button.ghost {
+    background: none;
+    border: 1px solid rgba(224, 24, 57, 0.6);
+    color: #ff8095;
+}
+
+.sheet a {
+    color: var(--gold);
+    text-decoration: underline;
+}
+
+.model-pick {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.model-btn {
+    flex: 1 1 0;
+    padding: 10px 8px;
+    border: 1px solid rgba(255, 210, 31, 0.3);
+    border-radius: 3px;
+    background: transparent;
+    color: var(--gold-dim);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.model-btn.on {
+    border-color: var(--gold);
+    background: rgba(255, 210, 31, 0.14);
+    color: var(--gold);
+}
+
+.sheet .close {
+    display: block;
+    margin: 14px auto 0;
+    background: none;
+    border: none;
+    color: var(--ink-faint);
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+</style>
+</head>
+<body class="state-idle">
+
+<div>
+    <h1>JARVIS</h1>
+    <p class="tagline">Tap the reactor. Then just talk.</p>
+</div>
+
+<div class="stage">
+    <button id="orb" aria-label="Tap to start or stop talking to Jarvis">
+        <i class="halo"></i><i class="ring-a"></i><i class="ring-b"></i><i class="core" id="core"></i>
+    </button>
+
+    <div class="readout">
+        <div id="state" aria-live="polite">Tap to talk</div>
+        <div id="trouble" aria-live="assertive"></div>
+    </div>
+
+    <form class="dictate" id="dictate" hidden>
+        <p>Your browser will not listen directly. Tap the box, then press the
+           <strong>microphone key on your own keyboard</strong> and speak —
+           Jarvis still answers out loud.</p>
+        <div class="dictate-row">
+            <input type="text" id="dictateInput" placeholder="Tap, then use your keyboard mic" autocomplete="off">
+            <button type="submit">Ask</button>
+        </div>
+    </form>
+</div>
+
+<footer>
+    <button id="brainBtn">⚙ Brain</button>
+    <button id="testBtn">🔊 Test voice</button>
+    <button id="checkBtn">🩺 Voice check</button>
+    <a href="text.html">⌨ Text mode</a>
+    <span id="build">build —</span>
+</footer>
+
+<div class="sheet" id="sheet">
+    <p id="sheetText"></p>
+    <div class="model-pick" id="modelPick" hidden>
+        <button data-model="fast" class="model-btn">Fast — Haiku</button>
+        <button data-model="smart" class="model-btn">Smart — Opus</button>
+    </div>
+    <button class="close" id="keyTest" hidden>Test this key now</button>
+    <p id="keyLink" hidden>Get a key at
+        <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a>
+        — a paid developer account, billed per message. Tap the link rather than typing the
+        address, or your browser will search for it instead of opening it.</p>
+    <div class="sheet-row" id="keyRow">
+        <input type="text" id="keyInput" placeholder="sk-ant-..." autocomplete="off"
+               autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="text">
+        <button id="keySave">Save</button>
+        <button id="keyClear" class="ghost">Clear</button>
+    </div>
+    <button class="close" id="sheetClose">Close</button>
+</div>
+
+<script>
+(function () {
+    'use strict';
+
+    // Replaced at build time; 'dev' means this came straight from source.
+    var BUILD = '20260923-2103'.charAt(0) === '_' ? 'dev' : '20260923-2103';
+
+    var body = document.body;
+    var orb = document.getElementById('orb');
+    var core = document.getElementById('core');
+    var stateEl = document.getElementById('state');
+    var troubleEl = document.getElementById('trouble');
+    var buildEl = document.getElementById('build');
+    var sheet = document.getElementById('sheet');
+    var sheetText = document.getElementById('sheetText');
+    var keyRow = document.getElementById('keyRow');
+    var keyInput = document.getElementById('keyInput');
+
+    buildEl.textContent = 'build ' + BUILD;
+
+    var API_KEY = 'jarvisApiKey';
+    var HISTORY = 'jarvisVoiceTurns';
+
+    var turns = [];          // kept only to give replies continuity
+    var talking = false;     // the conversation is open
+    var busy = false;
+
+    /* ---------- storage, never trusted ---------- */
+
+    function readStore(key, fallback) {
+        try {
+            var raw = localStorage.getItem(key);
+            return raw === null ? fallback : JSON.parse(raw);
+        } catch (e) { return fallback; }
+    }
+    function writeStore(key, value) {
+        try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+    }
+    function apiKey() {
+        try { return localStorage.getItem(API_KEY) || ''; } catch (e) { return ''; }
+    }
+
+    /* ---------- state ---------- */
+
+    var heardFlash = null;
+
+    function setState(name, label) {
+        body.className = 'state-' + name;
+        if (!heardFlash) stateEl.textContent = label;
+    }
+
+    // Show it just long enough to read, then get out of the way.
+    function flashHeard(words) {
+        var shown = words.length > 42 ? words.slice(0, 40) + '…' : words;
+        stateEl.textContent = '“' + shown + '”';
+        if (heardFlash) window.clearTimeout(heardFlash);
+        heardFlash = window.setTimeout(function () {
+            heardFlash = null;
+            stateEl.textContent = busy ? 'Thinking' : 'Speaking';
+        }, 2200);
+    }
+
+    var troubleIsAboutSound = false;
+
+    function trouble(message, aboutSound) {
+        troubleEl.textContent = message || '';
+        troubleIsAboutSound = !!message && !!aboutSound;
+    }
+
+    // Sound started, so only a sound warning is now stale. Anything else on
+    // screen (a rejected key, an empty balance) still needs reading.
+    function clearSoundTrouble() {
+        if (troubleIsAboutSound) trouble('');
+    }
+
+    /* =========================================================
+       SPEAKING
+       ========================================================= */
+
+    var synth = window.speechSynthesis || null;
+    var voice = null;
+    var queue = [];
+    var speaking = false;
+    var onDrain = null;
+    var unlocked = false;
+    var soundProven = false;   // has any utterance actually started?
+    var soundWatch = null;
+
+    // iPadOS reports itself as a Mac, so check for touch as well.
+    var isApple = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+        (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+
+    function chooseVoice() {
+        if (!synth) return;
+        var voices = synth.getVoices() || [];
+        if (!voices.length) return;
+        var tests = [
+            function (v) { return /en[-_]GB/i.test(v.lang) && /daniel|arthur|george|oliver|male/i.test(v.name); },
+            function (v) { return /en[-_]GB/i.test(v.lang) && !/female|hazel|kate|serena|fiona/i.test(v.name); },
+            function (v) { return /en[-_]GB/i.test(v.lang); },
+            function (v) { return /^en([-_]|$)/i.test(v.lang); }
+        ];
+        // On iOS, assigning utterance.voice is a common cause of silent
+        // playback. The system default is reliable, so leave it alone there.
+        if (isApple) { voice = null; return; }
+
+        for (var i = 0; i < tests.length; i++) {
+            for (var j = 0; j < voices.length; j++) {
+                if (tests[i](voices[j])) { voice = voices[j]; return; }
+            }
+        }
+        voice = voices[0];
+    }
+
+    if (synth) {
+        chooseVoice();
+        synth.addEventListener('voiceschanged', chooseVoice);
+    }
+
+    // iOS only permits speech begun inside a tap. Prime it during the tap so
+    // the replies that arrive seconds later are allowed to play.
+    function unlock() {
+        if (!synth) return;
+        try {
+            // iOS can leave the engine paused; resume costs nothing elsewhere.
+            synth.resume();
+            if (unlocked) return;
+            var primer = new SpeechSynthesisUtterance('ready');
+            primer.volume = 0.01;   // truly zero is sometimes discarded unheard
+            synth.speak(primer);
+            unlocked = true;
+        } catch (e) {}
+    }
+
+    function pieces(text) {
+        var cleaned = String(text)
+            .replace(/[•·▪●]/g, ' ')
+            .replace(/[*_`#~|]/g, ' ')
+            .replace(/\s*\n\s*/g, '. ')
+            .replace(/\.{2,}/g, '.')
+            .replace(/\s{2,}/g, ' ')
+            .trim();
+        var sentences = cleaned.match(/[^.!?…]+[.!?…]*\s*/g) || [];
+        var out = [];
+        for (var i = 0; i < sentences.length; i++) {
+            var s = sentences[i].trim();
+            while (s.length > 200) {
+                var cut = s.lastIndexOf(' ', 200);
+                if (cut < 60) cut = 200;
+                out.push(s.slice(0, cut));
+                s = s.slice(cut).trim();
+            }
+            if (s) out.push(s);
+        }
+        return out;
+    }
+
+    function pump() {
+        if (!synth || speaking) return;
+        if (!queue.length) {
+            core.style.transform = '';
+            var done = onDrain;
+            onDrain = null;
+            if (done) done();
+            return;
+        }
+
+        var u = new SpeechSynthesisUtterance(queue.shift());
+        if (voice) u.voice = voice;
+        u.volume = 1;
+        u.rate = isApple ? 1 : 1.02;
+        u.pitch = isApple ? 1 : 0.82;   // iOS is fussy about non-default pitch
+        speaking = true;
+
+        u.onstart = function () {
+            soundProven = true;
+            clearSoundWatch();
+            clearSoundTrouble();
+        };
+        u.onboundary = function () {
+            core.style.transform = core.style.transform === 'scale(1.16)' ? 'scale(1)' : 'scale(1.16)';
+        };
+        u.onend = u.onerror = function () {
+            speaking = false;
+            clearSoundWatch();
+            pump();
+        };
+
+        try {
+            synth.resume();
+            synth.speak(u);
+            watchForSilence();
+        } catch (e) {
+            speaking = false;
+            pump();
+        }
+    }
+
+    function clearSoundWatch() {
+        if (soundWatch) { window.clearTimeout(soundWatch); soundWatch = null; }
+    }
+
+    // speak() can be accepted and then produce nothing at all — a muted device,
+    // an engine iOS never started. Nothing fires, so only a timer catches it.
+    function watchForSilence() {
+        if (soundProven) return;
+        clearSoundWatch();
+        soundWatch = window.setTimeout(function () {
+            if (soundProven) return;
+            trouble('I am answering, but no sound is coming out. On an iPad: turn the volume up, ' +
+                'and check Control Centre — the mute switch silences web speech. Then tap "Test voice" below.', true);
+        }, 2500);
+    }
+
+    function say(text, whenDone) {
+        if (!synth) { if (whenDone) whenDone(); return; }
+        var chunks = pieces(text);
+        if (!chunks.length) { if (whenDone) whenDone(); return; }
+        setState('speaking', 'Speaking');
+        queue = queue.concat(chunks);
+        onDrain = whenDone || null;
+        pump();
+    }
+
+    function hush() {
+        queue = [];
+        onDrain = null;
+        clearSoundWatch();
+        // On iOS a cancel() followed closely by speak() silences the next
+        // utterance, so only cancel when something is really playing.
+        if (synth && (speaking || synth.speaking)) {
+            try { synth.cancel(); } catch (e) {}
+        }
+        speaking = false;
+        core.style.transform = '';
+    }
+
+    /* =========================================================
+       LISTENING
+       ========================================================= */
+
+    var Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    var recog = null;
+    var listening = false;
+    var heard = false;
+    var watchdog = null;
+    var deafStrikes = 0;
+
+    var dictateForm = document.getElementById('dictate');
+    var dictateInput = document.getElementById('dictateInput');
+
+    // Some browsers — iOS Safari in particular — start listening happily and
+    // then never deliver a result and never raise an error. Without this the
+    // orb sits on "Listening" forever and looks simply dead. After two such
+    // rounds, fall back to the keyboard's own dictation key, which works
+    // everywhere.
+    function offerDictation(message) {
+        talking = false;
+        stopWatchdog();
+        setState('error', 'Tap to talk');
+        trouble(message);
+        dictateForm.hidden = false;
+    }
+
+    function startWatchdog() {
+        stopWatchdog();
+        watchdog = window.setTimeout(function () {
+            if (!listening || heard) return;
+            try { recog.stop(); } catch (e) {}
+            deafStrikes++;
+            if (deafStrikes >= 2) {
+                offerDictation('I could not hear anything. This browser says it is listening but never sends me any words — common on iPhone.');
+            } else {
+                talking = false;
+                setState('error', 'Tap to talk');
+                trouble('I did not catch anything. Tap and speak clearly, close to the phone.');
+            }
+        }, 16000);
+    }
+
+    function stopWatchdog() {
+        if (watchdog) { window.clearTimeout(watchdog); watchdog = null; }
+    }
+
+    var TROUBLE = {
+        'not-allowed': 'Microphone permission was refused. Allow it for this site in your browser settings, then tap again.',
+        'service-not-allowed': 'The browser blocked listening. On iPhone: Settings, General, Keyboard, turn on Dictation. Then tap again.',
+        'audio-capture': 'No microphone found. Check nothing else is using it, then tap again.',
+        'network': 'Listening needs a connection and could not reach one.',
+        'language-not-supported': 'This device has no recognition for that language. Tap again and I will try another.'
+    };
+
+    if (Recognition) {
+        recog = new Recognition();
+        var deviceLang = navigator.language || 'en-US';
+        recog.lang = /^en\b/i.test(deviceLang) ? deviceLang : 'en-GB';
+        recog.interimResults = true;
+        recog.continuous = false;
+        recog.maxAlternatives = 1;
+
+        recog.onstart = function () {
+            listening = true;
+            heard = false;
+            clearSoundTrouble();
+            setState('listening', 'Listening');
+            startWatchdog();
+        };
+
+        // The transcript is never shown — it goes straight to the brain.
+        recog.onresult = function (event) {
+            var final = '';
+            for (var i = event.resultIndex; i < event.results.length; i++) {
+                if (event.results[i].isFinal) final += event.results[i][0].transcript;
+                else core.style.transform = 'scale(1.1)';   // react to your voice
+            }
+            final = final.trim();
+            if (final) {
+                heard = true;
+                deafStrikes = 0;
+                stopWatchdog();
+                flashHeard(final);
+                ask(final);
+            }
+        };
+
+        recog.onerror = function (event) {
+            var err = (event && event.error) || 'unknown';
+            stopWatchdog();
+            if (err === 'aborted') return;
+            if (err === 'not-allowed' || err === 'service-not-allowed') {
+                offerDictation(TROUBLE[err]);
+                return;
+            }
+            if (err === 'no-speech') {
+                // Ordinary in a conversation, but do not spin: after a few
+                // silent rounds, stop and let the user start again.
+                deafStrikes++;
+                if (deafStrikes >= 3) {
+                    talking = false;
+                    deafStrikes = 0;
+                    setState('idle', 'Tap to talk');
+                    trouble('I heard nothing for a while, so I have stopped listening. Tap when you are ready.');
+                } else if (talking && !busy) {
+                    window.setTimeout(listen, 250);
+                }
+                return;
+            }
+            if (err === 'language-not-supported') recog.lang = 'en-US';
+            talking = false;
+            setState('error', 'Tap to talk');
+            trouble(TROUBLE[err] || 'Listening stopped: ' + err + '. Tap to try again.');
+        };
+
+        recog.onend = function () {
+            listening = false;
+            stopWatchdog();
+            if (talking && !busy && !speaking) setState('idle', 'Tap to talk');
+        };
+    }
+
+    function listen() {
+        if (!recog) {
+            offerDictation('This browser cannot listen on its own — it has no speech recognition.');
+            return;
+        }
+        if (listening || busy) return;
+        hush();
+        try {
+            recog.start();
+        } catch (e) {
+            offerDictation('The browser would not open the microphone.');
+        }
+    }
+
+    /* =========================================================
+       THINKING
+       ========================================================= */
+
+    var PERSONA = 'You are Jarvis, a personal AI assistant: the calm, dryly witty British ' +
+        'butler-engineer. Composed, precise, warm without fawning. Address the user as "sir" ' +
+        'unless they give you their name. You are being LISTENED TO, never read: reply in plain ' +
+        'spoken sentences, no markdown, no lists, no headings, no emoji, no symbols. Keep it to ' +
+        'one to three sentences unless genuinely asked for more. Never invent facts.';
+
+    function offline(text) {
+        var t = text.toLowerCase();
+        if (/^(hi|hey|hello|good (morning|afternoon|evening))/.test(t)) {
+            var h = new Date().getHours();
+            return (h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening') + ', sir. I am listening.';
+        }
+        if (/who are you|your name/.test(t)) return 'I am Jarvis. Just A Rather Very Intelligent System.';
+        if (/time/.test(t)) return 'It is ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) + '.';
+        if (/date|what day/.test(t)) {
+            return 'Today is ' + new Date().toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' }) + '.';
+        }
+        if (/joke/.test(t)) return 'Why did the developer go broke? He used up all his cache.';
+        if (/coin/.test(t)) return 'It lands on ' + (Math.random() < 0.5 ? 'heads' : 'tails') + '.';
+
+        var sum = t.replace(/[^0-9+\-*/(). ]/g, '').trim();
+        if (sum && /\d/.test(sum) && /[+\-*/]/.test(sum)) {
+            try {
+                var n = Function('"use strict"; return (' + sum + ')')();
+                if (typeof n === 'number' && isFinite(n)) return 'That comes to ' + (Math.round(n * 1e6) / 1e6) + '.';
+            } catch (e) {}
+        }
+        return 'I have no language model connected, sir, so I will not pretend to an answer. ' +
+            'Open the Brain panel to connect one.';
+    }
+
+    // Claude Haiku answers almost immediately and does not think first, which is
+    // what a spoken conversation needs. Opus is far more capable but pauses to
+    // think before it speaks.
+    var MODELS = {
+        fast: { id: 'claude-haiku-4-5', label: 'Fast (Haiku)' },
+        smart: { id: 'claude-opus-5', label: 'Smart (Opus)' }
+    };
+
+    function modelChoice() {
+        var stored = readStore('jarvisModel', 'fast');
+        return MODELS[stored] ? stored : 'fast';
+    }
+
+    // Say what actually went wrong. Reporting every failure as a refused key
+    // hid the real causes — an empty credit balance most of all.
+    function explainApiError(status, body) {
+        var detail = '';
+        try {
+            var parsed = JSON.parse(body);
+            detail = (parsed.error && parsed.error.message) || '';
+        } catch (e) {
+            detail = (body || '').slice(0, 160);
+        }
+
+        if (status === 401) {
+            return 'That key was rejected as invalid. Check it was copied whole, starting with sk-ant.';
+        }
+        if (status === 403) {
+            return 'That key is not permitted to use this model.';
+        }
+        if (status === 429) {
+            return 'The API is rate limiting you. Wait a moment and ask again.';
+        }
+        if (status === 400 && /credit|balance|billing/i.test(detail)) {
+            return 'Your Anthropic account has no credit. Add billing in the console — a key alone is not enough.';
+        }
+        if (status === 404) {
+            return 'That model is not available on your account.';
+        }
+        if (status >= 500) {
+            return 'Anthropic had a server error. Try again shortly.';
+        }
+        return detail || ('The API returned status ' + status + '.');
+    }
+
+    // Streaming, so he starts speaking after the first sentence instead of
+    // waiting for the whole answer to be written.
+    function think(text, onSentence) {
+        var key = apiKey();
+        if (!key) return Promise.resolve(offline(text));
+
+        var recent = turns.slice(-10);
+        var body = {
+            model: MODELS[modelChoice()].id,
+            max_tokens: 400,
+            system: PERSONA,
+            stream: true,
+            messages: recent.concat([{ role: 'user', content: text }])
+        };
+
+        return fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json',
+                'x-api-key': key,
+                'anthropic-version': '2023-06-01',
+                'anthropic-dangerous-direct-browser-access': 'true'
+            },
+            body: JSON.stringify(body)
+        }).then(function (r) {
+            if (!r.ok) {
+                return r.text().then(function (t) {
+                    throw new Error(explainApiError(r.status, t));
+                });
+            }
+            if (!r.body || !r.body.getReader) {
+                // No streaming in this browser; fall back to the whole answer.
+                return r.json().then(function (data) {
+                    return (data.content || [])
+                        .filter(function (b) { return b.type === 'text'; })
+                        .map(function (b) { return b.text; }).join(' ').trim();
+                });
+            }
+
+            var reader = r.body.getReader();
+            var decoder = new TextDecoder();
+            var buffer = '';
+            var full = '';
+            var spokenTo = 0;
+
+            function flushSentences(done) {
+                if (!onSentence) return;
+                var upto = done ? full.length : Math.max(
+                    full.lastIndexOf('.'), full.lastIndexOf('!'),
+                    full.lastIndexOf('?'), full.lastIndexOf('\u2026')
+                ) + 1;
+                if (upto > spokenTo) {
+                    onSentence(full.slice(spokenTo, upto));
+                    spokenTo = upto;
+                }
+            }
+
+            function pumpStream() {
+                return reader.read().then(function (chunk) {
+                    if (chunk.done) {
+                        flushSentences(true);
+                        return full.trim();
+                    }
+                    buffer += decoder.decode(chunk.value, { stream: true });
+                    var lines = buffer.split('\n');
+                    buffer = lines.pop();
+                    for (var i = 0; i < lines.length; i++) {
+                        var line = lines[i].trim();
+                        if (line.indexOf('data:') !== 0) continue;
+                        var payload = line.slice(5).trim();
+                        if (!payload || payload === '[DONE]') continue;
+                        try {
+                            var evt = JSON.parse(payload);
+                            if (evt.type === 'content_block_delta' && evt.delta &&
+                                evt.delta.type === 'text_delta') {
+                                full += evt.delta.text;
+                                flushSentences(false);
+                            } else if (evt.type === 'error') {
+                                throw new Error((evt.error && evt.error.message) || 'stream error');
+                            }
+                        } catch (e) {
+                            if (e instanceof SyntaxError) continue;   // partial JSON
+                            throw e;
+                        }
+                    }
+                    return pumpStream();
+                });
+            }
+
+            return pumpStream();
+        }).then(function (reply) {
+            if (!reply) throw new Error('Nothing came back from the model.');
+            return reply;
+        }).catch(function (e) {
+            return { failed: true, message: e.message, fallback: offline(text) };
+        });
+    }
+
+    function ask(text) {
+        busy = true;
+        hush();
+        setState('thinking', 'Thinking');
+
+        turns.push({ role: 'user', content: text });
+
+        var started = false;
+
+        // Speak each sentence the moment it is finished, rather than waiting
+        // for the whole answer.
+        function speakSentence(sentence) {
+            if (!sentence.trim()) return;
+            started = true;
+            setState('speaking', 'Speaking');
+            queue = queue.concat(pieces(sentence));
+            pump();
+        }
+
+        think(text, speakSentence).then(function (result) {
+            busy = false;
+
+            var spoken = typeof result === 'string' ? result : null;
+
+            if (result && result.failed) {
+                trouble(result.message);
+                spoken = result.fallback;
+                started = false;
+                hush();
+            }
+
+            turns.push({ role: 'assistant', content: spoken });
+            if (turns.length > 20) turns = turns.slice(-20);
+            writeStore(HISTORY, turns);
+
+            function afterwards() {
+                if (talking) listen();
+                else setState('idle', dictateForm.hidden ? 'Tap to talk' : 'Ask another');
+            }
+
+            if (started) {
+                // Already speaking as it streamed; just wait for the queue.
+                onDrain = afterwards;
+                if (!speaking && !queue.length) afterwards();
+            } else {
+                say(spoken, afterwards);
+            }
+        });
+    }
+
+    /* =========================================================
+       CONTROLS
+       ========================================================= */
+
+    dictateForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        unlock();
+        var said = dictateInput.value.trim();
+        if (!said) return;
+        dictateInput.value = '';
+        dictateInput.blur();
+        trouble('');
+        ask(said);
+    });
+
+    orb.addEventListener('click', function () {
+        unlock();
+        trouble('');
+
+        if (talking) {
+            talking = false;
+            if (listening) { try { recog.stop(); } catch (e) {} }
+            hush();
+            busy = false;
+            setState('idle', 'Tap to talk');
+            return;
+        }
+
+        talking = true;
+        listen();
+    });
+
+    /* ---------- sheet: key + diagnostics ---------- */
+
+    var keyLink = document.getElementById('keyLink');
+
+    var modelPick = document.getElementById('modelPick');
+
+    function paintModelChoice() {
+        var current = modelChoice();
+        Array.prototype.forEach.call(modelPick.children, function (b) {
+            b.classList.toggle('on', b.dataset.model === current);
+        });
+    }
+
+    modelPick.addEventListener('click', function (e) {
+        var btn = e.target.closest('.model-btn');
+        if (!btn) return;
+        writeStore('jarvisModel', btn.dataset.model);
+        paintModelChoice();
+        sheetText.textContent = btn.dataset.model === 'fast'
+            ? 'Fast selected. Haiku answers in about a second — best for talking.'
+            : 'Smart selected. Opus is far more capable but pauses to think, so replies take longer.';
+    });
+
+    function openSheet(text, showKeyRow) {
+        sheetText.textContent = text;
+        keyRow.style.display = showKeyRow ? 'flex' : 'none';
+        keyLink.hidden = !showKeyRow;
+        keyTest.hidden = !(showKeyRow && apiKey());
+        modelPick.hidden = !showKeyRow;
+        if (showKeyRow) paintModelChoice();
+        sheet.classList.add('open');
+    }
+
+    document.getElementById('sheetClose').addEventListener('click', function () {
+        sheet.classList.remove('open');
+    });
+
+    document.getElementById('brainBtn').addEventListener('click', function () {
+        unlock();
+        openSheet(apiKey()
+            ? 'Connected — Jarvis is thinking with a live model. Paste a new key to replace it, or clear it to go back to the built-in brain.'
+            : 'Not connected. Paste an Anthropic API key and Jarvis thinks with a real model. It is kept in this browser only and sent only to Anthropic — unencrypted, so use a key you can revoke.',
+            true);
+        keyInput.value = '';
+    });
+
+    var keyTest = document.getElementById('keyTest');
+
+    function maskKey(k) {
+        if (k.length < 14) return k;
+        return k.slice(0, 11) + '…' + k.slice(-4);
+    }
+
+    // Check the shape before spending a request on it, and say exactly what is
+    // wrong — a key mangled by autocorrect looks fine at a glance.
+    function keyProblem(value) {
+        if (/\s/.test(value)) return 'That key has a space or line break in it. Paste it again.';
+        if (value.indexOf('sk-ant-') !== 0) {
+            if (value.toLowerCase().indexOf('sk-ant-') === 0) {
+                return 'Your keyboard capitalised the key. It must start with a lowercase "sk-ant-".';
+            }
+            return 'That does not look like an Anthropic key — they start with "sk-ant-".';
+        }
+        if (value.length < 40) return 'That key looks truncated — only part of it was pasted.';
+        return null;
+    }
+
+    document.getElementById('keySave').addEventListener('click', function () {
+        // Strip every kind of whitespace a paste can carry.
+        var value = keyInput.value.replace(/[\s\u00a0\u200b]/g, '');
+        if (!value) return;
+
+        var problem = keyProblem(value);
+        if (problem) {
+            sheetText.textContent = problem;
+            return;
+        }
+
+        try {
+            localStorage.setItem(API_KEY, value);
+            sheetText.textContent = 'Saved ' + maskKey(value) +
+                '. Check the whole key is there, then test it.';
+            keyTest.hidden = false;
+        } catch (e) {
+            sheetText.textContent = 'This browser refused to store the key.';
+        }
+    });
+
+    // One small request, so a bad key is caught here rather than mid-sentence.
+    keyTest.addEventListener('click', function () {
+        var key = apiKey();
+        if (!key) { sheetText.textContent = 'No key saved yet.'; return; }
+        sheetText.textContent = 'Testing…';
+
+        fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json',
+                'x-api-key': key,
+                'anthropic-version': '2023-06-01',
+                'anthropic-dangerous-direct-browser-access': 'true'
+            },
+            body: JSON.stringify({
+                model: MODELS[modelChoice()].id,
+                max_tokens: 8,
+                messages: [{ role: 'user', content: 'Say OK.' }]
+            })
+        }).then(function (r) {
+            if (r.ok) {
+                sheetText.textContent = 'The key works. Close this and tap the reactor.';
+                return;
+            }
+            return r.text().then(function (t) {
+                sheetText.textContent = explainApiError(r.status, t);
+            });
+        }).catch(function (e) {
+            sheetText.textContent = 'Could not reach Anthropic at all: ' + e.message +
+                '. Check your connection.';
+        });
+    });
+
+    document.getElementById('keyClear').addEventListener('click', function () {
+        try { localStorage.removeItem(API_KEY); } catch (e) {}
+        keyInput.value = '';
+        openSheet('Cleared — back to the built-in brain.', false);
+    });
+
+    // Speaking straight from the tap: if this is silent, the fault is the
+    // device's sound, not the page's timing.
+    document.getElementById('testBtn').addEventListener('click', function () {
+        unlock();
+        soundProven = false;
+        trouble('');
+        hush();
+        if (!synth) {
+            trouble('This browser has no speech synthesis at all.');
+            return;
+        }
+        var u = new SpeechSynthesisUtterance('Voice test. I am Jarvis, and you can hear me.');
+        if (voice) u.voice = voice;
+        u.volume = 1;
+        try {
+            synth.resume();
+            synth.speak(u);
+            u.onstart = function () { soundProven = true; clearSoundWatch(); clearSoundTrouble(); };
+            setState('speaking', 'Testing');
+            u.onend = function () { setState('idle', dictateForm.hidden ? 'Tap to talk' : 'Ask another'); };
+            watchForSilence();
+        } catch (e) {
+            trouble('The browser refused to speak: ' + e.message);
+        }
+    });
+
+    document.getElementById('checkBtn').addEventListener('click', function () {
+        unlock();
+        var voices = synth ? (synth.getVoices() || []) : [];
+        var report = [
+            'VOICE CHECK — build ' + BUILD,
+            '',
+            'Address: ' + location.protocol + '//' + location.host,
+            'Secure origin: ' + (window.isSecureContext ? 'yes' : 'NO — listening cannot work here'),
+            'Can listen: ' + (Recognition ? 'yes' : 'NO — this browser has no speech recognition'),
+            'Can speak: ' + (synth ? 'yes' : 'NO'),
+            'Voices installed: ' + voices.length + (voice ? ' — using "' + voice.name + '"' : ''),
+            'Speech unlocked: ' + (unlocked ? 'yes' : 'no'),
+            'Sound actually heard: ' + (soundProven ? 'yes' : 'not yet'),
+            'Apple device rules applied: ' + (isApple ? 'yes' : 'no'),
+            'Language: ' + (recog ? recog.lang : 'n/a'),
+            'Model: ' + (apiKey() ? MODELS[modelChoice()].id : 'built-in brain'),
+            '',
+            navigator.userAgent
+        ].join('\n');
+
+        openSheet(report, false);
+
+        if (navigator.permissions && navigator.permissions.query) {
+            navigator.permissions.query({ name: 'microphone' }).then(function (s) {
+                sheetText.textContent = report.replace('Speech unlocked:', 'Mic permission: ' + s.state + '\nSpeech unlocked:');
+            }).catch(function () {});
+        }
+    });
+
+    /* ---------- boot ---------- */
+
+    var stored = readStore(HISTORY, []);
+    if (Object.prototype.toString.call(stored) === '[object Array]') turns = stored.slice(-20);
+
+    if (!Recognition) {
+        setState('error', 'Use your keyboard mic');
+        trouble('This browser cannot listen on its own — it has no speech recognition.');
+        dictateForm.hidden = false;
+    }
+}());
+</script>
+</body>
+</html>
