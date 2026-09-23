@@ -410,12 +410,14 @@ footer button:hover, footer a:hover { color: var(--gold); }
         <button data-model="fast" class="model-btn">Fast — Haiku</button>
         <button data-model="smart" class="model-btn">Smart — Opus</button>
     </div>
+    <button class="close" id="keyTest" hidden>Test this key now</button>
     <p id="keyLink" hidden>Get a key at
         <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a>
         — a paid developer account, billed per message. Tap the link rather than typing the
         address, or your browser will search for it instead of opening it.</p>
     <div class="sheet-row" id="keyRow">
-        <input type="password" id="keyInput" placeholder="sk-ant-..." autocomplete="off">
+        <input type="text" id="keyInput" placeholder="sk-ant-..." autocomplete="off"
+               autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="text">
         <button id="keySave">Save</button>
         <button id="keyClear" class="ghost">Clear</button>
     </div>
@@ -427,7 +429,7 @@ footer button:hover, footer a:hover { color: var(--gold); }
     'use strict';
 
     // Replaced at build time; 'dev' means this came straight from source.
-    var BUILD = '20260923-2055'.charAt(0) === '_' ? 'dev' : '20260923-2055';
+    var BUILD = '20260923-2103'.charAt(0) === '_' ? 'dev' : '20260923-2103';
 
     var body = document.body;
     var orb = document.getElementById('orb');
@@ -466,9 +468,22 @@ footer button:hover, footer a:hover { color: var(--gold); }
 
     /* ---------- state ---------- */
 
+    var heardFlash = null;
+
     function setState(name, label) {
         body.className = 'state-' + name;
-        stateEl.textContent = label;
+        if (!heardFlash) stateEl.textContent = label;
+    }
+
+    // Show it just long enough to read, then get out of the way.
+    function flashHeard(words) {
+        var shown = words.length > 42 ? words.slice(0, 40) + '…' : words;
+        stateEl.textContent = '“' + shown + '”';
+        if (heardFlash) window.clearTimeout(heardFlash);
+        heardFlash = window.setTimeout(function () {
+            heardFlash = null;
+            stateEl.textContent = busy ? 'Thinking' : 'Speaking';
+        }, 2200);
     }
 
     var troubleIsAboutSound = false;
@@ -686,7 +701,7 @@ footer button:hover, footer a:hover { color: var(--gold); }
                 setState('error', 'Tap to talk');
                 trouble('I did not catch anything. Tap and speak clearly, close to the phone.');
             }
-        }, 12000);
+        }, 16000);
     }
 
     function stopWatchdog() {
@@ -729,6 +744,7 @@ footer button:hover, footer a:hover { color: var(--gold); }
                 heard = true;
                 deafStrikes = 0;
                 stopWatchdog();
+                flashHeard(final);
                 ask(final);
             }
         };
@@ -742,8 +758,17 @@ footer button:hover, footer a:hover { color: var(--gold); }
                 return;
             }
             if (err === 'no-speech') {
-                // Ordinary in a conversation: just open the mic again.
-                if (talking && !busy) window.setTimeout(listen, 200);
+                // Ordinary in a conversation, but do not spin: after a few
+                // silent rounds, stop and let the user start again.
+                deafStrikes++;
+                if (deafStrikes >= 3) {
+                    talking = false;
+                    deafStrikes = 0;
+                    setState('idle', 'Tap to talk');
+                    trouble('I heard nothing for a while, so I have stopped listening. Tap when you are ready.');
+                } else if (talking && !busy) {
+                    window.setTimeout(listen, 250);
+                }
                 return;
             }
             if (err === 'language-not-supported') recog.lang = 'en-US';
@@ -1060,6 +1085,7 @@ footer button:hover, footer a:hover { color: var(--gold); }
         sheetText.textContent = text;
         keyRow.style.display = showKeyRow ? 'flex' : 'none';
         keyLink.hidden = !showKeyRow;
+        keyTest.hidden = !(showKeyRow && apiKey());
         modelPick.hidden = !showKeyRow;
         if (showKeyRow) paintModelChoice();
         sheet.classList.add('open');
@@ -1078,19 +1104,84 @@ footer button:hover, footer a:hover { color: var(--gold); }
         keyInput.value = '';
     });
 
+    var keyTest = document.getElementById('keyTest');
+
+    function maskKey(k) {
+        if (k.length < 14) return k;
+        return k.slice(0, 11) + '…' + k.slice(-4);
+    }
+
+    // Check the shape before spending a request on it, and say exactly what is
+    // wrong — a key mangled by autocorrect looks fine at a glance.
+    function keyProblem(value) {
+        if (/\s/.test(value)) return 'That key has a space or line break in it. Paste it again.';
+        if (value.indexOf('sk-ant-') !== 0) {
+            if (value.toLowerCase().indexOf('sk-ant-') === 0) {
+                return 'Your keyboard capitalised the key. It must start with a lowercase "sk-ant-".';
+            }
+            return 'That does not look like an Anthropic key — they start with "sk-ant-".';
+        }
+        if (value.length < 40) return 'That key looks truncated — only part of it was pasted.';
+        return null;
+    }
+
     document.getElementById('keySave').addEventListener('click', function () {
-        var value = keyInput.value.trim();
+        // Strip every kind of whitespace a paste can carry.
+        var value = keyInput.value.replace(/[\s\u00a0\u200b]/g, '');
         if (!value) return;
+
+        var problem = keyProblem(value);
+        if (problem) {
+            sheetText.textContent = problem;
+            return;
+        }
+
         try {
             localStorage.setItem(API_KEY, value);
-            openSheet('Connected. Tap the reactor and talk.', false);
+            sheetText.textContent = 'Saved ' + maskKey(value) +
+                '. Check the whole key is there, then test it.';
+            keyTest.hidden = false;
         } catch (e) {
-            openSheet('This browser refused to store the key.', true);
+            sheetText.textContent = 'This browser refused to store the key.';
         }
+    });
+
+    // One small request, so a bad key is caught here rather than mid-sentence.
+    keyTest.addEventListener('click', function () {
+        var key = apiKey();
+        if (!key) { sheetText.textContent = 'No key saved yet.'; return; }
+        sheetText.textContent = 'Testing…';
+
+        fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json',
+                'x-api-key': key,
+                'anthropic-version': '2023-06-01',
+                'anthropic-dangerous-direct-browser-access': 'true'
+            },
+            body: JSON.stringify({
+                model: MODELS[modelChoice()].id,
+                max_tokens: 8,
+                messages: [{ role: 'user', content: 'Say OK.' }]
+            })
+        }).then(function (r) {
+            if (r.ok) {
+                sheetText.textContent = 'The key works. Close this and tap the reactor.';
+                return;
+            }
+            return r.text().then(function (t) {
+                sheetText.textContent = explainApiError(r.status, t);
+            });
+        }).catch(function (e) {
+            sheetText.textContent = 'Could not reach Anthropic at all: ' + e.message +
+                '. Check your connection.';
+        });
     });
 
     document.getElementById('keyClear').addEventListener('click', function () {
         try { localStorage.removeItem(API_KEY); } catch (e) {}
+        keyInput.value = '';
         openSheet('Cleared — back to the built-in brain.', false);
     });
 
