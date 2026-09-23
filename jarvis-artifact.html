@@ -437,7 +437,7 @@
         <line x1="12" y1="19" x2="12" y2="23"></line>
       </svg>
     </button>
-    <input id="entry" type="text" autocomplete="off" placeholder="Speak to Jarvis..." aria-label="Message to Jarvis">
+    <input id="entry" type="text" autocomplete="off" placeholder="Tap, then use your keyboard mic" aria-label="Message to Jarvis">
     <button class="act" id="send">Send</button>
     <button class="act stop" id="stop" hidden>Stop</button>
   </div>
@@ -519,6 +519,43 @@
     onDrain: null
   };
 
+  var soundProven = false;
+  var soundWatch = null;
+  var unlocked = false;
+
+  // iPadOS reports itself as a Mac, so test for touch as well.
+  var isApple = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+
+  // iOS only allows speech begun inside a tap, and it goes quiet in several
+  // other ways besides. Prime the engine during the first tap.
+  function unlock() {
+    if (!synth) return;
+    try {
+      synth.resume();
+      if (unlocked) return;
+      var primer = new SpeechSynthesisUtterance('ready');
+      primer.volume = 0.01;
+      synth.speak(primer);
+      unlocked = true;
+    } catch (e) {}
+  }
+
+  function clearSoundWatch() {
+    if (soundWatch) { window.clearTimeout(soundWatch); soundWatch = null; }
+  }
+
+  // speak() can be accepted and then produce nothing, firing no event at all.
+  // Only a timer catches that.
+  function watchForSilence() {
+    if (soundProven) return;
+    clearSoundWatch();
+    soundWatch = window.setTimeout(function () {
+      if (soundProven) return;
+      setStatus('No sound', false);
+    }, 2500);
+  }
+
   function chooseVoice() {
     if (!synth) return;
     var voices = synth.getVoices() || [];
@@ -532,6 +569,10 @@
       function (v) { return /en[-_]AU|en[-_]IE/i.test(v.lang); },
       function (v) { return /^en([-_]|$)/i.test(v.lang); }
     ];
+    // Assigning utterance.voice is a known cause of silent playback on iOS.
+    // The system default is reliable, so leave it alone there.
+    if (isApple) { speech.voice = null; return; }
+
     for (var i = 0; i < order.length; i++) {
       for (var j = 0; j < voices.length; j++) {
         if (order[i](voices[j])) { speech.voice = voices[j]; return; }
@@ -591,13 +632,16 @@
     var chunk = speech.queue.shift();
     var u = new SpeechSynthesisUtterance(chunk);
     if (speech.voice) u.voice = speech.voice;
-    u.rate = 1.03;
-    u.pitch = 0.82;
+    u.volume = 1;
+    u.rate = isApple ? 1 : 1.03;
+    u.pitch = isApple ? 1 : 0.82;   // iOS is fussy about a non-default pitch
 
     speech.speaking = true;
     speech.active = u;
 
     u.onstart = function () {
+      soundProven = true;
+      clearSoundWatch();
       reactor.classList.add('speaking');
       core.style.transform = 'scale(1.25)';
     };
@@ -617,7 +661,9 @@
     };
 
     try {
+      synth.resume();
       synth.speak(u);
+      watchForSilence();
     } catch (e) {
       speech.speaking = false;
       pump();
@@ -642,9 +688,14 @@
   function hush() {
     speech.queue = [];
     speech.onDrain = null;
+    clearSoundWatch();
+    // On iOS a cancel() just before speak() silences the next utterance, so
+    // only cancel when something is really playing.
+    if (synth && (speech.speaking || synth.speaking)) {
+      try { synth.cancel(); } catch (e) {}
+    }
     speech.speaking = false;
     speech.active = null;
-    if (synth) { try { synth.cancel(); } catch (e) {} }
     reactor.classList.remove('speaking');
     core.style.transform = '';
   }
@@ -698,7 +749,7 @@
     recog.onerror = function (event) {
       var err = event && event.error;
       if (err === 'not-allowed' || err === 'service-not-allowed') {
-        retireMic('Voice input is blocked here — the microphone is not available in this view. Typing still works, and Jarvis still speaks his replies.');
+        retireMic('The microphone is blocked in this view. Use your keyboard\u2019s own microphone key instead — tap the box below, press the mic on your keyboard and speak. I will still answer out loud.');
         return;
       }
       if (err === 'no-speech' || err === 'aborted') return;   // ordinary, stay quiet
@@ -1019,10 +1070,13 @@
 
   /* ---------- wiring ---------- */
 
-  sendBtn.addEventListener('click', function () { send(entry.value.trim()); });
+  document.addEventListener('click', unlock, { once: true });
+  document.addEventListener('touchend', unlock, { once: true, passive: true });
+
+  sendBtn.addEventListener('click', function () { unlock(); send(entry.value.trim()); });
 
   entry.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') { e.preventDefault(); send(entry.value.trim()); }
+    if (e.key === 'Enter') { e.preventDefault(); unlock(); send(entry.value.trim()); }
   });
 
   stopBtn.addEventListener('click', function () {
