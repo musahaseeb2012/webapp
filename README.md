@@ -98,7 +98,16 @@ server and is never sent to the browser.
 
 ### Live on the web (microphone works here)
 
-**https://musahaseeb2012.github.io/webapp/jarvis/** — voice only. Tap the
+**https://musahaseeb2012.github.io/webapp/jarvis/** — the chat session. A
+familiar assistant layout: a thread you scroll, a sidebar of past conversations
+you can reopen or delete, replies that stream in as they are written, Stop
+mid-answer, and Copy or Read aloud on anything he says. Conversations are kept
+in the browser, so closing the tab does not lose them.
+
+Markdown is rendered as nodes rather than parsed as HTML — lists, headings,
+bold, inline code and fenced code blocks — so a reply can never inject markup.
+
+**https://musahaseeb2012.github.io/webapp/jarvis/voice.html** — voice only. Tap the
 reactor and talk. Jarvis listens, answers aloud, and reopens the microphone for
 your next question, with nothing transcribed on screen. Tap again to stop.
 
@@ -145,7 +154,8 @@ voice input is text-only there. Voice output still works.
 ### Jarvis files
 
 - `jarvis-standalone.html` - **The whole app in one file.** Open this one.
-- `jarvis-voice.html` - Voice-only interface, the site's front page
+- `jarvis-chat.html` - The chat session, the site's front page
+- `jarvis-voice.html` - Voice-only interface, served at `voice.html`
 - `jarvis-artifact.html` - Source of the claude.ai Artifact (real model; claude.ai only)
 - `jarvis.html` - Chat interface (needs the two files below alongside it)
 - `jarvis.css` - Gold and red theme

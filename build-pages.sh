@@ -27,15 +27,22 @@ meta = '''    <script>window.JARVIS_NO_SERVER = true;</script>
 
 stamp = os.environ['BUILD_STAMP']
 
-# index.html — voice only. Talk to it; it talks back; nothing is transcribed
-# on screen.
+# index.html — the chat session: a thread, a history of conversations,
+# streaming replies. The front door.
+chat = open('jarvis-chat.html').read()
+anchor = '<style>'
+assert anchor in chat
+chat = chat.replace(anchor, meta + anchor, 1)
+open('site/index.html', 'w').write(chat.replace('__BUILD__', stamp))
+
+# voice.html — the hands-free orb, for talking rather than typing.
 voice = open('jarvis-voice.html').read()
 anchor = '<style>'
 assert anchor in voice
 voice = voice.replace(anchor, meta + anchor, 1)
-open('site/index.html', 'w').write(voice.replace('__BUILD__', stamp))
+open('site/voice.html', 'w').write(voice.replace('__BUILD__', stamp))
 
-# text.html — the full chat, for when typing is easier.
+# text.html — the earlier single-thread chat, kept so old links still work.
 text = open('jarvis-standalone.html').read()
 anchor = '    <style>'
 assert anchor in text
