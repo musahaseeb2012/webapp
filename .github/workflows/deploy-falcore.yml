@@ -1,0 +1,55 @@
+# Deploys the Falcore Rides site and its Firestore rules to Firebase.
+#
+# Exists so the site can be deployed from a phone or tablet: GitHub runs the
+# firebase CLI, so you never need a terminal of your own. Runs on every push
+# to this branch, and can be started by hand from the Actions tab.
+#
+# One secret is required — FIREBASE_SERVICE_ACCOUNT — see the README.
+
+name: Deploy Falcore Rides
+
+on:
+  push:
+    branches: [claude/spotless-rides-3d-site-j3v62r]
+    paths: ['falcore-rides/**', '.github/workflows/deploy-falcore.yml']
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - run: npm install -g firebase-tools
+
+      - name: Write the service account key
+        env:
+          SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          if [ -z "$SA" ]; then
+            echo "::error::FIREBASE_SERVICE_ACCOUNT secret is not set — see falcore-rides/README.md"
+            exit 1
+          fi
+          # printf, not echo, so nothing in the JSON is interpreted
+          printf '%s' "$SA" > "$RUNNER_TEMP/service-account.json"
+
+      - name: Deploy hosting and rules
+        working-directory: falcore-rides
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/service-account.json
+        run: |
+          firebase deploy \
+            --only hosting,firestore:rules \
+            --project car-detail-business \
+            --non-interactive
+
+      - name: Where it landed
+        run: |
+          echo "### Deployed 🚗✨" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Site: https://car-detail-business.web.app" >> $GITHUB_STEP_SUMMARY
+          echo "- Dashboard: https://car-detail-business.web.app/admin.html" >> $GITHUB_STEP_SUMMARY

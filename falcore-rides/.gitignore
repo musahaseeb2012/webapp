@@ -1,0 +1,5 @@
+# Firestore emulator output from ./test-rules.sh
+firestore-debug.log
+firebase-debug.log
+ui-debug.log
+.firebase/
